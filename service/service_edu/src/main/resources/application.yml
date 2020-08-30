@@ -1,0 +1,58 @@
+#服务端口
+server:
+  port: 8001
+
+#服务名
+spring:
+  application:
+    name: service8001-edu
+
+    #环境设置
+  profiles:
+    active: dev
+
+  # 时间格式和时区设置
+  jackson:
+    date-format:  yyyy-MM-dd  HH:mm:ss
+    time-zone: GMT+8
+
+# nacos服务地址
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+
+
+  #mysql数据库连接
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/online_edu?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: root
+
+
+
+mybatis-plus:
+  mapper-locations: classpath:edu/zsq/eduservice/mapper/xml/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#ribbon的超时时间
+#ribbon:
+#  ReadTimeout: 5000
+#  ConnectTimeout: 5000
+
+
+#开启熔断机制
+feign:
+  hystrix:
+    enabled: true
+
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 1000
+logging.level.com.alibaba.nacos.client.naming: WARN

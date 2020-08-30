@@ -1,0 +1,30 @@
+#    Data ID 的完整规则格式如下
+#
+#        ${prefix}-${spring.profile.active}.${file-extension}
+#
+#    - prefix 默认为所属工程配置spring.application.name 的值，也可以通过配置项 spring.cloud.nacos.config.prefix来配置。
+#
+#    - spring.profiles.active=dev 即为当前环境对应的 profile。 注意：当 spring.profiles.active 为空时，对应的连接符 - 也将不存在，dataId 的拼接格式变成 ${prefix}.${file-extension}
+#
+#    - file-exetension 为配置内容的数据格式，可以通过配置项 spring.cloud.nacos.config.file-extension 来配置。目前只支持 properties 和 yaml 类型。
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        #   要和nacos客户端的Data ID 的后缀名一致  bootstrap文件啥格式无所谓
+        prefix: group-service-msm
+        file-extension: yml
+        #   命名空间 1 为dev
+        namespace: 1
+        #   加载多个配置文件
+        ext-config:
+          - data-id: redis.yml
+            group: DEFAULT_GROUP
+            refresh: true
+          - data-id: nacos-discovery.yml
+            group: DEFAULT_GROUP
+            refresh: true
+        shared-dataids: env.yml
+        refreshable-dataids: env.yml
+
