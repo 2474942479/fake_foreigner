@@ -16,7 +16,7 @@
     </parent>
     <groupId>edu.zsq</groupId>
     <artifactId>online_edu</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <version>0.0.1-SNAPSHOT</version>
     <name>online_edu</name>
     <description>Demo project for Spring Boot</description>
