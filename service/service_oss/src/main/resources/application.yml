@@ -24,8 +24,8 @@ aliyun:
     file:
 #      地域节点
       endpoint: oss-cn-beijing.aliyuncs.com
-      keyid: LTAI4GG3LRccG3UGjxh3pPNJ
-      keysecret: 9hSReNVG5T0NXtvIxEgcK2BIoKGfw4
+      keyid: ###############
+      keysecret: ###########
       bucketname: online-zsq
 
 
