@@ -24,25 +24,29 @@
     </modules>
 
     <dependencies>
+        <!--nacos 服务注册中心-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <!-- nacos 配置中心-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+            <version>0.2.2.RELEASE</version>
         </dependency>
+
         <!--ribbon 负载均衡-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
         </dependency>
-        <!--hystrix依赖，主要是用  @HystrixCommand -->
+        <!--hystrix熔断器依赖，主要是用  @HystrixCommand -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
         </dependency>
-        <!--服务注册-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-        </dependency>
+
         <!--服务调用-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

@@ -32,7 +32,7 @@ public class CorsConfig {
         // 允许任何域名使用
         config.addAllowedOrigin("*");
         //允许携带cookie访问
-        config.setAllowCredentials(true);
+//        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(new PathPatternParser());
         source.registerCorsConfiguration("/**", config);

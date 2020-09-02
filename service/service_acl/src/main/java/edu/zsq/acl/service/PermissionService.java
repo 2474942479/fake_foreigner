@@ -1,5 +1,6 @@
 package edu.zsq.acl.service;
 
+import com.alibaba.fastjson.JSONObject;
 import edu.zsq.acl.entity.Permission;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.acl.entity.vo.PermissionTree;
@@ -30,4 +31,32 @@ public interface PermissionService extends IService<Permission> {
      * @return
      */
     void getPermissionIds(String id, ArrayList<String> permissionIds);
+
+    /**
+     * 根据用户id获取用户菜单
+     * @param id
+     * @return
+     */
+    List<String> selectPermissionValueByUserId(String id);
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    List<JSONObject> selectPermissionByUserId(String id);
+
+    /**
+     * 给角色分配权限
+     * @param roleId
+     * @param permissionId
+     */
+    void saveRolePermissionRealtionShipGuli(String roleId, String[] permissionId);
+
+    /**
+     *根据角色获取菜单
+     * @param roleId
+     * @return
+     */
+    List<Permission> selectAllMenu(String roleId);
 }

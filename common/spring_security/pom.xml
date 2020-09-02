@@ -16,7 +16,6 @@
             <artifactId>common_utils</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
         <!-- Spring Security依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

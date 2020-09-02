@@ -7,6 +7,7 @@ import edu.zsq.security.security.TokenLogoutHandler;
 import edu.zsq.security.security.TokenManager;
 import edu.zsq.security.security.UnauthorizedEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -36,7 +37,7 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
     private TokenManager tokenManager;
     private DefaultPasswordEncoder defaultPasswordEncoder;
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<String,String> redisTemplate;
 
     @Autowired
     public TokenWebSecurityConfig(UserDetailsService userDetailsService, DefaultPasswordEncoder defaultPasswordEncoder,

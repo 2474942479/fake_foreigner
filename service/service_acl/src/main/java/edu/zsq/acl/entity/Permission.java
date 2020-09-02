@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -54,6 +55,18 @@ public class Permission implements Serializable {
 
     @ApiModelProperty(value = "状态(0:禁止,1:正常)")
     private Integer status;
+
+    @ApiModelProperty(value = "层级")
+    @TableField(exist = false)
+    private Integer level;
+
+    @ApiModelProperty(value = "下级")
+    @TableField(exist = false)
+    private List<Permission> children;
+
+    @ApiModelProperty(value = "是否选中")
+    @TableField(exist = false)
+    private boolean isSelect;
 
     @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
     private Boolean isDeleted;
