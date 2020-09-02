@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        prefix: group-service-acl
+        file-extension: yml
+        namespace: 1
+        ext-config:
+          - data-id: redis.yml
+            refresh: true
+          - data-id: nacos-discovery.yml
+            refresh: true
+        shared-dataids: env.yml,hystrix.yml,mysql.yml
+        refreshable-dataids: env.yml,hystrix.yml,mysql.yml
+
+
