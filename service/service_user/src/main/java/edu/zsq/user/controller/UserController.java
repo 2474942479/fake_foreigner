@@ -49,7 +49,7 @@ public class UserController {
     public MyResultUtils getUserInfo(HttpServletRequest request) {
 
         String userId = JwtUtils.getMemberIdByJwtToken(request);
-        if(StringUtils.isEmpty(userId)) {
+        if (StringUtils.isEmpty(userId)) {
             return MyResultUtils.error().message("请先登录");
         }
         User userInfo = userService.getById(userId);
@@ -58,12 +58,13 @@ public class UserController {
 
     /**
      * 根据用户id获取用户信息
+     *
      * @param userId
      * @return
      */
     @ApiOperation(value = "根据用户id获取用户信息")
     @GetMapping("/getUserInfoById/{userId}")
-    public User getUserInfoById(@PathVariable String userId){
+    public User getUserInfoById(@PathVariable String userId) {
         User user = userService.getById(userId);
         return user;
     }
@@ -71,11 +72,12 @@ public class UserController {
 
     /**
      * 根据日期获取这一天的注册人数  用于统计服务
+     *
      * @param day
      * @return
      */
     @GetMapping("/getRegisterNumber/{day}")
-    public Integer getRegisterNumber(@PathVariable String day){
+    public Integer getRegisterNumber(@PathVariable String day) {
         Integer count = userService.getRegisterNumber(day);
         return count;
     }
