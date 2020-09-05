@@ -55,6 +55,7 @@ public class IndexFrontController {
 
 //        查询前8条热门课程
         QueryWrapper<EduCourse> courseWrapper = new QueryWrapper<>();
+        courseWrapper.eq("status","Normal");
         courseWrapper.orderByDesc("id");
         courseWrapper.last("limit 8");
         List<EduCourse> courseList = courseService.list(courseWrapper);
