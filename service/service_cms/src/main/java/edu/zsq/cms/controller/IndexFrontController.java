@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- *  前台首页
+ * 前台首页
+ *
  * @author 张
  */
 @RestController
@@ -37,14 +38,14 @@ public class IndexFrontController {
      * 注意 @Cacheable 的key两个引号
      * 缓存@Cacheable 多用于查询
      * 缓存@CachePut 多用于新增 会将添加的结果放进redis
-     * @CacheEvict 多用于删除 会清空redis中指定的缓存
      *
      * @return
+     * @CacheEvict 多用于删除 会清空redis中指定的缓存
      */
     @Cacheable(key = "'selectIndexInfo'", value = "IndexInfo")
     @ApiOperation(value = "查询前两条幻灯片banner记录 前8条热门课程 前4个名师")
     @GetMapping("/getIndexInfo")
-    public MyResultUtils getIndexInfo(){
+    public MyResultUtils getIndexInfo() {
 
 //        根据id进行降序排列 只显示前两条幻灯片banner记录
         QueryWrapper<EduBanner> bannerWrapper = new QueryWrapper<>();
@@ -55,7 +56,7 @@ public class IndexFrontController {
 
 //        查询前8条热门课程
         QueryWrapper<EduCourse> courseWrapper = new QueryWrapper<>();
-        courseWrapper.eq("status","Normal");
+        courseWrapper.eq("status", "Normal");
         courseWrapper.orderByDesc("id");
         courseWrapper.last("limit 8");
         List<EduCourse> courseList = courseService.list(courseWrapper);
@@ -66,7 +67,7 @@ public class IndexFrontController {
         teacherWrapper.last("limit 4");
         List<EduTeacher> teacherList = teacherService.list(teacherWrapper);
 
-        return MyResultUtils.ok().data("bannerList",bannerList).data("courseList",courseList).data("teacherList",teacherList);
+        return MyResultUtils.ok().data("bannerList", bannerList).data("courseList", courseList).data("teacherList", teacherList);
     }
 
 }
