@@ -18,12 +18,11 @@ import java.util.List;
 @Component
 @FeignClient(name = "service8003-vod",fallback = VodClientImpl.class)
 public interface VodClient {
-
     /**
      * 定义调用的方法路径
      * 注解@PathVariable 一定要加参数名称
      * @param videoSourceId
-     * @return
+     * @return MyResultUtils
      */
     @DeleteMapping("/eduVod/video/removeVod/{videoSourceId}")
     MyResultUtils removeVod(@PathVariable("videoSourceId") String videoSourceId);
@@ -31,9 +30,8 @@ public interface VodClient {
     /**
      * 根据视频id删除多个视频
      * @param vodIdList 视频id集合
-     * @return
+     * @return MyResultUtils
      */
     @DeleteMapping("/eduVod/video/removeVodList")
     MyResultUtils removeVodList(@RequestParam("vodIdList") List<String> vodIdList);
-
 }
