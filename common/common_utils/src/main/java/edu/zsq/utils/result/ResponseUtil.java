@@ -12,12 +12,12 @@ import java.io.IOException;
  */
 public class ResponseUtil {
 
-    public static void out(HttpServletResponse response, MyResultUtils myResultUtils) {
+    public static void out(HttpServletResponse response, JsonResult jsonResult) {
         ObjectMapper mapper = new ObjectMapper();
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         try {
-            mapper.writeValue(response.getWriter(), myResultUtils);
+            mapper.writeValue(response.getWriter(), jsonResult);
         } catch (IOException e) {
             e.printStackTrace();
         }

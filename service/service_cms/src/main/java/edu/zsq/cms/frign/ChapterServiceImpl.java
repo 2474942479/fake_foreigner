@@ -1,6 +1,6 @@
 package edu.zsq.cms.frign;
 
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ChapterServiceImpl implements ChapterService{
     @Override
-    public MyResultUtils getAllChapterVo(String courseId) {
-        return MyResultUtils.error().message("edu服务器出错了");
+    public JsonResult getAllChapterVo(String courseId) {
+        return JsonResult.failure().message("edu服务器出错了");
     }
 }

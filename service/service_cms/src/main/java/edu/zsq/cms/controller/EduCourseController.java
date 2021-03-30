@@ -9,7 +9,7 @@ import edu.zsq.cms.frign.ChapterService;
 import edu.zsq.cms.frign.OrderService;
 import edu.zsq.cms.service.EduCourseService;
 import edu.zsq.utils.jwt.JwtUtils;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,11 +42,11 @@ public class EduCourseController {
      * @return
      */
     @PostMapping("/getCourseList/{current}/{size}")
-    public MyResultUtils getCourseList(@PathVariable long current, @PathVariable long size, @RequestBody(required = false) CourseQueryVo courseQuery){
+    public JsonResult getCourseList(@PathVariable long current, @PathVariable long size, @RequestBody(required = false) CourseQueryVo courseQuery){
 
         Page<EduCourse> page = new Page<>(current,size);
         Map<String,Object> map = courseService.getCourseListByQuery(page,courseQuery);
-        return MyResultUtils.ok().data(map);
+        return JsonResult.success().data(map);
     }
 
     /**
@@ -55,13 +55,13 @@ public class EduCourseController {
      * @return
      */
      @GetMapping("/getCourseAllInfo/{courseId}")
-    public MyResultUtils getCourseAllInfo(@PathVariable String courseId, HttpServletRequest request){
+    public JsonResult getCourseAllInfo(@PathVariable String courseId, HttpServletRequest request){
 
 //        根据课程id获取课程基本信息
         CourseWebVo courseBaseInfo = courseService.getCourseBaseInfo(courseId);
 
 //         根据课程id获取大纲信息
-         MyResultUtils allChapterVo = chapterService.getAllChapterVo(courseId);
+         JsonResult allChapterVo = chapterService.getAllChapterVo(courseId);
 
 //        根据用户id和课程id判断用户是否购买课程
          String userId = JwtUtils.getMemberIdByJwtToken(request);

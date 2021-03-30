@@ -1,6 +1,6 @@
 package edu.zsq.security.security;
 
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import edu.zsq.utils.result.ResponseUtil;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -21,6 +21,6 @@ public class UnauthorizedEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
 
-        ResponseUtil.out(response, MyResultUtils.error());
+        ResponseUtil.out(response, JsonResult.failure());
     }
 }

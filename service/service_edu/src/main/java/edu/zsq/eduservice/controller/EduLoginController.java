@@ -1,6 +1,6 @@
 package edu.zsq.eduservice.controller;
 
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.*;
 public class EduLoginController {
 
     @PostMapping("/login")
-    public MyResultUtils login() {
-        return MyResultUtils.ok().data("token", "admin");
+    public JsonResult login() {
+        return JsonResult.success().data("token", "admin");
     }
 
     @GetMapping("/info")
-    public MyResultUtils info() {
-        return MyResultUtils.ok().data("roles", "admin").data("name", "admin").data("avatar", "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
+    public JsonResult info() {
+        return JsonResult.success().data("roles", "admin").data("name", "admin").data("avatar", "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
     }
 
 

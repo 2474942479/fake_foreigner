@@ -5,7 +5,7 @@ import edu.zsq.cms.entity.EduCourse;
 import edu.zsq.cms.entity.EduTeacher;
 import edu.zsq.cms.service.EduCourseService;
 import edu.zsq.cms.service.EduTeacherService;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,9 +36,9 @@ public class EduTeacherController {
      * @return
      */
     @GetMapping("/getTeacherFront/{current}/{size}")
-    public MyResultUtils getTeacherFront(@PathVariable long current, @PathVariable long size){
+    public JsonResult getTeacherFront(@PathVariable long current, @PathVariable long size){
         Map<String ,Object> map = teacherService.getTeacherFront(current,size);
-        return MyResultUtils.ok().data(map);
+        return JsonResult.success().data(map);
     }
 
 
@@ -48,12 +48,12 @@ public class EduTeacherController {
      * @return
      */
     @GetMapping("/getTeacherAllById/{id}")
-    public MyResultUtils getTeacherAllById(@PathVariable String id){
+    public JsonResult getTeacherAllById(@PathVariable String id){
         EduTeacher teacherInfo = teacherService.getById(id);
 
         List<EduCourse> courseList = courseService.getCourseByTeacherId(id);
 
-        return MyResultUtils.ok().data("teacherInfo",teacherInfo).data("courseList",courseList);
+        return JsonResult.success().data("teacherInfo",teacherInfo).data("courseList",courseList);
     }
 
 }

@@ -1,6 +1,6 @@
 package edu.zsq.eduservice.utils;
 
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,12 +12,12 @@ import java.util.List;
 @Component
 public class VodClientImpl  implements VodClient{
     @Override
-    public MyResultUtils removeVod(String videoSourceId) {
-        return MyResultUtils.error().message("Vod服务器出错了");
+    public JsonResult removeVod(String videoSourceId) {
+        return JsonResult.failure().message("Vod服务器出错了");
     }
 
     @Override
-    public MyResultUtils removeVodList(List<String> vodIdList) {
-        return MyResultUtils.error().message("Vod服务器出错了");
+    public JsonResult removeVodList(List<String> vodIdList) {
+        return JsonResult.failure().message("Vod服务器出错了");
     }
 }

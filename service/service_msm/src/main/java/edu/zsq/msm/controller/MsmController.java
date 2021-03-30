@@ -2,7 +2,7 @@ package edu.zsq.msm.controller;
 
 import edu.zsq.msm.service.MsmService;
 import edu.zsq.msm.utils.RandomUtil;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +36,7 @@ public class MsmController {
      * @return
      */
     @GetMapping("/send/{mobile}")
-    public MyResultUtils send(@PathVariable String mobile){
+    public JsonResult send(@PathVariable String mobile){
 
 //      生成随机数,并传递给阿里云进行发送
         String code = RandomUtil.getFourBitRandom();
@@ -50,9 +50,9 @@ public class MsmController {
 //            放入redis并设置5分钟
             redisTemplate.opsForValue().set(mobile,code,5, TimeUnit.MINUTES);
 
-            return MyResultUtils.ok().message("验证码发送成功,有效期5分钟");
+            return JsonResult.success().message("验证码发送成功,有效期5分钟");
         }else {
-            return MyResultUtils.error().message("验证码发送失败");
+            return JsonResult.failure().message("验证码发送失败");
 
         }
     }

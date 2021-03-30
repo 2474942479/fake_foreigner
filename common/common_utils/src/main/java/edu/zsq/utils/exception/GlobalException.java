@@ -1,7 +1,7 @@
 package edu.zsq.utils.exception;
 
 import edu.zsq.utils.exception.servicexception.MyException;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,10 +23,10 @@ public class GlobalException {
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public MyResultUtils error(Exception e) {
+    public JsonResult failure(Exception e) {
 
         e.printStackTrace();
-        return MyResultUtils.error().message("执行了全局异常处理");
+        return JsonResult.failure().message("执行了全局异常处理");
 
     }
 
@@ -35,10 +35,10 @@ public class GlobalException {
      */
     @ExceptionHandler(NullPointerException.class)
     @ResponseBody
-    public MyResultUtils error(NullPointerException e) {
+    public JsonResult failure(NullPointerException e) {
 
         e.printStackTrace();
-        return MyResultUtils.error().message("发生了空指针错误").code(20001);
+        return JsonResult.failure().message("发生了空指针错误").code(20001);
 
     }
 
@@ -48,11 +48,11 @@ public class GlobalException {
      */
     @ExceptionHandler(MyException.class)
     @ResponseBody
-    public MyResultUtils error(MyException e) {
+    public JsonResult failure(MyException e) {
 
         log.error(ExceptionUtils.outMore(e));
         e.printStackTrace();
-        return MyResultUtils.error().message(e.getMsg()).code(e.getStatus());
+        return JsonResult.failure().message(e.getMsg()).code(e.getStatus());
 
     }
 

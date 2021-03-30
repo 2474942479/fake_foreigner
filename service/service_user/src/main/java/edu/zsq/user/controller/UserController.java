@@ -6,7 +6,7 @@ import edu.zsq.user.entity.vo.LoginVo;
 import edu.zsq.user.entity.vo.RegisterVo;
 import edu.zsq.user.service.UserService;
 import edu.zsq.utils.jwt.JwtUtils;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -31,29 +31,29 @@ public class UserController {
 
     @ApiOperation(value = "登录")
     @PostMapping("/login")
-    public MyResultUtils login(@RequestBody LoginVo loginVo) {
+    public JsonResult login(@RequestBody LoginVo loginVo) {
 
         String token = userService.login(loginVo);
-        return MyResultUtils.ok().data("token", token).message("登录成功");
+        return JsonResult.success().data("token", token).message("登录成功");
     }
 
     @ApiOperation(value = "注册")
     @PostMapping("/register")
-    public MyResultUtils register(@RequestBody RegisterVo registerVo) {
+    public JsonResult register(@RequestBody RegisterVo registerVo) {
         userService.register(registerVo);
-        return MyResultUtils.ok().message("注册成功");
+        return JsonResult.success().message("注册成功");
     }
 
     @ApiOperation(value = "根据token获取用户信息")
     @GetMapping("/getUserInfo")
-    public MyResultUtils getUserInfo(HttpServletRequest request) {
+    public JsonResult getUserInfo(HttpServletRequest request) {
 
         String userId = JwtUtils.getMemberIdByJwtToken(request);
         if (StringUtils.isEmpty(userId)) {
-            return MyResultUtils.error().message("请先登录");
+            return JsonResult.failure().message("请先登录");
         }
         User userInfo = userService.getById(userId);
-        return MyResultUtils.ok().data("userInfo", userInfo);
+        return JsonResult.success().data("userInfo", userInfo);
     }
 
     /**

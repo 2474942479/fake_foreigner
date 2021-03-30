@@ -1,6 +1,6 @@
 package edu.zsq.cms.frign;
 
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,5 +21,5 @@ public interface ChapterService {
      * @GetMapping中要写服务全路径----------------------------------------------------------------
      */
     @GetMapping("/eduService/chapter/getAllChapterVo/{courseId}")
-    MyResultUtils getAllChapterVo(@PathVariable("courseId") String courseId);
+    JsonResult getAllChapterVo(@PathVariable("courseId") String courseId);
 }

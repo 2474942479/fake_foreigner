@@ -1,7 +1,7 @@
 package edu.zsq.oss.controller;
 
 import edu.zsq.oss.service.OssService;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,10 +20,10 @@ public class OssController {
      *     上传头像的方法
       */
     @PostMapping("/uploadAvatar")
-    public MyResultUtils UploadOssFile(MultipartFile file) {
+    public JsonResult UploadOssFile(MultipartFile file) {
 //        上传头像返回oss中的图片的url
         StringBuffer url = ossService.uploadAvatar(file);
-        return MyResultUtils.ok().data("url",url);
+        return JsonResult.success().data("url",url);
     }
 
 }

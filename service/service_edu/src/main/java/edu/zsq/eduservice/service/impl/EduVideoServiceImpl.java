@@ -7,7 +7,7 @@ import edu.zsq.eduservice.entity.EduVideo;
 import edu.zsq.eduservice.mapper.EduVideoMapper;
 import edu.zsq.eduservice.service.EduVideoService;
 import edu.zsq.eduservice.utils.VodClient;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -93,7 +93,7 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
         String videoSourceId = video.getVideoSourceId();
 //        判断是否有视频
         if (!StringUtils.isEmpty(videoSourceId)) {
-            MyResultUtils myResultUtils = vodClient.removeVod(videoSourceId);
+            JsonResult myResultUtils = vodClient.removeVod(videoSourceId);
             if (myResultUtils.getCode()!= 20001){
                 //      2  删除小节信息
                 int delete = baseMapper.deleteById(id);

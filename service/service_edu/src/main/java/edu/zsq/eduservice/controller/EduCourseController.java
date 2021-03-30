@@ -7,7 +7,7 @@ import edu.zsq.eduservice.entity.vo.CourseInfoVo;
 import edu.zsq.eduservice.entity.vo.CourseQuery;
 import edu.zsq.eduservice.entity.vo.FinalReleaseVo;
 import edu.zsq.eduservice.service.EduCourseService;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +35,9 @@ public class EduCourseController {
      * @return
      */
     @GetMapping("/getAllCourse")
-    public MyResultUtils getAllCourse(){
+    public JsonResult getAllCourse(){
         List<EduCourse> list = eduCourseService.list();
-        return MyResultUtils.ok().data("list",list);
+        return JsonResult.success().data("list",list);
     }
 
     /**
@@ -46,7 +46,7 @@ public class EduCourseController {
     @PostMapping("/getCourseListPage/{current}/{size}")
     @ApiOperation(value = "课程条件分页查询", notes = "根据获取的current size 以及courseQuery查询并分页")
 
-    public MyResultUtils getCourseListPage(
+    public JsonResult getCourseListPage(
             @ApiParam(name = "current", value = "当前页数", required = true)
             @PathVariable Long current,
             @ApiParam(name = "size", value = "每页记录数", required = true)
@@ -60,7 +60,7 @@ public class EduCourseController {
         List<EduCourse> list = page.getRecords();
 //        分页后查询到的全部记录数
         long total = page.getTotal();
-        return MyResultUtils.ok().data("total", total).data("list", list);
+        return JsonResult.success().data("total", total).data("list", list);
     }
 
     /**
@@ -69,10 +69,10 @@ public class EduCourseController {
      * @return
      */
     @PostMapping("/addCourseInfo")
-    public MyResultUtils addCourseInfo(@RequestBody CourseInfoVo courseInfoVo){
+    public JsonResult addCourseInfo(@RequestBody CourseInfoVo courseInfoVo){
 
         String courseId = eduCourseService.saveCourseInfo(courseInfoVo);
-        return MyResultUtils.ok().data("id",courseId);
+        return JsonResult.success().data("id",courseId);
     }
 
 
@@ -82,10 +82,10 @@ public class EduCourseController {
      * @return  课程基本信息
      */
     @GetMapping("/getCourseInfoVoById/{id}")
-    public MyResultUtils getCourseInfoById(@PathVariable String id){
+    public JsonResult getCourseInfoById(@PathVariable String id){
 
         CourseInfoVo  courseInfo= eduCourseService.getCourseInfoVoById(id);
-        return MyResultUtils.ok().data("courseInfo",courseInfo);
+        return JsonResult.success().data("courseInfo",courseInfo);
     }
 
     /**
@@ -94,10 +94,10 @@ public class EduCourseController {
      * @return
      */
     @PutMapping("/updateCourseInfoVo")
-    public MyResultUtils updateCourseInfoVo(@RequestBody CourseInfoVo courseInfoVo){
+    public JsonResult updateCourseInfoVo(@RequestBody CourseInfoVo courseInfoVo){
 
         eduCourseService.updateCourseInfoVo(courseInfoVo);
-        return MyResultUtils.ok().message("修改成功");
+        return JsonResult.success().message("修改成功");
     }
 
     /**
@@ -106,10 +106,10 @@ public class EduCourseController {
      * @return
      */
     @GetMapping("/getFinalReleaseVo/{id}")
-    public MyResultUtils getFinalReleaseVo(@PathVariable String id){
+    public JsonResult getFinalReleaseVo(@PathVariable String id){
         FinalReleaseVo finalReleaseVo = eduCourseService.getFinalReleaseVo(id);
 
-        return MyResultUtils.ok().data("finalReleaseVo",finalReleaseVo);
+        return JsonResult.success().data("finalReleaseVo",finalReleaseVo);
     }
 
     /**
@@ -118,12 +118,12 @@ public class EduCourseController {
      * @return
      */
     @PostMapping("/updateReleaseStatus")
-    public MyResultUtils updateReleaseStatus(@RequestBody  EduCourse eduCourse){
+    public JsonResult updateReleaseStatus(@RequestBody  EduCourse eduCourse){
         boolean update = eduCourseService.updateById(eduCourse);
         if (update){
-            return MyResultUtils.ok().message("保存成功");
+            return JsonResult.success().message("保存成功");
         }else {
-            return MyResultUtils.error().message("保存失败");
+            return JsonResult.failure().message("保存失败");
         }
     }
 
@@ -134,14 +134,14 @@ public class EduCourseController {
      * @return  返回是否全部删除
      */
     @DeleteMapping("/deleteCourse/{courseId}")
-    public MyResultUtils deleteCourse(@PathVariable String courseId){
+    public JsonResult deleteCourse(@PathVariable String courseId){
 
         Boolean remove = eduCourseService.removeCourseAllById(courseId);
 
         if (remove){
-            return MyResultUtils.ok().message("已成功删除课程全部信息");
+            return JsonResult.success().message("已成功删除课程全部信息");
         }else {
-            return MyResultUtils.error().message("删除课程失败");
+            return JsonResult.failure().message("删除课程失败");
         }
 
 

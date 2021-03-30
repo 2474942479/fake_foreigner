@@ -1,7 +1,7 @@
 package edu.zsq.security.filter;
 
 import edu.zsq.security.security.TokenManager;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import edu.zsq.utils.result.ResponseUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -50,13 +50,13 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
         try {
             authentication = getAuthentication(req);
         } catch (Exception e) {
-            ResponseUtil.out(res, MyResultUtils.error());
+            ResponseUtil.out(res, JsonResult.failure());
         }
 
         if (authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } else {
-            ResponseUtil.out(res, MyResultUtils.error());
+            ResponseUtil.out(res, JsonResult.failure());
         }
         chain.doFilter(req, res);
     }

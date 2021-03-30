@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.zsq.security.entity.SecurityUser;
 import edu.zsq.security.entity.User;
 import edu.zsq.security.security.TokenManager;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import edu.zsq.utils.result.ResponseUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -81,7 +83,9 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
 //        登录成功  以用户名作为key 权限表作为value 放入redis中
         redisTemplate.opsForValue().set(user.getCurrentUserInfo().getUsername(), user.getPermissionValueList());
 
-        ResponseUtil.out(res, MyResultUtils.ok().data("token", token));
+        Map<String, String> data = new HashMap<>();
+        data.put("token", token);
+        ResponseUtil.out(res, JsonResult.success().data(data));
     }
 
     /**
@@ -95,6 +99,6 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                               AuthenticationException e) throws IOException, ServletException {
-        ResponseUtil.out(response, MyResultUtils.error());
+        ResponseUtil.out(response, JsonResult.failure());
     }
 }

@@ -6,7 +6,7 @@ import edu.zsq.order.entity.Order;
 import edu.zsq.order.service.OrderService;
 import edu.zsq.order.utils.OrderNumberUtil;
 import edu.zsq.utils.exception.servicexception.MyException;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +30,7 @@ public class OrderController {
      * @return
      */
     @PostMapping("/createOrder")
-    public MyResultUtils createOrder(@RequestBody Order orderInfo) {
+    public JsonResult createOrder(@RequestBody Order orderInfo) {
         String userId = orderInfo.getUserId();
         if (userId ==null || "".equals(userId)){
             throw new MyException(28004,"您未登录，三秒后跳转登录页面");
@@ -44,10 +44,10 @@ public class OrderController {
 
         boolean b = orderService.saveOrUpdate(orderInfo);
         if (b){
-            return MyResultUtils.ok().message("订单添加成功").data("orderNumber", orderNumber);
+            return JsonResult.success().message("订单添加成功").data("orderNumber", orderNumber);
 
         }else {
-            return MyResultUtils.error().message("订单添加失败");
+            return JsonResult.failure().message("订单添加失败");
 
         }
 
@@ -60,11 +60,11 @@ public class OrderController {
      * @return
      */
     @GetMapping("/getOrderInfo/{orderNumber}")
-    public MyResultUtils getOrderInfo(@PathVariable String orderNumber){
+    public JsonResult getOrderInfo(@PathVariable String orderNumber){
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
         wrapper.eq("order_number",orderNumber);
         Order order = orderService.getOne(wrapper);
-        return MyResultUtils.ok().data("orderInfo",order).message("订单创建成功，请确认！");
+        return JsonResult.success().data("orderInfo",order).message("订单创建成功，请确认！");
     }
 
     /**
@@ -85,14 +85,14 @@ public class OrderController {
      * @return
      */
     @DeleteMapping("/removeOrder/{orderNumber}")
-    public MyResultUtils removeOrder(@PathVariable String orderNumber){
+    public JsonResult removeOrder(@PathVariable String orderNumber){
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
         wrapper.eq("order_number",orderNumber);
         boolean remove = orderService.remove(wrapper);
         if (remove){
-            return MyResultUtils.ok().message("已取消订单");
+            return JsonResult.success().message("已取消订单");
         }else {
-            return MyResultUtils.error().message("取消订单失败");
+            return JsonResult.failure().message("取消订单失败");
         }
     }
 

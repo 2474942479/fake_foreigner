@@ -2,7 +2,7 @@ package edu.zsq.acl.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import edu.zsq.acl.service.IndexService;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -25,11 +25,11 @@ public class IndexController {
      * 根据token获取用户信息
      */
     @GetMapping("info")
-    public MyResultUtils info(){
+    public JsonResult info(){
         //获取当前登录用户用户名
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Map<String, Object> userInfo = indexService.getUserInfo(username);
-        return MyResultUtils.ok().data(userInfo);
+        return JsonResult.success().data(userInfo);
     }
 
     /**
@@ -37,16 +37,16 @@ public class IndexController {
      * @return
      */
     @GetMapping("menu")
-    public MyResultUtils getMenu(){
+    public JsonResult getMenu(){
         //获取当前登录用户用户名
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         List<JSONObject> permissionList = indexService.getMenu(username);
-        return MyResultUtils.ok().data("permissionList", permissionList);
+        return JsonResult.success().data("permissionList", permissionList);
     }
 
     @PostMapping("logout")
-    public MyResultUtils logout(){
-        return MyResultUtils.ok();
+    public JsonResult logout(){
+        return JsonResult.success();
     }
 
 }

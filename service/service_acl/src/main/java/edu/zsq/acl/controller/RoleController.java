@@ -9,7 +9,7 @@ import edu.zsq.acl.entity.UserRole;
 import edu.zsq.acl.service.RolePermissionService;
 import edu.zsq.acl.service.RoleService;
 import edu.zsq.acl.service.UserRoleService;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,15 +45,15 @@ public class RoleController {
      * @return
      */
     @PostMapping("/setRolePermission/{rid}")
-    public MyResultUtils setRolePermission(@PathVariable String rid,@RequestBody String[] permissionIds ){
+    public JsonResult setRolePermission(@PathVariable String rid,@RequestBody String[] permissionIds ){
 
         boolean b = roleService.setRolePermission(rid, permissionIds);
 
         if (b){
-            return MyResultUtils.ok().message("角色添加权限成功！");
+            return JsonResult.success().message("角色添加权限成功！");
 
         }else{
-            return MyResultUtils.error().message("角色添加权限失败！");
+            return JsonResult.failure().message("角色添加权限失败！");
         }
 
 
@@ -62,7 +62,7 @@ public class RoleController {
 
     @ApiOperation(value = "获取角色分页列表")
     @GetMapping("{page}/{limit}")
-    public MyResultUtils index(
+    public JsonResult index(
             @ApiParam(name = "page", value = "当前页码", required = true)
             @PathVariable Long page,
 
@@ -75,33 +75,33 @@ public class RoleController {
             wrapper.like("role_name",role.getRoleName());
         }
         roleService.page(pageParam,wrapper);
-        return MyResultUtils.ok().data("items", pageParam.getRecords()).data("total", pageParam.getTotal());
+        return JsonResult.success().data("items", pageParam.getRecords()).data("total", pageParam.getTotal());
     }
 
     @ApiOperation(value = "获取角色")
     @GetMapping("get/{id}")
-    public MyResultUtils get(@PathVariable String id) {
+    public JsonResult get(@PathVariable String id) {
         Role role = roleService.getById(id);
-        return MyResultUtils.ok().data("item", role);
+        return JsonResult.success().data("item", role);
     }
 
     @ApiOperation(value = "新增角色")
     @PostMapping("save")
-    public MyResultUtils save(@RequestBody Role role) {
+    public JsonResult save(@RequestBody Role role) {
         roleService.save(role);
-        return MyResultUtils.ok();
+        return JsonResult.success();
     }
 
     @ApiOperation(value = "修改角色")
     @PutMapping("update")
-    public MyResultUtils updateById(@RequestBody Role role) {
+    public JsonResult updateById(@RequestBody Role role) {
         roleService.updateById(role);
-        return MyResultUtils.ok();
+        return JsonResult.success();
     }
 
     @ApiOperation(value = "删除角色")
     @DeleteMapping("remove/{id}")
-    public MyResultUtils remove(@PathVariable String id) {
+    public JsonResult remove(@PathVariable String id) {
         //删除当前角色权限数据
         QueryWrapper<RolePermission> wrapper = new QueryWrapper<>();
         wrapper.eq("role_id",id);
@@ -112,14 +112,14 @@ public class RoleController {
         userRoleService.remove(roleQueryWrapper);
         //删除角色
         roleService.removeById(id);
-        return MyResultUtils.ok();
+        return JsonResult.success();
     }
 
     @ApiOperation(value = "根据id列表删除角色")
     @DeleteMapping("batchRemove")
-    public MyResultUtils batchRemove(@RequestBody List<String> idList) {
+    public JsonResult batchRemove(@RequestBody List<String> idList) {
         roleService.removeByIds(idList);
-        return MyResultUtils.ok();
+        return JsonResult.success();
     }
 
 

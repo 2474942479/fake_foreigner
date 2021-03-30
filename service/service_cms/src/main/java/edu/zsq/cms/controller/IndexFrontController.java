@@ -7,7 +7,7 @@ import edu.zsq.cms.entity.EduTeacher;
 import edu.zsq.cms.service.EduBannerService;
 import edu.zsq.cms.service.EduCourseService;
 import edu.zsq.cms.service.EduTeacherService;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -45,7 +45,7 @@ public class IndexFrontController {
     @Cacheable(key = "'selectIndexInfo'", value = "IndexInfo")
     @ApiOperation(value = "查询前两条幻灯片banner记录 前8条热门课程 前4个名师")
     @GetMapping("/getIndexInfo")
-    public MyResultUtils getIndexInfo() {
+    public JsonResult getIndexInfo() {
 
 //        根据id进行降序排列 只显示前两条幻灯片banner记录
         QueryWrapper<EduBanner> bannerWrapper = new QueryWrapper<>();
@@ -67,7 +67,7 @@ public class IndexFrontController {
         teacherWrapper.last("limit 4");
         List<EduTeacher> teacherList = teacherService.list(teacherWrapper);
 
-        return MyResultUtils.ok().data("bannerList", bannerList).data("courseList", courseList).data("teacherList", teacherList);
+        return JsonResult.success().data("bannerList", bannerList).data("courseList", courseList).data("teacherList", teacherList);
     }
 
 }

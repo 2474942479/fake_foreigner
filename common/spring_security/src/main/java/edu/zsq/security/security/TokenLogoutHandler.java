@@ -1,6 +1,6 @@
 package edu.zsq.security.security;
 
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import edu.zsq.utils.result.ResponseUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
@@ -35,6 +35,6 @@ public class TokenLogoutHandler implements LogoutHandler {
             String userName = tokenManager.getUserFromToken(token);
             redisTemplate.delete(userName);
         }
-        ResponseUtil.out(response, MyResultUtils.ok());
+        ResponseUtil.out(response, JsonResult.success());
     }
 }

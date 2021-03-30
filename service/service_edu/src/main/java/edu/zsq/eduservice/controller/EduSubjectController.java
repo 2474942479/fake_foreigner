@@ -3,7 +3,7 @@ package edu.zsq.eduservice.controller;
 
 import edu.zsq.eduservice.entity.vo.subject.OneSubject;
 import edu.zsq.eduservice.service.EduSubjectService;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,11 +27,11 @@ public class EduSubjectController {
      * 查询课程分类
      */
     @GetMapping("/getAllSubject")
-    public MyResultUtils getAllSubject() {
+    public JsonResult getAllSubject() {
 
         List<OneSubject> list = eduSubjectService.getAllSubject();
 
-        return MyResultUtils.ok().data("list", list);
+        return JsonResult.success().data("list", list);
     }
 
 
@@ -41,11 +41,11 @@ public class EduSubjectController {
      */
 
     @PostMapping("/addSubject")
-    public MyResultUtils addSubject(MultipartFile file) {
+    public JsonResult addSubject(MultipartFile file) {
 
         eduSubjectService.saveSubject(file, eduSubjectService);
 
-        return MyResultUtils.ok().message("文件上传成功");
+        return JsonResult.success().message("文件上传成功");
     }
 
 }

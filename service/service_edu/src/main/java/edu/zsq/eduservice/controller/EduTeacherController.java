@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.zsq.eduservice.entity.EduTeacher;
 import edu.zsq.eduservice.entity.vo.TeacherQuery;
 import edu.zsq.eduservice.service.EduTeacherService;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -45,9 +45,9 @@ public class EduTeacherController {
      */
     @GetMapping("/findAll")
     @ApiOperation(value = "获取讲师列表")
-    public MyResultUtils findAll() {
+    public JsonResult findAll() {
         List<EduTeacher> list = teacherService.list(null);
-        return MyResultUtils.ok().data("list", list);
+        return JsonResult.success().data("list", list);
     }
 
     /**
@@ -58,7 +58,7 @@ public class EduTeacherController {
             @ApiImplicitParam(name = "current", value = "当前页", required = true, dataType = "Long", paramType = "path"),
             @ApiImplicitParam(name = "size", value = "每页记录数", required = true, dataType = "Long", paramType = "path")
     })
-    public MyResultUtils pageTeacher(@PathVariable Long current, @PathVariable Long size) {
+    public JsonResult pageTeacher(@PathVariable Long current, @PathVariable Long size) {
 
         Page<EduTeacher> page = new Page<>(current, size);
         teacherService.page(page);
@@ -68,7 +68,7 @@ public class EduTeacherController {
 //        每页数据List集合
         List<EduTeacher> list = page.getRecords();
 
-        return MyResultUtils.ok().data("total", total).data("list", list);
+        return JsonResult.success().data("total", total).data("list", list);
     }
 
 
@@ -78,7 +78,7 @@ public class EduTeacherController {
     @PostMapping("/getTeacherListPage/{current}/{size}")
     @ApiOperation(value = "讲师条件分页查询", notes = "根据获取的current size 以及teacherQuery查询并分页")
 
-    public MyResultUtils getTeacherListPage(
+    public JsonResult getTeacherListPage(
             @ApiParam(name = "current", value = "当前页数", required = true)
             @PathVariable Long current,
             @ApiParam(name = "size", value = "每页记录数", required = true)
@@ -92,7 +92,7 @@ public class EduTeacherController {
         List<EduTeacher> list = page.getRecords();
 //        分页后查询到的全部记录数
         long total = page.getTotal();
-        return MyResultUtils.ok().data("total", total).data("list", list);
+        return JsonResult.success().data("total", total).data("list", list);
     }
 
 
@@ -102,13 +102,13 @@ public class EduTeacherController {
     @PostMapping("/addTeacher")
     @ApiOperation(value = "增加讲师", notes = "根据获取的EduTeacher对象新增讲师")
     @ApiImplicitParam(name = "teacherInfo", value = "讲师详细实体EduTeacher", required = true, dataType = "EduTeacher", paramType = "body")
-    public MyResultUtils addTeacher(@RequestBody EduTeacher teacherInfo) {
+    public JsonResult addTeacher(@RequestBody EduTeacher teacherInfo) {
 
         boolean b = teacherService.save(teacherInfo);
         if (b) {
-            return MyResultUtils.ok().message("添加成功");
+            return JsonResult.success().message("添加成功");
         } else {
-            return MyResultUtils.error().message("添加失败");
+            return JsonResult.failure().message("添加失败");
         }
     }
 
@@ -120,13 +120,13 @@ public class EduTeacherController {
     @DeleteMapping("/removeTeacher/{id}")
     @ApiOperation(value = "删除讲师", notes = "根据获取的id删除讲师")
     @ApiImplicitParam(name = "id", value = "讲师ID", required = true, dataType = "String", paramType = "path")
-    public MyResultUtils removeTeacher(@PathVariable String id) {
+    public JsonResult removeTeacher(@PathVariable String id) {
 
         boolean b = teacherService.removeById(id);
         if (b) {
-            return MyResultUtils.ok().message("删除成功");
+            return JsonResult.success().message("删除成功");
         } else {
-            return MyResultUtils.error().message("删除失败");
+            return JsonResult.failure().message("删除失败");
         }
     }
 
@@ -135,9 +135,9 @@ public class EduTeacherController {
      * 修改前 根据id查询讲师  对数据进行回显
      */
     @GetMapping("/getTeacherInfo/{id}")
-    public MyResultUtils getTeacherInfo(@PathVariable String id) {
+    public JsonResult getTeacherInfo(@PathVariable String id) {
         EduTeacher info = teacherService.getById(id);
-        return MyResultUtils.ok().data("info", info);
+        return JsonResult.success().data("info", info);
     }
 
 
@@ -153,12 +153,12 @@ public class EduTeacherController {
             @ApiImplicitParam(name = "id", value = "讲师Id", required = true, dataType = "String", paramType = "path"),
             @ApiImplicitParam(name = "teacherInfo", value = "讲师详细实体EduTeacher", required = true, dataType = "EduTeacher", paramType = "body")
     })
-    public MyResultUtils updateTeacher(@RequestBody EduTeacher teacherInfo) {
+    public JsonResult updateTeacher(@RequestBody EduTeacher teacherInfo) {
         boolean b = teacherService.updateById(teacherInfo);
         if (b) {
-            return MyResultUtils.ok().message("修改成功");
+            return JsonResult.success().message("修改成功");
         } else {
-            return MyResultUtils.error().message("修改失败");
+            return JsonResult.failure().message("修改失败");
         }
     }
 

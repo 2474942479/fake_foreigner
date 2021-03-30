@@ -1,6 +1,6 @@
 package edu.zsq.vod.controller;
 
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import edu.zsq.vod.service.VodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +24,10 @@ public class VodController {
      * @return
      */
     @PostMapping("/uploadVideo")
-    public MyResultUtils uploadVideo(MultipartFile file){
+    public JsonResult uploadVideo(MultipartFile file){
 
         String videoSourceId = vodService.uploadVideo(file);
-        return MyResultUtils.ok().data("videoSourceId",videoSourceId);
+        return JsonResult.success().data("videoSourceId",videoSourceId);
     }
 
 
@@ -36,13 +36,13 @@ public class VodController {
      * @param videoSourceId
      */
     @DeleteMapping("/removeVod/{videoSourceId}")
-    public MyResultUtils removeVod(@PathVariable String videoSourceId){
+    public JsonResult removeVod(@PathVariable String videoSourceId){
         boolean remove = vodService.removeVod(videoSourceId);
         if (remove){
-            return MyResultUtils.ok().message("删除视频成功");
+            return JsonResult.success().message("删除视频成功");
 
         }else{
-            return MyResultUtils.ok().message("删除视频失败");
+            return JsonResult.success().message("删除视频失败");
         }
     }
 
@@ -53,14 +53,14 @@ public class VodController {
      * @return
      */
     @DeleteMapping("/removeVodList")
-    public MyResultUtils removeVodList(@RequestParam List vodIdList){
+    public JsonResult removeVodList(@RequestParam List vodIdList){
 
         boolean remove = vodService.removeVodList(vodIdList);
         if (remove){
-            return MyResultUtils.ok().message("删除视频成功");
+            return JsonResult.success().message("删除视频成功");
 
         }else{
-            return MyResultUtils.ok().message("删除视频失败");
+            return JsonResult.success().message("删除视频失败");
         }
     }
 
@@ -71,11 +71,11 @@ public class VodController {
      * @return
      */
     @GetMapping("/getVideoPlayAuth/{videoId}")
-    public MyResultUtils getVideoPlayAuth(@PathVariable String videoId){
+    public JsonResult getVideoPlayAuth(@PathVariable String videoId){
 
         String playAuth = vodService.getPlayAuth(videoId);
 
-        return MyResultUtils.ok().data("playAuth",playAuth);
+        return JsonResult.success().data("playAuth",playAuth);
     }
 
 }

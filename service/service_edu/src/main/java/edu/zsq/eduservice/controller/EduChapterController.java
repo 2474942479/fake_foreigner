@@ -5,7 +5,7 @@ import edu.zsq.eduservice.entity.EduChapter;
 import edu.zsq.eduservice.entity.vo.chapter.ChapterVo;
 import edu.zsq.eduservice.service.EduChapterService;
 import edu.zsq.utils.exception.servicexception.MyException;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,9 +31,9 @@ public class EduChapterController {
      * @return
      */
     @PostMapping("/saveChapter")
-    public MyResultUtils saveChapter(@RequestBody EduChapter chapter){
+    public JsonResult saveChapter(@RequestBody EduChapter chapter){
         chapterService.save(chapter);
-        return MyResultUtils.ok().message("添加章节成功");
+        return JsonResult.success().message("添加章节成功");
     }
 
     /**
@@ -42,9 +42,9 @@ public class EduChapterController {
      * @return
      */
     @GetMapping("/getChapter/{id}")
-    public MyResultUtils getChapter(@PathVariable String id){
+    public JsonResult getChapter(@PathVariable String id){
         EduChapter chapter = chapterService.getById(id);
-        return MyResultUtils.ok().data("chapter",chapter);
+        return JsonResult.success().data("chapter",chapter);
     }
 
     /**
@@ -53,12 +53,12 @@ public class EduChapterController {
      * @return
      */
     @PutMapping("/updateChapter")
-    public MyResultUtils updateChapter(@RequestBody EduChapter chapter){
+    public JsonResult updateChapter(@RequestBody EduChapter chapter){
         boolean b = chapterService.updateById(chapter);
         if (!b){
             throw new MyException(20001,"修改失败");
         }
-        return MyResultUtils.ok().message("修改章节成功");
+        return JsonResult.success().message("修改章节成功");
     }
 
     /**
@@ -67,13 +67,13 @@ public class EduChapterController {
      * @return
      */
     @DeleteMapping("{id}")
-    public MyResultUtils deleteChapter(@PathVariable String id){
+    public JsonResult deleteChapter(@PathVariable String id){
 
         Boolean flag = chapterService.deleteChapter(id);
         if (flag){
-            return MyResultUtils.ok().message("删除章节成功");
+            return JsonResult.success().message("删除章节成功");
         }else {
-            return MyResultUtils.error().message("删除章节失败");
+            return JsonResult.failure().message("删除章节失败");
         }
     }
 
@@ -83,11 +83,11 @@ public class EduChapterController {
      * @return
      */
     @GetMapping("/getAllChapterVo/{courseId}")
-    public MyResultUtils getAllChapterVo(@PathVariable String courseId){
+    public JsonResult getAllChapterVo(@PathVariable String courseId){
 
         List<ChapterVo> chapterVoList = chapterService.getChapterVoByCourseId(courseId);
 
-        return MyResultUtils.ok().data("chapterVoList",chapterVoList);
+        return JsonResult.success().data("chapterVoList",chapterVoList);
     }
 
 }

@@ -3,7 +3,7 @@ package edu.zsq.eduservice.controller;
 
 import edu.zsq.eduservice.entity.EduVideo;
 import edu.zsq.eduservice.service.EduVideoService;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,13 +29,13 @@ public class EduVideoController {
      * @return
      */
     @PostMapping("/saveVideo")
-    public MyResultUtils saveVideo(@RequestBody EduVideo video){
+    public JsonResult saveVideo(@RequestBody EduVideo video){
 
         boolean save = eduVideoService.save(video);
         if (save){
-            return MyResultUtils.ok().message("添加小节成功");
+            return JsonResult.success().message("添加小节成功");
         }else {
-            return MyResultUtils.ok().message("添加小节失败");
+            return JsonResult.success().message("添加小节失败");
         }
 
     }
@@ -47,14 +47,14 @@ public class EduVideoController {
      * @return
      */
     @DeleteMapping("{id}")
-    public MyResultUtils deleteVideo(@PathVariable String id){
+    public JsonResult deleteVideo(@PathVariable String id){
 
         boolean remove = eduVideoService.removeVideoAndVodById(id);
 
         if (remove){
-            return MyResultUtils.ok().message("删除小节成功");
+            return JsonResult.success().message("删除小节成功");
         }else {
-            return MyResultUtils.error().message("删除小节失败");
+            return JsonResult.failure().message("删除小节失败");
         }
 
     }
@@ -65,12 +65,12 @@ public class EduVideoController {
      * @return
      */
     @PutMapping("/updateVideo")
-    public MyResultUtils updateVideo(@RequestBody EduVideo video){
+    public JsonResult updateVideo(@RequestBody EduVideo video){
         boolean update = eduVideoService.updateById(video);
         if (update){
-            return MyResultUtils.ok().message("更新小节成功");
+            return JsonResult.success().message("更新小节成功");
         }else {
-            return MyResultUtils.ok().message("更新小节失败");
+            return JsonResult.success().message("更新小节失败");
         }
     }
 
@@ -80,10 +80,10 @@ public class EduVideoController {
      * @return
      */
     @GetMapping("/getVideo/{id}")
-    public MyResultUtils getVideo(@PathVariable String id){
+    public JsonResult getVideo(@PathVariable String id){
         EduVideo video = eduVideoService.getById(id);
 
-        return MyResultUtils.ok().data("videoInfo",video);
+        return JsonResult.success().data("videoInfo",video);
     }
 
 }
