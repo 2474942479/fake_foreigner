@@ -1,5 +1,6 @@
 package edu.zsq.utils.exception;
 
+import edu.zsq.utils.exception.core.ExceptionUtils;
 import edu.zsq.utils.exception.servicexception.MyException;
 import edu.zsq.utils.result.JsonResult;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class GlobalException {
     public JsonResult failure(NullPointerException e) {
 
         e.printStackTrace();
-        return JsonResult.failure().message("发生了空指针错误").code(20001);
+        return JsonResult.failure().message("发生了空指针错误");
 
     }
 
@@ -52,7 +53,7 @@ public class GlobalException {
 
         log.error(ExceptionUtils.outMore(e));
         e.printStackTrace();
-        return JsonResult.failure().message(e.getMsg()).code(e.getStatus());
+        return JsonResult.failure().message(e.getMessage()).code(e.getCode());
 
     }
 

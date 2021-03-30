@@ -1,12 +1,13 @@
 package edu.zsq.utils.exception;
 
-import lombok.Data;
+import edu.zsq.utils.exception.core.ExType;
+import edu.zsq.utils.exception.core.IErrorEnum;
 
 /**
  * @author zhangsongqi
  * @date 2:06 下午 2021/3/30
  */
-public enum ErrorCode {
+public enum ErrorCode implements IErrorEnum {
 
     /**
      *  程序逻辑闭合，if else{xxx},switch default:xx
@@ -89,6 +90,7 @@ public enum ErrorCode {
 
     private String msg;
 
+    @Override
     public ExType getExType() {
         return exType;
     }
@@ -97,7 +99,8 @@ public enum ErrorCode {
         this.exType = exType;
     }
 
-    public int getCode() {
+    @Override
+    public Integer getCode() {
         return code;
     }
 
@@ -105,6 +108,7 @@ public enum ErrorCode {
         this.code = code;
     }
 
+    @Override
     public String getMsg() {
         return msg;
     }

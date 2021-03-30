@@ -3,13 +3,8 @@ package edu.zsq.utils.result;
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import edu.zsq.utils.exception.ErrorCode;
-import edu.zsq.utils.exception.ExFactory;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.lang.reflect.Member;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author 张

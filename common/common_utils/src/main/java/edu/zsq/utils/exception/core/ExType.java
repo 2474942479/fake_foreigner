@@ -1,4 +1,4 @@
-package edu.zsq.utils.exception;
+package edu.zsq.utils.exception.core;
 
 /**
  * @author zhangsongqi

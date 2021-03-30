@@ -1,4 +1,4 @@
-package edu.zsq.utils.exception;
+package edu.zsq.utils.exception.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
