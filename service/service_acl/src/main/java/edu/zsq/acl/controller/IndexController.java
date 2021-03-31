@@ -1,6 +1,7 @@
 package edu.zsq.acl.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import edu.zsq.acl.entity.vo.UserInfoVO;
 import edu.zsq.acl.service.IndexService;
 import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,10 @@ public class IndexController {
      * 根据token获取用户信息
      */
     @GetMapping("info")
-    public JsonResult info(){
+    public JsonResult<UserInfoVO> info(){
         //获取当前登录用户用户名
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Map<String, Object> userInfo = indexService.getUserInfo(username);
-        return JsonResult.success().data(userInfo);
+        return JsonResult.success(indexService.getUserInfo(username));
     }
 
     /**

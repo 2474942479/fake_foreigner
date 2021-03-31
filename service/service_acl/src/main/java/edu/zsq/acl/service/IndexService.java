@@ -1,6 +1,7 @@
 package edu.zsq.acl.service;
 
 import com.alibaba.fastjson.JSONObject;
+import edu.zsq.acl.entity.vo.UserInfoVO;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ public interface IndexService {
      * @param username
      * @return
      */
-    Map<String, Object> getUserInfo(String username);
+    UserInfoVO getUserInfo(String username);
 
     /**
      * 根据用户名获取动态菜单

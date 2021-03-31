@@ -5,8 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.zsq.acl.entity.User;
+import edu.zsq.acl.entity.dto.UserQueryDTO;
+import edu.zsq.acl.entity.vo.UserInfoVO;
 import edu.zsq.acl.service.RoleService;
 import edu.zsq.acl.service.UserService;
+import edu.zsq.utils.page.PageDTO;
+import edu.zsq.utils.page.PageData;
 import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -37,14 +41,13 @@ public class UserController {
     private RoleService roleService;
 
     @GetMapping("/get/{id}")
-    public JsonResult get(@PathVariable String id) {
-        User user = userService.getById(id);
-        return JsonResult.success().data("item",user);
+    public JsonResult<User> get(@PathVariable String id) {
+        return JsonResult.success(userService.getById(id));
     }
 
     @ApiOperation(value = "获取管理用户分页列表")
     @GetMapping("{page}/{limit}")
-    public JsonResult index(
+    public JsonResult<PageData<UserInfoVO>> index(
             @ApiParam(name = "page", value = "当前页码", required = true)
             @PathVariable Long page,
 
@@ -52,11 +55,11 @@ public class UserController {
             @PathVariable Long limit,
 
             @ApiParam(name = "courseQuery", value = "查询对象", required = false)
-                    User userQueryVo) {
+                    UserQueryDTO userQueryDTO) {
         Page<User> pageParam = new Page<>(page, limit);
         QueryWrapper<User> wrapper = new QueryWrapper<>();
-        if(!StringUtils.isEmpty(userQueryVo.getUsername())) {
-            wrapper.like("username",userQueryVo.getUsername());
+        if(!StringUtils.isEmpty(userQueryDTO.getUserName())) {
+            wrapper.like("username",userQueryDTO.getUserName());
         }
 
         IPage<User> pageModel = userService.page(pageParam, wrapper);
