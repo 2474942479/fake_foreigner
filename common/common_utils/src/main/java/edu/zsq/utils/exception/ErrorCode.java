@@ -10,7 +10,7 @@ import edu.zsq.utils.exception.core.IErrorEnum;
 public enum ErrorCode implements IErrorEnum {
 
     /**
-     *  程序逻辑闭合，if else{xxx},switch default:xx
+     * 程序逻辑闭合，if else{xxx},switch default:xx
      */
     UNREACHABLE_ERROR(ExType.SYSTEM_ERROR, 2001, "unreachable error"),
     /**

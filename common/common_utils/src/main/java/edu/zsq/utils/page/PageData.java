@@ -63,6 +63,7 @@ public class PageData<T> implements Serializable {
 
     /**
      * 自适应页号
+     *
      * @param pageNo 传参页号
      * @return 适应页号
      */
@@ -72,6 +73,7 @@ public class PageData<T> implements Serializable {
 
     /**
      * 自适应分页条数
+     *
      * @param limit 传参条数
      * @return 适应条数
      */

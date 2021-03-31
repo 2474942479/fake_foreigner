@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @ControllerAdvice
 @Slf4j
-public class GlobalException {
+public class GlobalException<T> {
 
     /**
      * 指定出现什么异常执行这个方法
@@ -24,10 +24,9 @@ public class GlobalException {
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public JsonResult failure(Exception e) {
-
-        e.printStackTrace();
-        return JsonResult.failure().message("执行了全局异常处理");
+    public JsonResult<T> failure(Exception e) {
+        log.error("系统错误", e);
+        return JsonResult.failure("执行了全局异常处理");
 
     }
 
@@ -36,10 +35,9 @@ public class GlobalException {
      */
     @ExceptionHandler(NullPointerException.class)
     @ResponseBody
-    public JsonResult failure(NullPointerException e) {
-
-        e.printStackTrace();
-        return JsonResult.failure().message("发生了空指针错误");
+    public JsonResult<T> failure(NullPointerException e) {
+        log.error("发生了空指针错误", e);
+        return JsonResult.failure("发生了空指针错误");
 
     }
 
@@ -49,12 +47,11 @@ public class GlobalException {
      */
     @ExceptionHandler(MyException.class)
     @ResponseBody
-    public JsonResult failure(MyException e) {
-
+    public JsonResult<T> failure(MyException e) {
         log.error(ExceptionUtils.outMore(e));
-        e.printStackTrace();
-        return JsonResult.failure().message(e.getMessage()).code(e.getCode());
-
+        JsonResult<T> failure = JsonResult.failure(e.getMessage());
+        failure.code(e.getCode());
+        return failure;
     }
 
 }

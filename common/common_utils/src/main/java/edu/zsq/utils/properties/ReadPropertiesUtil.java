@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
  * 集成InitializingBean接口实现方法 方便后边使用定义的属性
  * InitializingBean接口为bean提供了初始化方法的方式，
  * 它只包括afterPropertiesSet方法，凡是继承该接口的类，在初始化bean的时候都会执行该方法。
+ *
  * @author 张
  */
 @Component
@@ -30,7 +31,7 @@ public class ReadPropertiesUtil implements InitializingBean {
 
 
     /**
-     *     定义公开静态常量 在方法中进行复制 方便使用
+     * 定义公开静态常量 在方法中进行复制 方便使用
      */
     public static String ACCESS_KEY_ID;
     public static String ACCESS_KEY_SECRET;

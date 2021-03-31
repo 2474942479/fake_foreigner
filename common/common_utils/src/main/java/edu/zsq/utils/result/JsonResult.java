@@ -61,15 +61,15 @@ public final class JsonResult<T> {
     }
 
     public static <T> JsonResult<T> failure(String message) {
-        return failure(ErrorCode.BUSINESS_ERROR,message);
+        return failure(ErrorCode.BUSINESS_ERROR, message);
     }
 
     public static <T> JsonResult<T> failure(IErrorEnum iErrorEnum, Object... messages) {
-        return new JsonResult<T>(ExFactory.of(iErrorEnum,messages));
+        return new JsonResult<>(ExFactory.of(iErrorEnum, messages));
     }
 
     public static <T> JsonResult<T> failure(ExDefinition exDefinition) {
-        return new JsonResult<T>(exDefinition);
+        return new JsonResult<>(exDefinition);
     }
 
     public static <T> JsonResult<T> failure(ExDefinition exDefinition, T data) {

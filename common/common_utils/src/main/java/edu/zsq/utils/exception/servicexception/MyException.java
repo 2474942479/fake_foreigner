@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
  *
  * @author 张
  * @AllArgsConstructor 全部参数构造器
- * @NoArgsConstructor   无参构造器
+ * @NoArgsConstructor 无参构造器
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
