@@ -31,11 +31,11 @@ import org.springframework.stereotype.Service;
 public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse> implements EduCourseService {
 
 
-    @Autowired
+    @Resource
     private EduCourseDescriptionService courseDescriptionService;
-    @Autowired
+    @Resource
     private EduChapterService chapterService;
-    @Autowired
+    @Resource
     private EduVideoService videoService;
 
 

@@ -22,7 +22,7 @@ import java.util.Map;
 public class PayLogController {
 
 
-    @Autowired
+    @Resource
     private PayLogService payLogService;
 
     /**

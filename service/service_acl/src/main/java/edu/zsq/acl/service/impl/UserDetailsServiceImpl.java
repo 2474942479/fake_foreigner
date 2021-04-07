@@ -23,10 +23,10 @@ import java.util.List;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private PermissionService permissionService;
 
     /***

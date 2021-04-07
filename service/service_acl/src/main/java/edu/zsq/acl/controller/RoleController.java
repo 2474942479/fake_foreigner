@@ -30,13 +30,13 @@ import java.util.List;
 @RequestMapping("/admin/acl/role")
 public class RoleController {
 
-    @Autowired
+    @Resource
     private RoleService roleService;
 
-    @Autowired
+    @Resource
     private RolePermissionService rolePermissionService;
 
-    @Autowired
+    @Resource
     private UserRoleService userRoleService;
     /**
      * 给角色批量分配权限

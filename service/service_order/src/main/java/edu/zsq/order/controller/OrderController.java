@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/orderService/order")
 public class OrderController {
 
-    @Autowired
+    @Resource
     private OrderService orderService;
     /**
      * 根据课程id和用户id创建订单，返回订单id

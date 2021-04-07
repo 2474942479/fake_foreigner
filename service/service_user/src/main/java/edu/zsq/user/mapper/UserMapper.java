@@ -9,7 +9,7 @@ import edu.zsq.user.entity.User;
  * </p>
  *
  * @author zsq
- * @since 2020-08-21
+ * @since 2021-04-05
  */
 public interface UserMapper extends BaseMapper<User> {
 

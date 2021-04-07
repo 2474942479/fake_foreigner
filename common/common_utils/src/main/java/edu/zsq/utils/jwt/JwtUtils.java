@@ -1,5 +1,7 @@
 package edu.zsq.utils.jwt;
 
+import edu.zsq.utils.exception.core.ExFactory;
+import edu.zsq.utils.result.JsonResult;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -18,7 +20,7 @@ public class JwtUtils {
      * EXPIRE :过期时间
      * APP_SECRET:秘钥
      */
-    public static final long EXPIRE = 1000 * 60 * 60 * 24;
+    public static final long EXPIRE = 1000 * 60 * 60 * 12;
     public static final String APP_SECRET = "ukc8BDbRigUDaY6pZFfWus2jZWLPHO";
 
     /**
@@ -99,12 +101,10 @@ public class JwtUtils {
     public static String getMemberIdByJwtToken(HttpServletRequest request) {
         String jwtToken = request.getHeader("token");
         if (StringUtils.isEmpty(jwtToken)) {
-
-            return "";
+            throw ExFactory.throwBusiness("token 已失效");
         }
 //        对Jwt解析
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(jwtToken);
-        Claims claims = claimsJws.getBody();
-        return (String) claims.get("id");
+        return (String) claimsJws.getBody().get("id");
     }
 }

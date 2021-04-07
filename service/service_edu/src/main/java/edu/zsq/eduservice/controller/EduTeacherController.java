@@ -26,7 +26,7 @@ import java.util.List;
 @Api(tags = {"讲师的CRUD"})
 public class EduTeacherController {
 
-    @Autowired
+    @Resource
     private EduTeacherService teacherService;
 
     /**

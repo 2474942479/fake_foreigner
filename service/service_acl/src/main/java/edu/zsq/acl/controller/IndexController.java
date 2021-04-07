@@ -19,7 +19,7 @@ import java.util.Map;
 @RequestMapping("/admin/acl/index")
 public class IndexController {
 
-    @Autowired
+    @Resource
     private IndexService indexService;
 
     /**

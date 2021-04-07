@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/eduService/banner")
 public class EduBannerController {
 
-    @Autowired
+    @Resource
     private EduBannerService bannerService;
 
 

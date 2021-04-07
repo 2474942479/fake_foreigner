@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/eduService/video")
 public class EduVideoController {
-    @Autowired
+    @Resource
     private EduVideoService eduVideoService;
 
 

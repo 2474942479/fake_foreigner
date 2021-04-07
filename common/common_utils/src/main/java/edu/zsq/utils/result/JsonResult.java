@@ -60,6 +60,11 @@ public final class JsonResult<T> {
         return result.data(data);
     }
 
+    public static <T> JsonResult<T> success(T data, String message) {
+        JsonResult<T> result = success();
+        return result.data(data).message(message);
+    }
+
     public static <T> JsonResult<T> failure(String message) {
         return failure(ErrorCode.BUSINESS_ERROR, message);
     }

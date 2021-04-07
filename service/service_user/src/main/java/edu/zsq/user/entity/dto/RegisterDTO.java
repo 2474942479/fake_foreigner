@@ -1,12 +1,15 @@
-package edu.zsq.user.entity.vo;
+package edu.zsq.user.entity.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+/**
+ * @author zhang
+ */
 @Data
 @ApiModel(value="注册对象", description="注册对象")
-public class RegisterVo {
+public class RegisterDTO {
 
     @ApiModelProperty(value = "昵称")
     private String nickname;

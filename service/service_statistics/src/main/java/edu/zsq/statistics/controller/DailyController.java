@@ -6,6 +6,7 @@ import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -20,7 +21,7 @@ import java.util.Map;
 @RequestMapping("/statisticsService/daily")
 public class DailyController {
 
-    @Autowired
+    @Resource
     private DailyService dailyService;
 
     @PostMapping("{day}")

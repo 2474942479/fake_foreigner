@@ -19,15 +19,15 @@ import java.util.Date;
  * </p>
  *
  * @author zsq
- * @since 2020-08-21
+ * @since 2021-04-05
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="User对象", description="会员表")
+@ApiModel(value = "User对象", description = "会员表")
 public class User implements Serializable {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "会员id")
     @TableId(value = "id", type = IdType.ID_WORKER_STR)

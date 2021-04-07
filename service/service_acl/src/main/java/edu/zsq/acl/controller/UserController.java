@@ -34,10 +34,10 @@ import java.util.Map;
 @RequestMapping("/admin/acl/user")
 public class UserController {
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private RoleService roleService;
 
     @GetMapping("/get/{id}")

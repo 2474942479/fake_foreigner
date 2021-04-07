@@ -15,7 +15,7 @@ import java.util.Date;
 @Component
 public class ScheduledTask {
 
-    @Autowired
+    @Resource
     private DailyService dailyService;
 
     /**

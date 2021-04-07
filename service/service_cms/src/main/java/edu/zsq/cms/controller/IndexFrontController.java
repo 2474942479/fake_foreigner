@@ -26,11 +26,11 @@ import java.util.List;
 @RequestMapping("/eduCms/indexFront")
 public class IndexFrontController {
 
-    @Autowired
+    @Resource
     private EduBannerService bannerService;
-    @Autowired
+    @Resource
     private EduCourseService courseService;
-    @Autowired
+    @Resource
     private EduTeacherService teacherService;
 
 

@@ -31,7 +31,7 @@ import java.util.Map;
 @Service
 public class PayLogServiceImpl extends ServiceImpl<PayLogMapper, PayLog> implements PayLogService {
 
-    @Autowired
+    @Resource
     private OrderService orderService;
 
     /**

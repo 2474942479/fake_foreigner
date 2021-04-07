@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/eduService/chapter")
 public class EduChapterController {
-    @Autowired
+    @Resource
     private EduChapterService chapterService;
 
     /**

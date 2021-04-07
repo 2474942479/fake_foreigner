@@ -26,7 +26,7 @@ public class GlobalException<T> {
     @ResponseBody
     public JsonResult<T> failure(Exception e) {
         log.error("系统错误", e);
-        return JsonResult.failure("执行了全局异常处理");
+        return JsonResult.failure(ErrorCode.UNDEFINED_ERROR,"执行了全局异常处理");
 
     }
 
@@ -37,7 +37,7 @@ public class GlobalException<T> {
     @ResponseBody
     public JsonResult<T> failure(NullPointerException e) {
         log.error("发生了空指针错误", e);
-        return JsonResult.failure("发生了空指针错误");
+        return JsonResult.failure(ErrorCode.PARAM_ERROR,"发生了空指针错误");
 
     }
 

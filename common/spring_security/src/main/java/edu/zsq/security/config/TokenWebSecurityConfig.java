@@ -39,7 +39,7 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private DefaultPasswordEncoder defaultPasswordEncoder;
     private RedisTemplate<String,String> redisTemplate;
 
-    @Autowired
+    @Resource
     public TokenWebSecurityConfig(UserDetailsService userDetailsService, DefaultPasswordEncoder defaultPasswordEncoder,
                                   TokenManager tokenManager, RedisTemplate redisTemplate) {
         this.userDetailsService = userDetailsService;

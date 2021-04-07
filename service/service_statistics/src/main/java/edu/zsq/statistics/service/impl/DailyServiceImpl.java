@@ -26,7 +26,7 @@ import java.util.Map;
 @Service
 public class DailyServiceImpl extends ServiceImpl<DailyMapper, Daily> implements DailyService {
 
-    @Autowired
+    @Resource
     private UserServer userServer;
 
     /**

@@ -1,4 +1,4 @@
-package edu.zsq.user.entity.vo;
+package edu.zsq.user.entity.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.Data;
  * @author 张
  */
 @Data
-public class LoginVo {
+public class LoginDTO {
 
 
     @ApiModelProperty(value = "手机号")

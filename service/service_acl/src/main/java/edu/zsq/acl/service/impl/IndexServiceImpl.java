@@ -26,16 +26,16 @@ import java.util.stream.Collectors;
 public class IndexServiceImpl implements IndexService {
 
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private RoleService roleService;
 
-    @Autowired
+    @Resource
     private PermissionService permissionService;
 
-    @Autowired
+    @Resource
     private RedisTemplate redisTemplate;
 
     /**

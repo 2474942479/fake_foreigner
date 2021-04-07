@@ -18,14 +18,14 @@ import java.util.List;
  * </p>
  *
  * @author zsq
- * @since 2020-08-29
+ * @since 2021-04-05 2020-08-29
  */
 @RestController
 @RequestMapping("/admin/acl/permission")
 public class PermissionController {
 
 
-    @Autowired
+    @Resource
     private PermissionService permissionService;
     /**
      * 获取所有的菜单

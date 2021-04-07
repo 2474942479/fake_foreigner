@@ -24,7 +24,7 @@ import java.util.Map;
 @RequestMapping("/eduCms/comment")
 public class EduCommentController {
 
-    @Autowired
+    @Resource
     private EduCommentService commentService;
 
     /**

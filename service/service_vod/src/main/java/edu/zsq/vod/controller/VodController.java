@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/eduVod/video")
 public class VodController {
 
-    @Autowired
+    @Resource
     private VodService vodService;
 
     /**

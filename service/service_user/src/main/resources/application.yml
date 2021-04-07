@@ -13,7 +13,7 @@ spring:
 
   # 时间格式和时区设置
   jackson:
-    date-format:  yyyy-MM-dd  HH:mm:ss
+    date-format: yyyy-MM-dd  HH:mm:ss
     time-zone: GMT+8
 
   # nacos服务地址
@@ -44,9 +44,9 @@ spring:
   #mysql数据库连接
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/online_edu?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8
-    username: root
-    password: root
+    url: jdbc:mysql://online-edu.mysql.rds.aliyuncs.com:3306/online_edu?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8
+    username: zhangsongqi
+    password: Zsq060606
 
 
 
@@ -79,7 +79,7 @@ logging.level.com.alibaba.nacos.client.naming: WARN
 # 微信开放平台 appid
 wx:
   open:
-   app_id: wxed9954c01bb89b47
+    app_id: wxed9954c01bb89b47
   # 微信开放平台 appsecret
   app_secret: a7482517235173ddb4083788de60b90e
   # 微信开放平台 重定向url

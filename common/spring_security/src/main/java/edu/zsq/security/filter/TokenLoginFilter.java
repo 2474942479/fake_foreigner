@@ -71,21 +71,19 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
      * @param res
      * @param chain
      * @param auth
-     * @throws IOException
-     * @throws ServletException
      */
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
-                                            Authentication auth) throws IOException, ServletException {
+                                            Authentication auth) {
         SecurityUser user = (SecurityUser) auth.getPrincipal();
 //        生成token
         String token = tokenManager.createToken(user.getCurrentUserInfo().getUsername());
 //        登录成功  以用户名作为key 权限表作为value 放入redis中
         redisTemplate.opsForValue().set(user.getCurrentUserInfo().getUsername(), user.getPermissionValueList());
 
-        Map<String, String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<>(16);
         data.put("token", token);
-        ResponseUtil.out(res, JsonResult.success().data(data));
+        ResponseUtil.out(res, JsonResult.success(data,"登陆成功"));
     }
 
     /**
@@ -93,12 +91,10 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
      * @param request
      * @param response
      * @param e
-     * @throws IOException
-     * @throws ServletException
      */
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                              AuthenticationException e) throws IOException, ServletException {
-        ResponseUtil.out(response, JsonResult.failure());
+                                              AuthenticationException e) {
+        ResponseUtil.out(response, JsonResult.failure("登陆失败"));
     }
 }

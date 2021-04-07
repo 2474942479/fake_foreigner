@@ -28,11 +28,11 @@ import java.util.Map;
 @RequestMapping("/eduCms/course")
 public class EduCourseController {
 
-    @Autowired
+    @Resource
     private EduCourseService courseService;
-    @Autowired
+    @Resource
     private ChapterService chapterService;
-    @Autowired
+    @Resource
     private OrderService orderService;
     /**
      * 条件查询带分页

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ import java.util.Map;
 @RequestMapping("/api/ucenter/wx")
 public class WxController {
 
-    @Autowired
+    @Resource
     private UserService userService;
 
     /**
@@ -133,7 +134,7 @@ public class WxController {
 
         //TODO 登录
         String jwtToken = JwtUtils.getJwtToken(user.getId(), user.getNickname());
-        System.out.println(jwtToken);
+//        System.out.println(jwtToken);
         return "redirect:http://localhost:3000?token="+jwtToken;
 
     }

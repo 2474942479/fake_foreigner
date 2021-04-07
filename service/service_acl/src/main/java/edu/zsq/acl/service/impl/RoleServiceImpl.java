@@ -30,10 +30,10 @@ import java.util.stream.Collectors;
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
 
-    @Autowired
+    @Resource
     private RolePermissionService rolePermissionService;
 
-    @Autowired
+    @Resource
     private UserRoleService userRoleService;
 
     @Override

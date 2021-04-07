@@ -26,7 +26,7 @@ import java.util.List;
 public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> implements EduVideoService {
 
 
-    @Autowired
+    @Resource
     private VodClient vodClient;
 
     /**

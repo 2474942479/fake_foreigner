@@ -77,19 +77,20 @@
             <groupId>org.apache.velocity</groupId>
             <artifactId>velocity-engine-core</artifactId>
         </dependency>
-        <!--        swagger-->
+        <!-- swagger-->
         <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-swagger2</artifactId>
         </dependency>
 
-        <!--        引入common中的Service_base (配置依赖)-->
+        <!-- 引入common中的service_base (配置依赖)-->
         <dependency>
             <groupId>edu.zsq</groupId>
             <artifactId>service_base</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        <!--        引入common中的common_utils (工具类)-->
+        <!-- 引入common中的common_utils (工具类)-->
+
         <dependency>
             <groupId>edu.zsq</groupId>
             <artifactId>common_utils</artifactId>

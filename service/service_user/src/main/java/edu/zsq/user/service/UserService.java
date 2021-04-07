@@ -2,8 +2,9 @@ package edu.zsq.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.user.entity.User;
-import edu.zsq.user.entity.vo.LoginVo;
-import edu.zsq.user.entity.vo.RegisterVo;
+import edu.zsq.user.entity.dto.LoginDTO;
+import edu.zsq.user.entity.dto.RegisterDTO;
+import edu.zsq.utils.result.JsonResult;
 
 /**
  * <p>
@@ -11,35 +12,34 @@ import edu.zsq.user.entity.vo.RegisterVo;
  * </p>
  *
  * @author zsq
- * @since 2020-08-21
+ * @since 2021-04-05
  */
 public interface UserService extends IService<User> {
 
     /**
      * 登录
-     * @return
-     * @param loginVo
+     * @param LoginDTO 登陆信息
+     * @return 登陆结果
      */
-    String login(LoginVo loginVo);
+    JsonResult<String> login(LoginDTO LoginDTO);
 
     /**
      * 注册
-     * @return
-     * @param registerVo
+     * @param registerDTO 注册信息
      */
-    void register(RegisterVo registerVo);
+    JsonResult<Void> register(RegisterDTO registerDTO);
 
     /**
      * 根据openid获取用户信息
-     * @param openid
-     * @return
+     * @param openid openId
+     * @return 用户信息
      */
     User getUserInfoByOpenid(String openid);
 
     /**
      * 根据日期获取这一天的注册人数  用于统计服务
-     * @param day
-     * @return
+     * @param day 天
+     * @return 人数
      */
     Integer getRegisterNumber(String day);
 }

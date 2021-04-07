@@ -33,10 +33,10 @@ import java.util.List;
 @Service
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements PermissionService {
 
-    @Autowired
+    @Resource
     private RolePermissionService rolePermissionService;
 
-    @Autowired
+    @Resource
     private UserService userService;
 
 

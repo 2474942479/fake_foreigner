@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/eduOss/fileOss")
 public class OssController {
 
-    @Autowired
+    @Resource
     private OssService ossService;
 
     /**

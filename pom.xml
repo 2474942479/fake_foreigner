@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.3.3.RELEASE</version>
+        <version>2.3.2.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>edu.zsq</groupId>
@@ -31,7 +31,9 @@
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 
         <spring.cloud.version>Hoxton.SR8</spring.cloud.version>
-        <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
+        <spring.boot.version>2.3.2.RELEASE</spring.boot.version>
+        <cloud-alibaba.version>2.2.5.RELEASE</cloud-alibaba.version>
+
         <online-edu.version>0.0.1-SNAPSHOT</online-edu.version>
 
         <knife4j-spring-boot-starter.version>1.9.6</knife4j-spring-boot-starter.version>
@@ -60,7 +62,6 @@
         <commons-dbutils.version>1.7</commons-dbutils.version>
         <canal.client.version>1.1.0</canal.client.version>
         <docker.image.prefix>zx</docker.image.prefix>
-        <cloud-alibaba.version>0.2.2.RELEASE</cloud-alibaba.version>
     </properties>
 
 

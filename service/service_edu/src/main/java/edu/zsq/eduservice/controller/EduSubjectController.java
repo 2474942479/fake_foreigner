@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("/eduService/subject")
 public class EduSubjectController {
 
-    @Autowired
+    @Resource
     EduSubjectService eduSubjectService;
 
     /**

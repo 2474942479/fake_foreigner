@@ -24,9 +24,9 @@ import java.util.Map;
 @RequestMapping("/eduCms/teacherFront")
 public class EduTeacherController {
 
-    @Autowired
+    @Resource
     private EduTeacherService teacherService;
-    @Autowired
+    @Resource
     private EduCourseService courseService;
 
     /**

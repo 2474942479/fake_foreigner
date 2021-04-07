@@ -28,7 +28,7 @@ import java.util.List;
 @Service
 public class EduChapterServiceImpl extends ServiceImpl<EduChapterMapper, EduChapter> implements EduChapterService {
 
-    @Autowired
+    @Resource
     EduVideoService videoService;
 
     /**
