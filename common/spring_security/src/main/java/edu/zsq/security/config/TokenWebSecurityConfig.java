@@ -18,6 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import javax.annotation.Resource;
+
 /**
  * <p>
  * Security核心配置类
@@ -39,7 +41,7 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private DefaultPasswordEncoder defaultPasswordEncoder;
     private RedisTemplate<String,String> redisTemplate;
 
-    @Resource
+    @Autowired
     public TokenWebSecurityConfig(UserDetailsService userDetailsService, DefaultPasswordEncoder defaultPasswordEncoder,
                                   TokenManager tokenManager, RedisTemplate redisTemplate) {
         this.userDetailsService = userDetailsService;
