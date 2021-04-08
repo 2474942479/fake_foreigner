@@ -40,7 +40,6 @@
         <mybatis-plus.version>3.2.0</mybatis-plus.version>
         <velocity.version>2.0</velocity.version>
         <swagger.version>2.7.0</swagger.version>
-        <aliyun.oss.version>3.1.0</aliyun.oss.version>
         <jodatime.version>2.10.1</jodatime.version>
         <poi.version>4.1.2</poi.version>
         <commons-fileupload.version>1.3.1</commons-fileupload.version>
@@ -48,17 +47,18 @@
         <httpclient.version>4.5.6</httpclient.version>
         <lombok.version>1.18.8</lombok.version>
         <jwt.version>0.7.0</jwt.version>
-        <fastjson.version>1.2.57.sec10</fastjson.version>
+        <fastjson.version>1.2.58</fastjson.version>
         <gson.version>2.8.6</gson.version>
         <json.version>20170516</json.version>
         <jetcache.version>2.5.14</jetcache.version>
         <commons.lang3.version>3.8.1</commons.lang3.version>
         <hutool-all.version>5.6.7</hutool-all.version>
 
+        <aliyun-sdk-oss.version>3.10.2</aliyun-sdk-oss.version>
         <aliyun-java-sdk-core.version>4.5.1</aliyun-java-sdk-core.version>
-        <aliyun-java-sdk-vod.version>2.15.10</aliyun-java-sdk-vod.version>
+        <aliyun-java-sdk-vod.version>2.15.11</aliyun-java-sdk-vod.version>
         <aliyun-java-vod-upload.version>1.4.12</aliyun-java-vod-upload.version>
-        <aliyun-sdk-vod-upload.version>1.4.12</aliyun-sdk-vod-upload.version>
+        <aliyun-sdk-vod-upload.version>1.4.13</aliyun-sdk-vod-upload.version>
         <commons-dbutils.version>1.7</commons-dbutils.version>
         <canal.client.version>1.1.0</canal.client.version>
         <docker.image.prefix>zx</docker.image.prefix>
@@ -146,7 +146,7 @@
             <dependency>
                 <groupId>com.aliyun.oss</groupId>
                 <artifactId>aliyun-sdk-oss</artifactId>
-                <version>${aliyun.oss.version}</version>
+                <version>${aliyun-sdk-oss.version}</version>
             </dependency>
             <!--日期时间工具-->
             <dependency>
@@ -206,11 +206,11 @@
                 <artifactId>aliyun-java-sdk-vod</artifactId>
                 <version>${aliyun-java-sdk-vod.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.aliyun</groupId>
-                <artifactId>aliyun-java-vod-upload</artifactId>
-                <version>${aliyun-java-vod-upload.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.aliyun</groupId>-->
+<!--                <artifactId>aliyun-java-vod-upload</artifactId>-->
+<!--                <version>${aliyun-java-vod-upload.version}</version>-->
+<!--            </dependency>-->
             <dependency>
                 <groupId>com.aliyun</groupId>
                 <artifactId>aliyun-sdk-vod-upload</artifactId>

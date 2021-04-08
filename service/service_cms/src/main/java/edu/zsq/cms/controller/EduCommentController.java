@@ -8,7 +8,9 @@ import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import sun.security.krb5.internal.PAData;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
@@ -35,11 +37,9 @@ public class EduCommentController {
      */
     @ApiOperation(value = "评论分页列表")
     @GetMapping("/{current}/{size}/{courseId}")
-    public JsonResult getCommentList(@PathVariable long current, @PathVariable long size, @PathVariable String courseId,HttpServletRequest request){
-
+    public JsonResult getCommentList(@PathVariable long current, @PathVariable long size, @PathVariable String courseId, HttpServletRequest request){
         Page<EduComment> page = new Page<>(current,size);
-        Map<String, Object> map = commentService.getCommentList(page,courseId,request);
-        return JsonResult.success().data(map);
+        return JsonResult.success(commentService.getCommentList(page,courseId,request));
     }
 
     /**
@@ -50,18 +50,17 @@ public class EduCommentController {
 
     @ApiOperation(value = "添加评论")
     @PostMapping("/saveCommentInfo")
-    public JsonResult saveComment(@RequestBody EduComment commentInfo){
+    public JsonResult<Void> saveComment(@RequestBody EduComment commentInfo){
         if (commentInfo.getUserId() == null ||"".equals(commentInfo.getUserId())){
-            return JsonResult.failure().message("请先登录");
+            return JsonResult.failure("请先登录");
         }
         if (commentInfo.getContent() == null ||"".equals(commentInfo.getContent())){
-            return JsonResult.failure().message("请输入评论内容");
+            return JsonResult.failure("请输入评论内容");
         }
-        Boolean save = commentService.save(commentInfo);
-        if (save){
-            return JsonResult.success().message("发表评论成功");
+        if (commentService.save(commentInfo)){
+            return JsonResult.OK;
         }else {
-            return JsonResult.failure().message("发表评论失败");
+            return JsonResult.failure("发表评论失败");
         }
 
     }

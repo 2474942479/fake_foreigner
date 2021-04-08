@@ -1,5 +1,6 @@
 package edu.zsq.vod.service;
 
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -11,13 +12,15 @@ public interface VodService {
 
     /**
      * 上传视频到阿里云
-     * @param file
+     *
+     * @param file 文件
      * @return
      */
-    String uploadVideo(MultipartFile file);
+    JsonResult<String> uploadVideo(MultipartFile file);
 
     /**
      * 通过视频资源Id删除阿里云中的视频
+     *
      * @param videoSourceId
      * @return
      */
@@ -29,12 +32,13 @@ public interface VodService {
      * @param vodIdList
      * @return
      */
-    boolean removeVodList(List vodIdList);
+    void removeVodList(List<Integer> vodIdList);
 
     /**
      * 根据视频id获取视频播放凭证
+     *
      * @param videoId
      * @return
      */
-    String getPlayAuth(String videoId);
+    JsonResult<String> getPlayAuth(String videoId);
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -24,10 +25,8 @@ public class VodController {
      * @return
      */
     @PostMapping("/uploadVideo")
-    public JsonResult uploadVideo(MultipartFile file){
-
-        String videoSourceId = vodService.uploadVideo(file);
-        return JsonResult.success().data("videoSourceId",videoSourceId);
+    public JsonResult<String> uploadVideo(MultipartFile file){
+        return vodService.uploadVideo(file);
     }
 
 
@@ -53,15 +52,9 @@ public class VodController {
      * @return
      */
     @DeleteMapping("/removeVodList")
-    public JsonResult removeVodList(@RequestParam List vodIdList){
-
-        boolean remove = vodService.removeVodList(vodIdList);
-        if (remove){
-            return JsonResult.success().message("删除视频成功");
-
-        }else{
-            return JsonResult.success().message("删除视频失败");
-        }
+    public JsonResult<Void> removeVodList(@RequestParam List<Integer> vodIdList){
+       vodService.removeVodList(vodIdList);
+       return JsonResult.OK;
     }
 
 
@@ -71,11 +64,8 @@ public class VodController {
      * @return
      */
     @GetMapping("/getVideoPlayAuth/{videoId}")
-    public JsonResult getVideoPlayAuth(@PathVariable String videoId){
-
-        String playAuth = vodService.getPlayAuth(videoId);
-
-        return JsonResult.success().data("playAuth",playAuth);
+    public JsonResult<String> getVideoPlayAuth(@PathVariable String videoId){
+        return vodService.getPlayAuth(videoId);
     }
 
 }

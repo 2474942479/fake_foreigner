@@ -8,8 +8,10 @@ import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.vod.model.v20170321.DeleteVideoRequest;
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthRequest;
 import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
+import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.exception.servicexception.MyException;
 import edu.zsq.utils.properties.ReadPropertiesUtil;
+import edu.zsq.utils.result.JsonResult;
 import edu.zsq.vod.service.VodService;
 import edu.zsq.vod.utils.InitVodClient;
 import org.apache.commons.lang.StringUtils;
@@ -26,21 +28,16 @@ import java.util.List;
 @Service
 public class VodServiceImpl implements VodService {
     @Override
-    public String uploadVideo(MultipartFile file) {
-
-        /**
-         * title:上传之后显示名称
-         * fileName:上传文件原始名称
-         * inputStream:上传文件流
-         */
-
-        String videoId = null;
-
+    public JsonResult<String> uploadVideo(MultipartFile file) {
+        String videoId;
         try {
-
+            // fileName:上传文件原始名称
             String fileName = file.getOriginalFilename();
+
+            // title:上传之后显示名称
             String title = fileName.substring(0, fileName.lastIndexOf("."));
 
+            // inputStream:上传文件流
             InputStream inputStream = file.getInputStream();
             UploadStreamRequest request = new UploadStreamRequest(ReadPropertiesUtil.ACCESS_KEY_ID, ReadPropertiesUtil.ACCESS_KEY_SECRET, title, fileName, inputStream);
 
@@ -56,10 +53,10 @@ public class VodServiceImpl implements VodService {
                 System.out.print("ErrorCode=" + response.getCode() + "\n");
                 System.out.print("ErrorMessage=" + response.getMessage() + "\n");
             }
-            return videoId;
+            return JsonResult.success(videoId);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new MyException(20001, "上传视频失败");
+            throw ExFactory.throwBusiness("上传视频失败");
         }
 
 
@@ -102,10 +99,9 @@ public class VodServiceImpl implements VodService {
      * @return
      */
     @Override
-    public boolean removeVodList(List vodIdList) {
+    public void removeVodList(List<Integer> vodIdList) {
         try {
             //        初始化对象
-
             DefaultAcsClient client = InitVodClient.initVodClient(ReadPropertiesUtil.ACCESS_KEY_ID, ReadPropertiesUtil.ACCESS_KEY_SECRET);
 //            创建删除视频request对象
             DeleteVideoRequest request = new DeleteVideoRequest();
@@ -114,27 +110,24 @@ public class VodServiceImpl implements VodService {
 //            调用初始化对象的方法实现删除
             client.getAcsResponse(request);
 
-            return true;
         } catch (ClientException e) {
             e.printStackTrace();
-            throw new MyException(20001, "删除视频失败");
+            throw ExFactory.throwBusiness("删除视频失败");
         }
     }
 
     @Override
-    public String getPlayAuth(String videoId) {
+    public JsonResult<String> getPlayAuth(String videoId) {
         try {
 //          初始化对象
-
             DefaultAcsClient client = InitVodClient.initVodClient(ReadPropertiesUtil.ACCESS_KEY_ID, ReadPropertiesUtil.ACCESS_KEY_SECRET);
             GetVideoPlayAuthRequest request = new GetVideoPlayAuthRequest();
             request.setVideoId(videoId);
             GetVideoPlayAuthResponse response = client.getAcsResponse(request);
-            String playAuth = response.getPlayAuth();
-            return playAuth;
+            return JsonResult.success(response.getPlayAuth());
         } catch (ClientException e) {
             e.printStackTrace();
-            throw new MyException(20001,"获取视频凭证出错了");
+            throw ExFactory.throwBusiness("获取视频凭证出错了");
         }
 
     }

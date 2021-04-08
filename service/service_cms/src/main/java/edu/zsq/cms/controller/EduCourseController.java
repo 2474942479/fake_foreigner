@@ -11,9 +11,12 @@ import edu.zsq.cms.service.EduCourseService;
 import edu.zsq.utils.jwt.JwtUtils;
 import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.support.incrementer.HsqlMaxValueIncrementer;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -61,14 +64,17 @@ public class EduCourseController {
         CourseWebVo courseBaseInfo = courseService.getCourseBaseInfo(courseId);
 
 //         根据课程id获取大纲信息
-         JsonResult allChapterVo = chapterService.getAllChapterVo(courseId);
+         JsonResult jsonResult = chapterService.getAllChapterVo(courseId);
 
 //        根据用户id和课程id判断用户是否购买课程
          String userId = JwtUtils.getMemberIdByJwtToken(request);
 
          Boolean isBuy = orderService.isBuyCourse(userId, courseId);
 
-         return allChapterVo.data("courseBaseInfo",courseBaseInfo).data("isBuy",isBuy);
+         HashMap<String, Object> result = new HashMap<>();
+         result.put("courseBaseInfo",courseBaseInfo);
+         result.put("isBuy", isBuy);
+         return jsonResult.data(result);
      }
 
 
