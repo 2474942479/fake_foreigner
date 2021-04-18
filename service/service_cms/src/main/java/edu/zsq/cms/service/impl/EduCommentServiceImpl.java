@@ -1,17 +1,21 @@
 package edu.zsq.cms.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.cms.entity.EduComment;
+import edu.zsq.cms.entity.dto.CommentDTO;
+import edu.zsq.cms.entity.vo.CommentVO;
 import edu.zsq.cms.mapper.EduCommentMapper;
 import edu.zsq.cms.service.EduCommentService;
+import edu.zsq.utils.exception.core.ExFactory;
+import edu.zsq.utils.page.PageData;
+import edu.zsq.utils.result.JsonResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -19,52 +23,71 @@ import java.util.Map;
  * </p>
  *
  * @author zsq
- * @since 2020-08-25
+ * @since 2021-04-18
  */
 @Service
 public class EduCommentServiceImpl extends ServiceImpl<EduCommentMapper, EduComment> implements EduCommentService {
 
     /**
-     *  根据课程id查询评论列表
-     * @param page
-     * @param courseId
-     * @return
+     * 根据课程id查询评论列表
+     *
+     * @param courseId 课程id
+     * @return 评论列表
      */
     @Override
-    public Map<String, Object> getCommentList(Page<EduComment> page, String courseId,HttpServletRequest request) {
+    public PageData<CommentVO> getCommentList(String courseId) {
 
-        QueryWrapper<EduComment> wrapper = new QueryWrapper<>();
-        wrapper.eq("course_id",courseId);
-        wrapper.orderByDesc("gmt_modified");
-        baseMapper.selectPage(page,wrapper);
+        Page<EduComment> page = new Page<>();
+        lambdaQuery()
+                .eq(EduComment::getCourseId, courseId)
+                .orderByDesc(EduComment::getGmtModified)
+                .page(page);
 
+        if (page.getRecords().isEmpty()) {
+            return PageData.of(Collections.emptyList(), page.getCurrent(), page.getSize(), page.getTotal());
+        }
 
-        //        每页数据List集合
-        List<EduComment> records = page.getRecords();
-//        总记录数
-        long total = page.getTotal();
-//         每页显示条数
-        long size1 = page.getSize();
-//        当前分页总页数
-        long pages = page.getPages();
-//      当前页数
-        long current1 = page.getCurrent();
-//        是否存在下一页
-        boolean next = page.hasNext();
-//        是否存在上一页
+        List<CommentVO> comments = page.getRecords().stream().map(this::convertEduComment).collect(Collectors.toList());
 
-        boolean previous = page.hasPrevious();
-        Map<String, Object> map = new HashMap<>(7);
-        map.put("records",records);
-        map.put("total",total);
-        map.put("size",size1);
-        map.put("pages",pages);
-        map.put("current",current1);
-        map.put("previous",previous);
-        map.put("next",next);
-
-        return map;
-
+        return PageData.of(comments, page.getCurrent(), page.getSize(), page.getTotal());
     }
 
+    @Override
+    public JsonResult<Void> saveComment(CommentDTO commentDTO) {
+
+        if (StringUtils.isEmpty(commentDTO.getUserId())){
+            throw ExFactory.throwBusiness("请先登录");
+        }
+        if (StringUtils.isEmpty(commentDTO.getContent())){
+            throw ExFactory.throwBusiness("请输入评论内容");
+        }
+
+        if (save(this.convertCommentDTO(commentDTO))) {
+            throw ExFactory.throwSystem("系统异常，发表评论失败");
+        }
+
+        return JsonResult.OK;
+    }
+
+    private EduComment convertCommentDTO(CommentDTO commentDTO){
+        EduComment eduComment = new EduComment();
+        commentDTO.setUserId(commentDTO.getUserId());
+        commentDTO.setContent(commentDTO.getContent());
+        commentDTO.setTeacherId(commentDTO.getTeacherId());
+        commentDTO.setCourseId(commentDTO.getCourseId());
+
+        return eduComment;
+    }
+
+    private CommentVO convertEduComment(EduComment eduComment) {
+        return CommentVO.builder()
+                .id(eduComment.getId())
+                .teacherId(eduComment.getTeacherId())
+                .avatar(eduComment.getAvatar())
+                .content(eduComment.getContent())
+                .nickname(eduComment.getNickname())
+                .userId(eduComment.getUserId())
+                .courseId(eduComment.getCourseId())
+                .build();
+    }
 }

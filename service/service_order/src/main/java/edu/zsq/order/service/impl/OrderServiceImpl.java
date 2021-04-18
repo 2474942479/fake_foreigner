@@ -5,7 +5,9 @@ import edu.zsq.order.entity.Order;
 import edu.zsq.order.mapper.OrderMapper;
 import edu.zsq.order.service.OrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.exception.servicexception.MyException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @author zsq
- * @since 2020-08-25
+ * @since 2021-04-18
  */
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
@@ -23,23 +25,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
      * 判断用户是否购买课程
      * @param userId 用户id
      * @param courseId  课程id
-     * @return
+     * @return 购买结果
      */
     @Override
     public boolean isBuyCourse(String userId, String courseId) {
 
-        if (userId ==null || "".equals(userId)){
-            throw new MyException(28004,"您尚未登录，请先登录");
+        if (StringUtils.isEmpty(userId)){
+            throw ExFactory.throwBusiness("您尚未登录，请先登录");
         }
-        QueryWrapper<Order> wrapper = new QueryWrapper<>();
-        wrapper.eq("user_id",userId);
-        wrapper.eq("course_id",courseId);
-        wrapper.eq("status",1);
-        Integer count = baseMapper.selectCount(wrapper);
-        if (count>0) {
-            return true;
-        }else{
-            return false;
-        }
+
+        return lambdaQuery()
+                .eq(Order::getUserId, userId)
+                .eq(Order::getCourseId, courseId)
+                .eq(Order::getStatus, 1)
+                .count() > 0;
     }
 }

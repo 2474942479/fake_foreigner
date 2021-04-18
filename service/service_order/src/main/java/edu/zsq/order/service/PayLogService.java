@@ -11,7 +11,7 @@ import java.util.Map;
  * </p>
  *
  * @author zsq
- * @since 2020-08-25
+ * @since 2021-04-18
  */
 public interface PayLogService extends IService<PayLog> {
 

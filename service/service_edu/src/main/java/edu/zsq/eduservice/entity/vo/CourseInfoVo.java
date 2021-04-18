@@ -14,7 +14,7 @@ import java.math.BigDecimal;
  */
 @Data
 @ApiModel(value = "课程基本信息", description = "编辑课程基本信息的表单对象")
-public class CourseInfoVo implements Serializable {
+public class CourseInfoVO implements Serializable {
     private static final long serialVersionUID = 1L;
     @ApiModelProperty(value = "课程ID")
     private String id;

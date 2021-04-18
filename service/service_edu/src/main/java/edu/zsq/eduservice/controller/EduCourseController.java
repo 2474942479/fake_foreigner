@@ -3,7 +3,7 @@ package edu.zsq.eduservice.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.zsq.eduservice.entity.EduCourse;
-import edu.zsq.eduservice.entity.vo.CourseInfoVo;
+import edu.zsq.eduservice.entity.vo.CourseInfoVO;
 import edu.zsq.eduservice.entity.vo.CourseQuery;
 import edu.zsq.eduservice.entity.vo.FinalReleaseVo;
 import edu.zsq.eduservice.service.EduCourseService;
@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ import java.util.List;
  * </p>
  *
  * @author zsq
- * @since 2020-08-16
+ * @since 2021-04-16
  */
 @RestController
 @RequestMapping("/eduService/course")
@@ -65,13 +66,13 @@ public class EduCourseController {
 
     /**
      * 添加课程基本信息
-     * @param courseInfoVo
+     * @param CourseInfoVO
      * @return
      */
     @PostMapping("/addCourseInfo")
-    public JsonResult addCourseInfo(@RequestBody CourseInfoVo courseInfoVo){
+    public JsonResult addCourseInfo(@RequestBody CourseInfoVO CourseInfoVO){
 
-        String courseId = eduCourseService.saveCourseInfo(courseInfoVo);
+        String courseId = eduCourseService.saveCourseInfo(CourseInfoVO);
         return JsonResult.success().data("id",courseId);
     }
 
@@ -81,22 +82,22 @@ public class EduCourseController {
      * @param id 课程id
      * @return  课程基本信息
      */
-    @GetMapping("/getCourseInfoVoById/{id}")
+    @GetMapping("/getCourseInfoVOById/{id}")
     public JsonResult getCourseInfoById(@PathVariable String id){
 
-        CourseInfoVo  courseInfo= eduCourseService.getCourseInfoVoById(id);
+        CourseInfoVO  courseInfo= eduCourseService.getCourseInfoVOById(id);
         return JsonResult.success().data("courseInfo",courseInfo);
     }
 
     /**
      * 修改课程基本信息
-     * @param courseInfoVo 课程基本信息VO类
+     * @param CourseInfoVO 课程基本信息VO类
      * @return
      */
-    @PutMapping("/updateCourseInfoVo")
-    public JsonResult updateCourseInfoVo(@RequestBody CourseInfoVo courseInfoVo){
+    @PutMapping("/updateCourseInfoVO")
+    public JsonResult updateCourseInfoVO(@RequestBody CourseInfoVO CourseInfoVO){
 
-        eduCourseService.updateCourseInfoVo(courseInfoVo);
+        eduCourseService.updateCourseInfoVO(CourseInfoVO);
         return JsonResult.success().message("修改成功");
     }
 

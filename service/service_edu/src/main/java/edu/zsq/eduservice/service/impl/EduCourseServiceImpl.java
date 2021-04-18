@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.eduservice.entity.EduCourse;
 import edu.zsq.eduservice.entity.EduCourseDescription;
-import edu.zsq.eduservice.entity.vo.CourseInfoVo;
+import edu.zsq.eduservice.entity.vo.CourseInfoVO;
 import edu.zsq.eduservice.entity.vo.CourseQuery;
 import edu.zsq.eduservice.entity.vo.FinalReleaseVo;
 import edu.zsq.eduservice.mapper.EduCourseMapper;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @author zsq
- * @since 2020-08-16
+ * @since 2021-04-16
  */
 @Service
 public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse> implements EduCourseService {
@@ -42,15 +42,15 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
     /**
      * 添加课程基本信息
      *
-     * @param courseInfoVo 课程基本信息
+     * @param CourseInfoVO 课程基本信息
      * @return
      */
     @Override
-    public String saveCourseInfo(CourseInfoVo courseInfoVo) {
+    public String saveCourseInfo(CourseInfoVO CourseInfoVO) {
 
 //      1  添加课程基本信息到课程表
         EduCourse eduCourse = new EduCourse();
-        BeanUtils.copyProperties(courseInfoVo, eduCourse);
+        BeanUtils.copyProperties(CourseInfoVO, eduCourse);
         int insert = baseMapper.insert(eduCourse);
 
         if (insert == 0) {
@@ -62,7 +62,7 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
 //        2添加课程简介到课程简介表
 
         EduCourseDescription eduCourseDescription = new EduCourseDescription();
-        BeanUtils.copyProperties(courseInfoVo, eduCourseDescription);
+        BeanUtils.copyProperties(CourseInfoVO, eduCourseDescription);
         //        (手动设置外键——程序控制数据一致性)获取添加之后课程id
         eduCourseDescription.setId(courseId);
         courseDescriptionService.save(eduCourseDescription);
@@ -78,38 +78,38 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
      * @return 课程基本信息VO类
      */
     @Override
-    public CourseInfoVo getCourseInfoVoById(String id) {
+    public CourseInfoVO getCourseInfoVOById(String id) {
 
         EduCourse course = baseMapper.selectById(id);
-        CourseInfoVo courseInfoVo = new CourseInfoVo();
-        BeanUtils.copyProperties(course, courseInfoVo);
+        CourseInfoVO CourseInfoVO = new CourseInfoVO();
+        BeanUtils.copyProperties(course, CourseInfoVO);
 
 //        通过课程id获取课程简介
         String courseDescription = courseDescriptionService.getById(id).getDescription();
-        courseInfoVo.setDescription(courseDescription);
+        CourseInfoVO.setDescription(courseDescription);
 
-        return courseInfoVo;
+        return CourseInfoVO;
     }
 
     /**
      * 修改课程基本信息
      *
-     * @param courseInfoVo 课程基本信息VO类
+     * @param CourseInfoVO 课程基本信息VO类
      * @return
      */
     @Override
-    public void updateCourseInfoVo(CourseInfoVo courseInfoVo) {
+    public void updateCourseInfoVO(CourseInfoVO CourseInfoVO) {
 
         EduCourse eduCourse = new EduCourse();
-        BeanUtils.copyProperties(courseInfoVo,eduCourse);
+        BeanUtils.copyProperties(CourseInfoVO,eduCourse);
         int update = baseMapper.updateById(eduCourse);
         if (update == 0){
             throw new MyException(20001,"修改课程基本信息失败");
         }
 
         EduCourseDescription eduCourseDescription = new EduCourseDescription();
-        eduCourseDescription.setId(courseInfoVo.getId());
-        eduCourseDescription.setDescription(courseInfoVo.getDescription());
+        eduCourseDescription.setId(CourseInfoVO.getId());
+        eduCourseDescription.setDescription(CourseInfoVO.getDescription());
         boolean b = courseDescriptionService.updateById(eduCourseDescription);
         if (!b){
             throw new MyException(20001,"修改课程简介失败");

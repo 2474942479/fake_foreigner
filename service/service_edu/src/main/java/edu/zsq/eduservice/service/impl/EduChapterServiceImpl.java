@@ -4,16 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.eduservice.entity.EduChapter;
 import edu.zsq.eduservice.entity.EduVideo;
-import edu.zsq.eduservice.entity.vo.chapter.ChapterVo;
+import edu.zsq.eduservice.entity.vo.chapter.ChapterVO;
 import edu.zsq.eduservice.entity.vo.chapter.VideoVo;
 import edu.zsq.eduservice.mapper.EduChapterMapper;
 import edu.zsq.eduservice.service.EduChapterService;
 import edu.zsq.eduservice.service.EduVideoService;
+import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.exception.servicexception.MyException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,7 @@ import java.util.List;
  * </p>
  *
  * @author zsq
- * @since 2020-08-16
+ * @since 2021-04-16
  */
 @Service
 public class EduChapterServiceImpl extends ServiceImpl<EduChapterMapper, EduChapter> implements EduChapterService {
@@ -38,7 +40,7 @@ public class EduChapterServiceImpl extends ServiceImpl<EduChapterMapper, EduChap
      * @return 课程大纲list集合
      */
     @Override
-    public List<ChapterVo> getChapterVoByCourseId(String courseId) {
+    public List<ChapterVO> getChapterVoByCourseId(String courseId) {
 
         //        查询并获取章节所有信息
         QueryWrapper<EduChapter> chapterWrapper = new QueryWrapper<>();
@@ -49,10 +51,10 @@ public class EduChapterServiceImpl extends ServiceImpl<EduChapterMapper, EduChap
 
         List<EduVideo> videoList = videoService.getAllVideoByCourseId(courseId);
 
-        ArrayList<ChapterVo> finalList = new ArrayList<>();
+        ArrayList<ChapterVO> finalList = new ArrayList<>();
 
         for (EduChapter chapter : chapterList) {
-            ChapterVo chapterVo = new ChapterVo();
+            ChapterVO chapterVo = new ChapterVO();
             ArrayList<VideoVo> ChapterVideo = new ArrayList<>();
             for (EduVideo video : videoList) {
                 if (video.getChapterId().equals(chapter.getId())) {
@@ -74,29 +76,29 @@ public class EduChapterServiceImpl extends ServiceImpl<EduChapterMapper, EduChap
 
     /**
      * 删除章节  当有小节是不允许删除
-     * @param chapterId
-     * @return
+     *
+     * @param chapterId 章节id
+     * @return 删除结果
      */
     @Override
-    public Boolean deleteChapter(String chapterId) {
+    public void deleteChapter(String chapterId) {
 
-        QueryWrapper<EduVideo> videoWrapper = new QueryWrapper<>();
-        videoWrapper.eq("chapter_id",chapterId);
-        int videoCount = videoService.count(videoWrapper);
-        if (videoCount > 0){
-            throw new MyException(20001,"请先删除掉所有小节!");
+        if (videoService.lambdaQuery().eq(EduVideo::getChapterId, chapterId).count() > 0) {
+            throw ExFactory.throwBusiness("请先删除掉该章节下的所有小节!");
         }
 
-        int result = baseMapper.deleteById(chapterId);
-        return result>0;
+        if (baseMapper.deleteById(chapterId) <= 0) {
+            throw ExFactory.throwBusiness("删除失败！");
+        }
+
     }
 
     @Override
     public boolean removeChapterByCourseId(String courseId) {
 
         QueryWrapper<EduChapter> chapterWrapper = new QueryWrapper<>();
-        chapterWrapper.eq("course_id",courseId);
+        chapterWrapper.eq("course_id", courseId);
         int delete = baseMapper.delete(chapterWrapper);
-        return delete>0;
+        return delete > 0;
     }
 }

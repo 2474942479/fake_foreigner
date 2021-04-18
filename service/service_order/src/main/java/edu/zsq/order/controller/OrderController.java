@@ -2,6 +2,7 @@ package edu.zsq.order.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import edu.zsq.order.entity.Order;
 import edu.zsq.order.service.OrderService;
 import edu.zsq.order.utils.OrderNumberUtil;
@@ -10,13 +11,15 @@ import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+
 /**
  * <p>
  * 订单 前端控制器
  * </p>
  *
  * @author zsq
- * @since 2020-08-25
+ * @since 2021-04-18
  */
 @RestController
 @RequestMapping("/orderService/order")
@@ -74,9 +77,8 @@ public class OrderController {
      * @return
      */
     @GetMapping("/isBuyCourse/{userId}/{courseId}")
-    public Boolean isBuyCourse(@PathVariable String userId, @PathVariable String courseId){
-        boolean isBuy = orderService.isBuyCourse(userId,courseId);
-        return isBuy;
+    public JsonResult<Boolean> isBuyCourse(@PathVariable String userId, @PathVariable String courseId){
+        return JsonResult.success(orderService.isBuyCourse(userId,courseId));
     }
 
     /**

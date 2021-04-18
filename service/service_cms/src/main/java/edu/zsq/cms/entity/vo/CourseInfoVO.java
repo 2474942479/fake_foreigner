@@ -10,9 +10,9 @@ import java.math.BigDecimal;
 /**
  * @author 张
  */
-@ApiModel(value="课程信息", description="网站课程详情页需要的相关字段")
+@ApiModel(value = "课程信息", description = "网站课程详情页需要的相关字段")
 @Data
-public class CourseWebVo implements Serializable {
+public class CourseInfoVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -66,8 +66,5 @@ public class CourseWebVo implements Serializable {
 
     @ApiModelProperty(value = "二级分类名称")
     private String subjectTwoTitle;
-
-
-
 
 }

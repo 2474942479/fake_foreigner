@@ -1,5 +1,7 @@
-package edu.zsq.cms.entity.vo;
+package edu.zsq.cms.entity.dto;
 
+import edu.zsq.cms.entity.EduCourse;
+import edu.zsq.utils.page.PageData;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,7 +11,7 @@ import java.io.Serializable;
  * @author 张
  */
 @Data
-public class CourseQueryVo implements Serializable {
+public class CourseQueryDTO extends PageData<EduCourse> {
 
     @ApiModelProperty(value = "课程名称")
     private String title;

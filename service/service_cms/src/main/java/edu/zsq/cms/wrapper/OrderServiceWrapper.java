@@ -1,5 +1,6 @@
-package edu.zsq.cms.frign;
+package edu.zsq.cms.wrapper;
 
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  */
 @Component
 @FeignClient(name = "service8007-order",fallback = OrderServiceImpl.class)
-public interface OrderService {
+public interface OrderServiceWrapper {
 
     /**
      * 判断用户是否购买课程
@@ -19,5 +20,5 @@ public interface OrderService {
      * @return
      */
     @GetMapping("/orderService/order/isBuyCourse/{userId}/{courseId}")
-    Boolean isBuyCourse(@PathVariable("userId") String userId, @PathVariable("courseId") String courseId);
+    JsonResult<Boolean> isBuyCourse(@PathVariable("userId") String userId, @PathVariable("courseId") String courseId);
 }

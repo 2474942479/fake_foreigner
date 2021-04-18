@@ -2,7 +2,7 @@ package edu.zsq.eduservice.service;
 
 import edu.zsq.eduservice.entity.EduChapter;
 import com.baomidou.mybatisplus.extension.service.IService;
-import edu.zsq.eduservice.entity.vo.chapter.ChapterVo;
+import edu.zsq.eduservice.entity.vo.chapter.ChapterVO;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
  * </p>
  *
  * @author zsq
- * @since 2020-08-16
+ * @since 2021-04-16
  */
 public interface EduChapterService extends IService<EduChapter> {
 
@@ -22,14 +22,14 @@ public interface EduChapterService extends IService<EduChapter> {
      * @return  课程大纲list集合
      */
 
-    List<ChapterVo> getChapterVoByCourseId(String courseId);
+    List<ChapterVO> getChapterVoByCourseId(String courseId);
 
     /**
      * 删除章节  当有小节是不允许删除
      * @param chapterId
      * @return
      */
-    Boolean deleteChapter(String chapterId);
+    void deleteChapter(String chapterId);
 
     /**
      * 根据根据课程id删除课程小节

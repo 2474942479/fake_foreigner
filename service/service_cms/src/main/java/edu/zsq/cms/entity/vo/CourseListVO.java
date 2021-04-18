@@ -1,34 +1,20 @@
-package edu.zsq.eduservice.entity;
+package edu.zsq.cms.entity.vo;
 
-import com.baomidou.mybatisplus.annotation.*;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
- * <p>
- * 课程
- * </p>
- *
- * @author zsq
- * @since 2021-04-16
+ * @author zhangsongqi
+ * @date 10:37 下午 2021/4/18
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value="EduCourse对象", description="课程")
-public class EduCourse implements Serializable {
-
-    private static final long serialVersionUID=1L;
+@Builder
+public class CourseListVO {
 
     @ApiModelProperty(value = "课程ID")
-    @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
     @ApiModelProperty(value = "课程讲师ID")
@@ -61,23 +47,6 @@ public class EduCourse implements Serializable {
     @ApiModelProperty(value = "浏览数量")
     private Long viewCount;
 
-    @ApiModelProperty(value = "乐观锁")
-    private Long version;
-
     @ApiModelProperty(value = "课程状态 Draft未发布  Normal已发布")
     private String status;
-
-    @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
-    @TableLogic
-    private Integer isDeleted;
-
-    @ApiModelProperty(value = "创建时间")
-    @TableField(fill = FieldFill.INSERT)
-    private Date gmtCreate;
-
-    @ApiModelProperty(value = "更新时间")
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date gmtModified;
-
-
 }

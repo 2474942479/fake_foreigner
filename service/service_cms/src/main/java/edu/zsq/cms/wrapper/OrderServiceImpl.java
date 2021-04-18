@@ -1,12 +1,14 @@
-package edu.zsq.cms.frign;
+package edu.zsq.cms.wrapper;
 
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.stereotype.Component;
+import springfox.documentation.spring.web.json.Json;
 
 /**
  * @author 张
  */
 @Component
-public class OrderServiceImpl implements OrderService{
+public class OrderServiceImpl implements OrderServiceWrapper{
 
     /**
      * 判断用户是否购买课程
@@ -17,8 +19,8 @@ public class OrderServiceImpl implements OrderService{
      * @return
      */
     @Override
-    public Boolean isBuyCourse(String userId, String courseId) {
+    public JsonResult<Boolean> isBuyCourse(String userId, String courseId) {
 
-        return false;
+        return JsonResult.failure("订单系统异常");
     }
 }

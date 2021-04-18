@@ -2,13 +2,14 @@ package edu.zsq.eduservice.controller;
 
 
 import edu.zsq.eduservice.entity.EduChapter;
-import edu.zsq.eduservice.entity.vo.chapter.ChapterVo;
+import edu.zsq.eduservice.entity.vo.chapter.ChapterVO;
 import edu.zsq.eduservice.service.EduChapterService;
 import edu.zsq.utils.exception.servicexception.MyException;
 import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ import java.util.List;
  * </p>
  *
  * @author zsq
- * @since 2020-08-16
+ * @since 2021-04-16
  */
 @RestController
 @RequestMapping("/eduService/chapter")
@@ -43,8 +44,7 @@ public class EduChapterController {
      */
     @GetMapping("/getChapter/{id}")
     public JsonResult getChapter(@PathVariable String id){
-        EduChapter chapter = chapterService.getById(id);
-        return JsonResult.success().data("chapter",chapter);
+        return JsonResult.success(chapterService.getById(id));
     }
 
     /**
@@ -63,31 +63,24 @@ public class EduChapterController {
 
     /**
      * 删除章节  当有小节是不允许删除
-     * @param id
-     * @return
+     * @param id 章节id
      */
     @DeleteMapping("{id}")
-    public JsonResult deleteChapter(@PathVariable String id){
-
-        Boolean flag = chapterService.deleteChapter(id);
-        if (flag){
-            return JsonResult.success().message("删除章节成功");
-        }else {
-            return JsonResult.failure().message("删除章节失败");
-        }
+    public JsonResult<Void> deleteChapter(@PathVariable String id){
+        chapterService.deleteChapter(id);
+        return JsonResult.OK;
     }
 
 
     /**
      * 根据课程id获取课程大纲列表
-     * @return
+     *
+     * @param courseId 课程id
+     * @return 课程大纲列表
      */
     @GetMapping("/getAllChapterVo/{courseId}")
-    public JsonResult getAllChapterVo(@PathVariable String courseId){
-
-        List<ChapterVo> chapterVoList = chapterService.getChapterVoByCourseId(courseId);
-
-        return JsonResult.success().data("chapterVoList",chapterVoList);
+    public JsonResult<List<ChapterVO>> getAllChapterVo(@PathVariable String courseId){
+        return JsonResult.success(chapterService.getChapterVoByCourseId(courseId));
     }
 
 }

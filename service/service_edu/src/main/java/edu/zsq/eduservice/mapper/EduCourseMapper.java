@@ -10,7 +10,7 @@ import edu.zsq.eduservice.entity.vo.FinalReleaseVo;
  * </p>
  *
  * @author zsq
- * @since 2020-08-16
+ * @since 2021-04-16
  */
 public interface EduCourseMapper extends BaseMapper<EduCourse> {
 
