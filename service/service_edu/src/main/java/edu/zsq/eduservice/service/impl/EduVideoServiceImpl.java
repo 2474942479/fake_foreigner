@@ -1,18 +1,23 @@
 package edu.zsq.eduservice.service.impl;
 
-import com.alibaba.excel.util.StringUtils;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.eduservice.entity.EduVideo;
+import edu.zsq.eduservice.entity.dto.VideoDTO;
+import edu.zsq.eduservice.entity.vo.EduVideoVO;
+import edu.zsq.eduservice.entity.vo.chapter.VideoVO;
 import edu.zsq.eduservice.mapper.EduVideoMapper;
 import edu.zsq.eduservice.service.EduVideoService;
 import edu.zsq.eduservice.utils.VodClient;
+import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.result.JsonResult;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -29,77 +34,168 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
     @Resource
     private VodClient vodClient;
 
+    @Override
+    public JsonResult<Void> saveVideo(VideoDTO videoDTO) {
+
+        if (!save(convertVideoDTO(videoDTO))) {
+            throw ExFactory.throwSystem("系统异常，课程视频添加失败");
+        }
+        return JsonResult.OK;
+    }
+
     /**
      * 根据课程id查询所有小节
      *
      * @param courseId 课程id
-     * @return
+     * @return 课程信息
      */
     @Override
-    public List<EduVideo> getAllVideoByCourseId(String courseId) {
-        QueryWrapper<EduVideo> videoWrapper = new QueryWrapper<>();
-        videoWrapper.eq("course_id", courseId);
-        List<EduVideo> chapterList = baseMapper.selectList(videoWrapper);
+    public List<VideoVO> getAllVideoByCourseId(String courseId) {
+        List<EduVideo> list = lambdaQuery()
+                .eq(EduVideo::getCourseId, courseId)
+                .select(EduVideo::getId, EduVideo::getTitle, EduVideo::getVideoSourceId)
+                .list();
 
-        return chapterList;
+        return list.stream().map(this::convertVideoVO).collect(Collectors.toList());
+    }
+
+    private VideoVO convertVideoVO(EduVideo eduVideo) {
+        return VideoVO.builder()
+                .id(eduVideo.getId())
+                .title(eduVideo.getTitle())
+                .chapterId(eduVideo.getChapterId())
+                .videoSourceId(eduVideo.getVideoSourceId())
+                .build();
     }
 
     /**
-     * 根据课程id删除小节和视频
+     * 删除小节并调用service_vod服务的删除阿里云上的视频
      *
-     * @param courseId
-     * @return
+     * @param id 小节id
+     * @return 删除结果
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
+    public JsonResult<Void> removeVideoAndVodById(String id) {
+
+        // 根据小节id查询获取视频id 然后调用vod服务删除视频
+        EduVideo eduVideo = lambdaQuery()
+                .eq(EduVideo::getId, id)
+                .select(EduVideo::getId, EduVideo::getVideoSourceId)
+                .last("limit 1")
+                .one();
+
+        // 判断是否有视频
+        if (StringUtils.isNotBlank(eduVideo.getVideoSourceId())) {
+            try {
+                JsonResult<Void> jsonResult = vodClient.removeVod(eduVideo.getVideoSourceId());
+
+                if (!jsonResult.isSuccess()) {
+                    // 删除小节信息
+                    throw ExFactory.throwBusiness("调用Vod服务失败");
+                }
+            } catch (Exception e) {
+                throw ExFactory.throwSystem("调用Vod服务异常");
+            }
+
+        }
+
+        if (baseMapper.deleteById(id) == 0) {
+            throw ExFactory.throwSystem("服务器异常, 删除小节失败");
+        }
+
+        return JsonResult.OK;
+    }
+
+    /**
+     * 根据课程id 批量删除小节和视频
+     *
+     * @param courseId 课程ID
+     * @return 删除结果
      */
     @Override
     public boolean removeVideoByCourseId(String courseId) {
 
-//        批量删除视频
-        QueryWrapper<EduVideo> videoWrapper = new QueryWrapper<>();
-        videoWrapper.eq("course_id", courseId);
-//        查询指定字段 优化数据库查询
-        videoWrapper.select("video_source_id");
-//        根据章节id获取到所有小节信息
-        List<EduVideo> videoList = baseMapper.selectList(videoWrapper);
+        List<EduVideo> videoList = lambdaQuery()
+                .eq(EduVideo::getCourseId, courseId)
+                .select(EduVideo::getId, EduVideo::getVideoSourceId)
+                .list();
 
 //        遍历删除掉小节中所有的阿里云视频
-        ArrayList<String>  vodIdList= new ArrayList<>();
+        List<String> vodIdList = videoList.stream()
+                .map(EduVideo::getVideoSourceId)
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList());
 
-        for (EduVideo video : videoList) {
-            String videoSourceId = video.getVideoSourceId();
-            if (!StringUtils.isEmpty(videoSourceId)) {
-                vodIdList.add(videoSourceId);
+
+        if (vodIdList.size() > 0) {
+            // 根据多个视频id批量删除
+            try {
+                JsonResult<Void> jsonResult = vodClient.removeVodList(vodIdList);
+                if (!jsonResult.isSuccess()) {
+                    // 删除小节信息
+                    throw ExFactory.throwBusiness("调用Vod服务失败");
+                }
+            } catch (Exception e) {
+                throw ExFactory.throwSystem("调用Vod服务异常");
             }
         }
-        if (vodIdList.size()>0){
-            //        根据多个视频id批量删除
-            vodClient.removeVodList(vodIdList);
-        }
 
-        int delete = baseMapper.delete(videoWrapper);
-        return delete > 0;
+        List<String> ids = videoList.stream().map(EduVideo::getId).collect(Collectors.toList());
+
+        return removeByIds(ids);
     }
 
-    /**
-     * 根据小节id删除小节并通过nacos调用service_vod服务的删除阿里云上的视频
-     *
-     * @param id
-     * @return
-     */
-    @Override
-    public boolean removeVideoAndVodById(String id) {
 
-//      1  根据小节id查询获取视频id 然后调用vod服务删除视频
-        EduVideo video = baseMapper.selectById(id);
-        String videoSourceId = video.getVideoSourceId();
-//        判断是否有视频
-        if (!StringUtils.isEmpty(videoSourceId)) {
-            JsonResult myResultUtils = vodClient.removeVod(videoSourceId);
-            if (myResultUtils.getCode()!= 20001){
-                //      2  删除小节信息
-                int delete = baseMapper.deleteById(id);
-                return delete > 0;
-            }
+    @Override
+    public JsonResult<Void> updateVideo(VideoDTO videoDTO) {
+        if (baseMapper.updateById(convertVideoDTO(videoDTO)) == 0) {
+            throw ExFactory.throwSystem("服务器异常, 修改失败");
         }
-        return false;
+
+        return JsonResult.OK;
+    }
+
+    @Override
+    public EduVideoVO getVideo(String id) {
+        EduVideo eduVideo = lambdaQuery()
+                .eq(EduVideo::getId, id)
+                .last("limit 1")
+                .one();
+        return convertEduVideo(eduVideo);
+    }
+
+    private EduVideo convertVideoDTO(VideoDTO videoDTO) {
+        EduVideo eduVideo = new EduVideo();
+        eduVideo.setChapterId(videoDTO.getChapterId());
+        eduVideo.setDuration(videoDTO.getDuration());
+        eduVideo.setCourseId(videoDTO.getCourseId());
+        eduVideo.setVideoSourceId(videoDTO.getVideoSourceId());
+        eduVideo.setCourseId(videoDTO.getCourseId());
+        eduVideo.setIsFree(videoDTO.getIsFree());
+        eduVideo.setPlayCount(videoDTO.getPlayCount());
+        eduVideo.setSize(videoDTO.getSize());
+        eduVideo.setSort(videoDTO.getSort());
+        eduVideo.setStatus(videoDTO.getStatus());
+        eduVideo.setTitle(videoDTO.getTitle());
+        eduVideo.setVideoOriginalName(videoDTO.getVideoOriginalName());
+        return eduVideo;
+    }
+
+    private EduVideoVO convertEduVideo(EduVideo eduVideo) {
+        return EduVideoVO.builder()
+                .id(eduVideo.getId())
+                .chapterId(eduVideo.getChapterId())
+                .title(eduVideo.getTitle())
+                .duration(eduVideo.getDuration())
+                .videoSourceId(eduVideo.getVideoSourceId())
+                .isFree(eduVideo.getIsFree())
+                .playCount(eduVideo.getPlayCount())
+                .sort(eduVideo.getSort())
+                .videoOriginalName(eduVideo.getVideoOriginalName())
+                .courseId(eduVideo.getCourseId())
+                .status(eduVideo.getStatus())
+                .size(eduVideo.getSize())
+                .build();
     }
 }

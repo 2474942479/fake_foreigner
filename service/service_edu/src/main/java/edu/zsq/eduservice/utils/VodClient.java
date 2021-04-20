@@ -25,7 +25,7 @@ public interface VodClient {
      * @return JsonResult
      */
     @DeleteMapping("/eduVod/video/removeVod/{videoSourceId}")
-    JsonResult removeVod(@PathVariable("videoSourceId") String videoSourceId);
+    JsonResult<Void> removeVod(@PathVariable("videoSourceId") String videoSourceId);
 
     /**
      * 根据视频id删除多个视频
@@ -33,5 +33,5 @@ public interface VodClient {
      * @return JsonResult
      */
     @DeleteMapping("/eduVod/video/removeVodList")
-    JsonResult removeVodList(@RequestParam("vodIdList") List<String> vodIdList);
+    JsonResult<Void> removeVodList(@RequestParam("vodIdList") List<String> vodIdList);
 }

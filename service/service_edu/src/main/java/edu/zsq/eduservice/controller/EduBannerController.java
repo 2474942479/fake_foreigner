@@ -3,7 +3,11 @@ package edu.zsq.eduservice.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.zsq.eduservice.entity.EduBanner;
+import edu.zsq.eduservice.entity.dto.BannerDTO;
+import edu.zsq.eduservice.entity.dto.query.BannerQueryDTO;
+import edu.zsq.eduservice.entity.vo.BannerVO;
 import edu.zsq.eduservice.service.EduBannerService;
+import edu.zsq.utils.page.PageData;
 import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,41 +32,34 @@ public class EduBannerController {
 
 
     @ApiOperation(value = "获取Banner分页列表")
-    @GetMapping("pageBanner/{page}/{size}")
-    public JsonResult pageBanner(@PathVariable long page, @PathVariable long size) {
-
-        Page<EduBanner> pageBanner = new Page<>(page, size);
-        bannerService.page(pageBanner, null);
-        return JsonResult.success().data("items", pageBanner.getRecords()).data("total", pageBanner.getTotal());
+    @GetMapping("/pageBanner")
+    public JsonResult<PageData<BannerVO>> pageBanner(@RequestBody BannerQueryDTO bannerQueryDTO) {
+        return JsonResult.success(bannerService.pageBanner(bannerQueryDTO));
     }
 
-    @ApiOperation(value = "获取Banner")
-    @GetMapping("get/{id}")
-    public JsonResult get(@PathVariable String id) {
-        EduBanner banner = bannerService.getById(id);
-        return JsonResult.success().data("item", banner);
+    @ApiOperation(value = "根据id获取Banner信息")
+    @GetMapping("/getBanner/{id}")
+    public JsonResult<BannerVO> getBanner(@PathVariable String id) {
+        return JsonResult.success(bannerService.getBanner(id));
     }
 
 
     @ApiOperation(value = "新增Banner")
-    @PostMapping("addBanner")
-    public JsonResult addBanner(@RequestBody EduBanner EduBanner) {
-        bannerService.save(EduBanner);
-        return JsonResult.success();
+    @PostMapping("/saveBanner")
+    public JsonResult<Void> saveBanner(@RequestBody BannerDTO bannerDTO) {
+        return bannerService.saveBanner(bannerDTO);
     }
 
     @ApiOperation(value = "修改Banner")
-    @PutMapping("update")
-    public JsonResult updateById(@RequestBody EduBanner banner) {
-        bannerService.updateById(banner);
-        return JsonResult.success();
+    @PutMapping("/updateBanner")
+    public JsonResult<Void> updateBanner(@RequestBody BannerDTO bannerDTO) {
+        return bannerService.updateBanner(bannerDTO);
     }
 
     @ApiOperation(value = "删除Banner")
-    @DeleteMapping("remove/{id}")
-    public JsonResult remove(@PathVariable String id) {
-        bannerService.removeById(id);
-        return JsonResult.success();
+    @DeleteMapping("/removeBanner/{id}")
+    public JsonResult<Void> remove(@PathVariable String id) {
+        return bannerService.removeBanner(id);
     }
 
 }

@@ -3,6 +3,7 @@ package edu.zsq.eduservice.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.eduservice.entity.EduSubject;
 import edu.zsq.eduservice.entity.vo.subject.OneSubject;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * </p>
  *
  * @author zsq
- * @since 2020-08-15
+ * @since 2021-04-19
  */
 public interface EduSubjectService extends IService<EduSubject> {
 
@@ -21,9 +22,10 @@ public interface EduSubjectService extends IService<EduSubject> {
      *
      * 添加课程分类
      * @param file 上传的文件
-     * @param eduSubjectService
+     * @param eduSubjectService 服务
+     * @return 添加结果
      */
-    void saveSubject(MultipartFile file, EduSubjectService eduSubjectService);
+    JsonResult<Void> saveSubject(MultipartFile file, EduSubjectService eduSubjectService);
 
     /**
      * 获取所有分类信息

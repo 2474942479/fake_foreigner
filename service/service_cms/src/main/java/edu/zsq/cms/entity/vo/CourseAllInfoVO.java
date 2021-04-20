@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class CourseAllInfoVO {
 
-    private CourseInfoVO courseInfoVO;
+    private CourseDTO CourseDTO;
     private List<ChapterVO> chapterList;
     private Boolean isBuy;
 }

@@ -24,7 +24,7 @@ public interface VodService {
      * @param videoSourceId
      * @return
      */
-    boolean removeVod(String videoSourceId);
+    JsonResult<Void> removeVod(String videoSourceId);
 
     /**
      * 通过多个id批量删除视频

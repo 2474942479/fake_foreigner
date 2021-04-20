@@ -1,16 +1,14 @@
 package edu.zsq.eduservice.controller;
 
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import edu.zsq.eduservice.entity.EduCourse;
-import edu.zsq.eduservice.entity.vo.CourseInfoVO;
-import edu.zsq.eduservice.entity.vo.CourseQuery;
-import edu.zsq.eduservice.entity.vo.FinalReleaseVo;
+import edu.zsq.eduservice.entity.dto.query.CourseQueryDTO;
+import edu.zsq.eduservice.entity.vo.CourseDTO;
+import edu.zsq.eduservice.entity.vo.CourseVO;
+import edu.zsq.eduservice.entity.vo.FinalReleaseVO;
 import edu.zsq.eduservice.service.EduCourseService;
+import edu.zsq.utils.page.PageData;
 import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -33,121 +31,89 @@ public class EduCourseController {
 
     /**
      * 查询所有课程
-     * @return
+     *
+     * @return 课程列表
      */
     @GetMapping("/getAllCourse")
-    public JsonResult getAllCourse(){
-        List<EduCourse> list = eduCourseService.list();
-        return JsonResult.success().data("list",list);
+    public JsonResult<List<CourseVO>> getAllCourse() {
+        return JsonResult.success(eduCourseService.getAllCourse());
     }
 
     /**
      * 条件分页查询
      */
-    @PostMapping("/getCourseListPage/{current}/{size}")
+    @PostMapping("/getCourseListPage")
     @ApiOperation(value = "课程条件分页查询", notes = "根据获取的current size 以及courseQuery查询并分页")
-
-    public JsonResult getCourseListPage(
-            @ApiParam(name = "current", value = "当前页数", required = true)
-            @PathVariable Long current,
-            @ApiParam(name = "size", value = "每页记录数", required = true)
-            @PathVariable Long size,
-            @ApiParam(name = "courseQuery", value = "查询对象", required = false)
-            @RequestBody CourseQuery courseQuery
-    ) {
-        Page<EduCourse> page = new Page<>(current, size);
-        eduCourseService.pageQuery(page, courseQuery);
-        //       分页后 单页数据List集合
-        List<EduCourse> list = page.getRecords();
-//        分页后查询到的全部记录数
-        long total = page.getTotal();
-        return JsonResult.success().data("total", total).data("list", list);
+    public JsonResult<PageData<CourseVO>> getCourseListPage(@RequestBody CourseQueryDTO courseQueryDTO) {
+        return JsonResult.success(eduCourseService.getCourseListPage(courseQueryDTO));
     }
 
     /**
      * 添加课程基本信息
-     * @param CourseInfoVO
-     * @return
+     *
+     * @param courseDTO 课程基本信息
+     * @return 添加结果
      */
     @PostMapping("/addCourseInfo")
-    public JsonResult addCourseInfo(@RequestBody CourseInfoVO CourseInfoVO){
-
-        String courseId = eduCourseService.saveCourseInfo(CourseInfoVO);
-        return JsonResult.success().data("id",courseId);
+    public JsonResult<Void> addCourseInfo(@RequestBody CourseDTO courseDTO) {
+        return eduCourseService.saveCourse(courseDTO);
     }
 
 
     /**
-     * 回显课程基本信息
+     * 根据课程id获取单个课程基本信息
+     *
      * @param id 课程id
-     * @return  课程基本信息
+     * @return 课程基本信息
      */
-    @GetMapping("/getCourseInfoVOById/{id}")
-    public JsonResult getCourseInfoById(@PathVariable String id){
-
-        CourseInfoVO  courseInfo= eduCourseService.getCourseInfoVOById(id);
-        return JsonResult.success().data("courseInfo",courseInfo);
+    @GetMapping("/getCourseDTOById/{id}")
+    public JsonResult<CourseVO> getCourseInfoById(@PathVariable String id) {
+        return JsonResult.success(eduCourseService.getCourseDTO(id));
     }
 
     /**
      * 修改课程基本信息
-     * @param CourseInfoVO 课程基本信息VO类
-     * @return
+     *
+     * @param courseDTO 课程基本信息VO类
+     * @return 修改结果
      */
-    @PutMapping("/updateCourseInfoVO")
-    public JsonResult updateCourseInfoVO(@RequestBody CourseInfoVO CourseInfoVO){
-
-        eduCourseService.updateCourseInfoVO(CourseInfoVO);
-        return JsonResult.success().message("修改成功");
+    @PutMapping("/updateCourseDTO")
+    public JsonResult<Void> updateCourseDTO(@RequestBody CourseDTO courseDTO) {
+        return eduCourseService.updateCourseDTO(courseDTO);
     }
 
     /**
      * 根据课程id查询返回最终发布信息
-     * @param id
-     * @return
+     *
+     * @param id 课程id
+     * @return 最终发布信息
      */
     @GetMapping("/getFinalReleaseVo/{id}")
-    public JsonResult getFinalReleaseVo(@PathVariable String id){
-        FinalReleaseVo finalReleaseVo = eduCourseService.getFinalReleaseVo(id);
-
-        return JsonResult.success().data("finalReleaseVo",finalReleaseVo);
+    public JsonResult<FinalReleaseVO> getFinalReleaseVo(@PathVariable String id) {
+        return JsonResult.success(eduCourseService.getFinalReleaseVo(id));
     }
 
     /**
      * 修改课程发布状态
-     * @param eduCourse
-     * @return
+     *
+     * @param courseDTO 发布状态
+     * @return 修改结果
      */
     @PostMapping("/updateReleaseStatus")
-    public JsonResult updateReleaseStatus(@RequestBody  EduCourse eduCourse){
-        boolean update = eduCourseService.updateById(eduCourse);
-        if (update){
-            return JsonResult.success().message("保存成功");
-        }else {
-            return JsonResult.failure().message("保存失败");
-        }
+    public JsonResult<Void> updateReleaseStatus(@RequestBody CourseDTO courseDTO) {
+        return eduCourseService.updateReleaseStatus(courseDTO);
     }
 
     /**
      * 根据课程id删除课程相关的所有信息(课程章节 小节 描述 课程基本信息)
      *
      * @param courseId 课程id
-     * @return  返回是否全部删除
+     * @return 返回是否全部删除
      */
     @DeleteMapping("/deleteCourse/{courseId}")
-    public JsonResult deleteCourse(@PathVariable String courseId){
-
-        Boolean remove = eduCourseService.removeCourseAllById(courseId);
-
-        if (remove){
-            return JsonResult.success().message("已成功删除课程全部信息");
-        }else {
-            return JsonResult.failure().message("删除课程失败");
-        }
-
-
+    public JsonResult<Void> deleteCourse(@PathVariable String courseId) {
+        return eduCourseService.removeCourseAllById(courseId);
     }
-
 
 }
 

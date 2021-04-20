@@ -16,6 +16,8 @@ import edu.zsq.vod.service.VodService;
 import edu.zsq.vod.utils.InitVodClient;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -70,25 +72,22 @@ public class VodServiceImpl implements VodService {
      * @return
      */
     @Override
-    public boolean removeVod(String videoSourceId) {
-
+    @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
+    public JsonResult<Void> removeVod(String videoSourceId) {
         try {
-            //        初始化对象
-
+            // 初始化对象
             DefaultAcsClient client = InitVodClient.initVodClient(ReadPropertiesUtil.ACCESS_KEY_ID, ReadPropertiesUtil.ACCESS_KEY_SECRET);
-//            创建删除视频request对象
+            // 创建删除视频request对象
             DeleteVideoRequest request = new DeleteVideoRequest();
             request.setVideoIds(videoSourceId);
-//            调用初始化对象的方法实现删除
+            // 调用初始化对象的方法实现删除
             client.getAcsResponse(request);
 
-            return true;
+            return JsonResult.OK;
         } catch (ClientException e) {
             e.printStackTrace();
-            throw new MyException(20001, "删除视频失败");
+            throw ExFactory.throwBusiness("删除阿里云视频失败");
         }
-
-
     }
 
 

@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author 张
  */
 @Data
-public class FinalReleaseVo implements Serializable {
+public class FinalReleaseVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String courseId;

@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.cms.entity.EduCourse;
 import edu.zsq.cms.entity.dto.CourseQueryDTO;
 import edu.zsq.cms.entity.vo.CourseAllInfoVO;
-import edu.zsq.cms.entity.vo.CourseInfoVO;
+import edu.zsq.cms.entity.vo.CourseDTO;
 import edu.zsq.cms.entity.vo.CourseListVO;
 import edu.zsq.utils.page.PageData;
 

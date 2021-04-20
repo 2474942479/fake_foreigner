@@ -2,6 +2,7 @@ package edu.zsq.vod.controller;
 
 import edu.zsq.utils.result.JsonResult;
 import edu.zsq.vod.service.VodService;
+import edu.zsq.vod.service.impl.VodServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,14 +36,8 @@ public class VodController {
      * @param videoSourceId
      */
     @DeleteMapping("/removeVod/{videoSourceId}")
-    public JsonResult removeVod(@PathVariable String videoSourceId){
-        boolean remove = vodService.removeVod(videoSourceId);
-        if (remove){
-            return JsonResult.success().message("删除视频成功");
-
-        }else{
-            return JsonResult.success().message("删除视频失败");
-        }
+    public JsonResult<Void> removeVod(@PathVariable String videoSourceId){
+        return vodService.removeVod(videoSourceId);
     }
 
     /**

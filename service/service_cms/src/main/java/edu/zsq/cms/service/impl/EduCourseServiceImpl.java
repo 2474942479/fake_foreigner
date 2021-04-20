@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.cms.entity.EduCourse;
 import edu.zsq.cms.entity.dto.CourseQueryDTO;
 import edu.zsq.cms.entity.vo.CourseAllInfoVO;
-import edu.zsq.cms.entity.vo.CourseInfoVO;
+import edu.zsq.cms.entity.vo.CourseDTO;
 import edu.zsq.cms.entity.vo.CourseListVO;
 import edu.zsq.cms.mapper.EduCourseMapper;
 import edu.zsq.cms.service.EduCourseService;
@@ -66,11 +66,11 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         String priceSort = courseQueryDTO.getPriceSort();
 
         lambdaQuery()
-                .eq(StringUtils.isEmpty(subjectParentId), EduCourse::getSubjectParentId, subjectParentId)
-                .eq(StringUtils.isEmpty(subjectId), EduCourse::getSubjectId, subjectId)
-                .eq(StringUtils.isEmpty(buyCountSort), EduCourse::getBuyCount, buyCountSort)
-                .eq(StringUtils.isEmpty(gmtCreateSort), EduCourse::getGmtCreate, gmtCreateSort)
-                .eq(StringUtils.isEmpty(priceSort), EduCourse::getPrice, priceSort)
+                .eq(StringUtils.isNotBlank(subjectParentId), EduCourse::getSubjectParentId, subjectParentId)
+                .eq(StringUtils.isNotBlank(subjectId), EduCourse::getSubjectId, subjectId)
+                .eq(StringUtils.isNotBlank(buyCountSort), EduCourse::getBuyCount, buyCountSort)
+                .eq(StringUtils.isNotBlank(gmtCreateSort), EduCourse::getGmtCreate, gmtCreateSort)
+                .eq(StringUtils.isNotBlank(priceSort), EduCourse::getPrice, priceSort)
                 .eq(EduCourse::getStatus, "Normal")
                 .page(coursePage);
 
@@ -105,7 +105,7 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
     public CourseAllInfoVO getCourseAllInfo(String userId, String courseId) {
 
         // 根据课程id获取课程基本信息
-        CourseInfoVO courseInfo = baseMapper.getCourseBaseInfo(courseId);
+        CourseDTO courseInfo = baseMapper.getCourseBaseInfo(courseId);
 
         // 根据课程id获取大纲信息
         List<ChapterVO> chapterList = chapterServiceWrapper.getAllChapterVO(courseId).getData();
@@ -114,7 +114,7 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         Boolean isBuy = orderServiceWrapper.isBuyCourse(userId, courseId).getData();
 
         return CourseAllInfoVO.builder()
-                .courseInfoVO(courseInfo)
+                .CourseDTO(courseInfo)
                 .chapterList(chapterList)
                 .isBuy(isBuy)
                 .build();

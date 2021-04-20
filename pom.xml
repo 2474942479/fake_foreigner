@@ -36,7 +36,6 @@
 
         <online-edu.version>0.0.1-SNAPSHOT</online-edu.version>
 
-        <knife4j-spring-boot-starter.version>1.9.6</knife4j-spring-boot-starter.version>
         <mybatis-plus.version>3.2.0</mybatis-plus.version>
         <velocity.version>2.0</velocity.version>
         <swagger.version>2.7.0</swagger.version>
@@ -53,6 +52,7 @@
         <jetcache.version>2.5.14</jetcache.version>
         <commons.lang3.version>3.8.1</commons.lang3.version>
         <hutool-all.version>5.6.3</hutool-all.version>
+        <knife4j-spring-boot-starter.version>2.0.7</knife4j-spring-boot-starter.version>
 
         <aliyun-sdk-oss.version>3.10.2</aliyun-sdk-oss.version>
         <aliyun-java-sdk-core.version>4.5.1</aliyun-java-sdk-core.version>
@@ -67,6 +67,11 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+            </dependency>
 
             <!--Spring Cloud-->
             <dependency>
@@ -88,13 +93,6 @@
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool-all.version}</version>
-            </dependency>
-
-            <!-- swagger加强版 -->
-            <dependency>
-                <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-spring-boot-starter</artifactId>
-                <version>${knife4j-spring-boot-starter.version}</version>
             </dependency>
 
             <!-- jetcache多级缓存 -->
@@ -131,16 +129,21 @@
                 <version>${velocity.version}</version>
             </dependency>
             <!--swagger-->
-            <dependency>
+            <!--<dependency>
                 <groupId>io.springfox</groupId>
                 <artifactId>springfox-swagger2</artifactId>
                 <version>${swagger.version}</version>
-            </dependency>
+            </dependency>-->
             <!--swagger ui-->
-            <dependency>
+            <!--<dependency>
                 <groupId>io.springfox</groupId>
                 <artifactId>springfox-swagger-ui</artifactId>
                 <version>${swagger.version}</version>
+            </dependency>-->
+            <!-- swagger加强版 -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
             </dependency>
             <!--aliyun OSS-->
             <dependency>
@@ -211,11 +214,6 @@
 <!--                <artifactId>aliyun-java-vod-upload</artifactId>-->
 <!--                <version>${aliyun-java-vod-upload.version}</version>-->
 <!--            </dependency>-->
-            <dependency>
-                <groupId>com.aliyun</groupId>
-                <artifactId>aliyun-sdk-vod-upload</artifactId>
-                <version>${aliyun-sdk-vod-upload.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>

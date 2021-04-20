@@ -67,8 +67,7 @@ public class EduChapterController {
      */
     @DeleteMapping("{id}")
     public JsonResult<Void> deleteChapter(@PathVariable String id){
-        chapterService.deleteChapter(id);
-        return JsonResult.OK;
+        return chapterService.deleteChapter(id);
     }
 
 

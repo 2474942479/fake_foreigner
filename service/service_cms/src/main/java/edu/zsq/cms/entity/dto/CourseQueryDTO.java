@@ -4,12 +4,14 @@ import edu.zsq.cms.entity.EduCourse;
 import edu.zsq.utils.page.PageData;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
 /**
  * @author 张
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class CourseQueryDTO extends PageData<EduCourse> {
 

@@ -1,23 +1,31 @@
 package edu.zsq.eduservice.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.eduservice.entity.EduCourse;
 import edu.zsq.eduservice.entity.EduCourseDescription;
-import edu.zsq.eduservice.entity.vo.CourseInfoVO;
-import edu.zsq.eduservice.entity.vo.CourseQuery;
-import edu.zsq.eduservice.entity.vo.FinalReleaseVo;
+import edu.zsq.eduservice.entity.dto.query.CourseQueryDTO;
+import edu.zsq.eduservice.entity.vo.CourseDTO;
+import edu.zsq.eduservice.entity.vo.CourseVO;
+import edu.zsq.eduservice.entity.vo.FinalReleaseVO;
 import edu.zsq.eduservice.mapper.EduCourseMapper;
 import edu.zsq.eduservice.service.EduChapterService;
 import edu.zsq.eduservice.service.EduCourseDescriptionService;
 import edu.zsq.eduservice.service.EduCourseService;
 import edu.zsq.eduservice.service.EduVideoService;
-import edu.zsq.utils.exception.servicexception.MyException;
+import edu.zsq.utils.exception.core.ExFactory;
+import edu.zsq.utils.page.PageData;
+import edu.zsq.utils.result.JsonResult;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -42,155 +50,187 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
     /**
      * 添加课程基本信息
      *
-     * @param CourseInfoVO 课程基本信息
-     * @return
+     * @param courseDTO 课程基本信息
+     * @return 添加结果
      */
     @Override
-    public String saveCourseInfo(CourseInfoVO CourseInfoVO) {
+    @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
+    public JsonResult<Void> saveCourse(CourseDTO courseDTO) {
 
 //      1  添加课程基本信息到课程表
-        EduCourse eduCourse = new EduCourse();
-        BeanUtils.copyProperties(CourseInfoVO, eduCourse);
-        int insert = baseMapper.insert(eduCourse);
-
-        if (insert == 0) {
-            throw new MyException(20001, "添加课程信息失败");
+        if (!save(convertCourseDTO(courseDTO))) {
+            throw ExFactory.throwSystem("系统错误，添加课程信息失败");
         }
 
-        String courseId = eduCourse.getId();
-
 //        2添加课程简介到课程简介表
-
         EduCourseDescription eduCourseDescription = new EduCourseDescription();
-        BeanUtils.copyProperties(CourseInfoVO, eduCourseDescription);
-        //        (手动设置外键——程序控制数据一致性)获取添加之后课程id
-        eduCourseDescription.setId(courseId);
-        courseDescriptionService.save(eduCourseDescription);
+        eduCourseDescription.setDescription(courseDTO.getDescription());
 
+        // (手动设置外键——程序控制数据一致性) 获取添加之后课程id
+        eduCourseDescription.setId(courseDTO.getId());
+        if (courseDescriptionService.save(eduCourseDescription)) {
+            throw ExFactory.throwSystem("系统错误，课程详情信息添加失败");
+        }
 
-        return courseId;
+        return JsonResult.OK;
     }
 
     /**
-     * 回显课程基本信息
+     * 根据课程id获取单个课程基本信息
      *
      * @param id 课程id
-     * @return 课程基本信息VO类
+     * @return 课程基本信息
      */
     @Override
-    public CourseInfoVO getCourseInfoVOById(String id) {
-
-        EduCourse course = baseMapper.selectById(id);
-        CourseInfoVO CourseInfoVO = new CourseInfoVO();
-        BeanUtils.copyProperties(course, CourseInfoVO);
-
-//        通过课程id获取课程简介
-        String courseDescription = courseDescriptionService.getById(id).getDescription();
-        CourseInfoVO.setDescription(courseDescription);
-
-        return CourseInfoVO;
+    public CourseVO getCourseDTO(String id) {
+        return baseMapper.getCourseById(id);
     }
 
     /**
      * 修改课程基本信息
      *
-     * @param CourseInfoVO 课程基本信息VO类
-     * @return
+     * @param courseDTO 课程基本信息VO类
+     * @return 修改结果
      */
     @Override
-    public void updateCourseInfoVO(CourseInfoVO CourseInfoVO) {
+    @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
+    public JsonResult<Void> updateCourseDTO(CourseDTO courseDTO) {
 
-        EduCourse eduCourse = new EduCourse();
-        BeanUtils.copyProperties(CourseInfoVO,eduCourse);
-        int update = baseMapper.updateById(eduCourse);
-        if (update == 0){
-            throw new MyException(20001,"修改课程基本信息失败");
+        if (!lambdaUpdate().update(convertCourseDTO(courseDTO))) {
+            throw ExFactory.throwSystem("服务器异常，修改课程基本信息失败");
         }
 
         EduCourseDescription eduCourseDescription = new EduCourseDescription();
-        eduCourseDescription.setId(CourseInfoVO.getId());
-        eduCourseDescription.setDescription(CourseInfoVO.getDescription());
-        boolean b = courseDescriptionService.updateById(eduCourseDescription);
-        if (!b){
-            throw new MyException(20001,"修改课程简介失败");
+        eduCourseDescription.setId(courseDTO.getId());
+        eduCourseDescription.setDescription(courseDTO.getDescription());
+        if (!courseDescriptionService.updateById(eduCourseDescription)) {
+            throw ExFactory.throwSystem("服务器异常，修改课程简介失败");
         }
+
+        return JsonResult.OK;
     }
 
     /**
      * 根据课程id查询返回最终发布信息
-     * @param id
-     * @return
+     *
+     * @param id 课程id
+     * @return 最终发布信息
      */
     @Override
-    public FinalReleaseVo getFinalReleaseVo(String id) {
-
-        FinalReleaseVo finalReleaseVo = baseMapper.getFinalReleaseVo(id);
-        return finalReleaseVo;
+    public FinalReleaseVO getFinalReleaseVo(String id) {
+        return baseMapper.getFinalReleaseVO(id);
     }
 
     /**
-     * 条件分页查询
-     * @param page 分页条件
-     * @param courseQuery   课程条件
+     * 分页查询课程信息
+     *
+     * @param courseQueryDTO 查询条件
+     * @return 课程信息
      */
     @Override
-    public void pageQuery(Page<EduCourse> page, CourseQuery courseQuery) {
-        QueryWrapper<EduCourse> wrapper = new QueryWrapper<>();
-        //        坑 id为表中字段名
+    public PageData<CourseVO> getCourseListPage(CourseQueryDTO courseQueryDTO) {
 
-        wrapper.orderByDesc("gmt_create");
-        if (courseQuery != null) {
-            String title = courseQuery.getTitle();
-            Integer status = courseQuery.getStatus();
-            String begin = courseQuery.getBegin();
-            String end = courseQuery.getEnd();
+        Page<EduCourse> coursePage = new Page<>(courseQueryDTO.getCurrent(), courseQueryDTO.getSize());
 
-            if (!StringUtils.isEmpty(title)) {
-                wrapper.like("title", title);
-            }
-            if (status != null) {
-                wrapper.eq("status", status);
-            }
-            if (!StringUtils.isEmpty(begin)) {
-                wrapper.ge("gmt_create", begin);
-            }
-            if (!StringUtils.isEmpty(end)) {
-                wrapper.le("gmt_modified", end);
-            }
+        String title = courseQueryDTO.getTitle();
+        Integer status = courseQueryDTO.getStatus();
+        LocalDateTime buyCountSort = courseQueryDTO.getBegin();
+        LocalDateTime gmtCreateSort = courseQueryDTO.getEnd();
+
+        lambdaQuery()
+                .eq(StringUtils.isNotBlank(title), EduCourse::getSubjectParentId, title)
+                .eq(Objects.nonNull(status), EduCourse::getSubjectId, status)
+                .ge(Objects.nonNull(buyCountSort), EduCourse::getBuyCount, buyCountSort)
+                .le(Objects.nonNull(gmtCreateSort), EduCourse::getGmtCreate, gmtCreateSort)
+                .orderByDesc(EduCourse::getGmtCreate)
+                .page(coursePage);
+
+        if (coursePage.getRecords().isEmpty()) {
+            return PageData.empty();
         }
 
-//继承的ServiceImpl 自动注入了baseMapper
-        baseMapper.selectPage(page, wrapper);
+        List<CourseVO> courseList = coursePage.getRecords().stream().map(this::convertEduCourse).collect(Collectors.toList());
+        return PageData.of(courseList, coursePage.getCurrent(), coursePage.getSize(), coursePage.getTotal());
+
     }
 
     @Override
-    public Boolean removeCourseAllById(String courseId) {
+    public JsonResult<Void> updateReleaseStatus(CourseDTO courseDTO) {
+
+        boolean updateResult = lambdaUpdate()
+                .eq(EduCourse::getId, courseDTO.getId())
+                .set(StringUtils.isNotBlank(courseDTO.getStatus()), EduCourse::getStatus, courseDTO.getStatus())
+                .update();
+
+        if (!updateResult) {
+            throw ExFactory.throwSystem("系统异常，课程发布状态修改失败");
+        }
+        return JsonResult.OK;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
+    public JsonResult<Void> removeCourseAllById(String courseId) {
+
 //      1  根据课程id删除小节
-        boolean removeVideo = videoService.removeVideoByCourseId(courseId);
+        if (!videoService.removeVideoByCourseId(courseId)) {
+            throw ExFactory.throwSystem("系统异常, 删除课程小节失败");
+        }
 
 //      2  根据课程id删除章节
-        boolean removeChapter = chapterService.removeChapterByCourseId(courseId);
+        if (!chapterService.removeChapterByCourseId(courseId)) {
+            throw ExFactory.throwSystem("系统异常, 删除课程章节失败");
+        }
 
 //      3  根据课程id删除课程描述
-        boolean removeDesc = courseDescriptionService.removeById(courseId);
+        if (!courseDescriptionService.removeById(courseId)) {
+            throw ExFactory.throwSystem("系统异常, 删除课程简介失败");
+        }
 
 //      4  根据课程id删除课程基本信息
-        int delete = baseMapper.deleteById(courseId);
-
-        if (delete==0){
-            throw new MyException(20001,"删除课程基本信息失败");
+        if (baseMapper.deleteById(courseId) == 0) {
+            throw ExFactory.throwSystem("系统异常, 删除课程基本信息失败");
         }
 
-        if (!removeDesc){
-            throw new MyException(20001,"删除课程简介失败");
-        }
-        if (!removeChapter){
-            throw new MyException(20001,"删除课程章节失败");
-        }
-        if (!removeVideo){
-            throw new MyException(20001,"删除课程小节失败");
-        }
-            return true;
-
+        return JsonResult.OK;
     }
+
+    @Override
+    public List<CourseVO> getAllCourse() {
+        return lambdaQuery().list().stream()
+                .map(this::convertEduCourse)
+                .collect(Collectors.toList());
+    }
+
+    private CourseVO convertEduCourse(EduCourse eduCourse) {
+        return CourseVO.builder()
+                .id(eduCourse.getId())
+                .cover(eduCourse.getCover())
+                .buyCount(eduCourse.getBuyCount())
+                .lessonNum(eduCourse.getLessonNum())
+                .price(eduCourse.getPrice())
+                .reductionMoney(eduCourse.getReductionMoney())
+                .subjectId(eduCourse.getSubjectId())
+                .subjectParentId(eduCourse.getSubjectParentId())
+                .teacherId(eduCourse.getTeacherId())
+                .viewCount(eduCourse.getViewCount())
+                .title(eduCourse.getTitle())
+                .description(courseDescriptionService.getById(eduCourse.getId()).getDescription())
+                .build();
+    }
+
+    private EduCourse convertCourseDTO(CourseDTO courseDTO) {
+
+        EduCourse eduCourse = new EduCourse();
+        eduCourse.setCover(courseDTO.getCover());
+        eduCourse.setLessonNum(courseDTO.getLessonNum());
+        eduCourse.setPrice(courseDTO.getPrice());
+        eduCourse.setReductionMoney(courseDTO.getReductionMoney());
+        eduCourse.setSubjectId(courseDTO.getSubjectId());
+        eduCourse.setSubjectParentId(courseDTO.getSubjectParentId());
+        eduCourse.setTeacherId(courseDTO.getTeacherId());
+        eduCourse.setTitle(courseDTO.getTitle());
+        return eduCourse;
+    }
+
 }

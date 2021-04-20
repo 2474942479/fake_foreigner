@@ -1,14 +1,22 @@
 package edu.zsq.eduservice.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.eduservice.entity.EduTeacher;
-import edu.zsq.eduservice.entity.vo.TeacherQuery;
+import edu.zsq.eduservice.entity.dto.TeacherDTO;
+import edu.zsq.eduservice.entity.dto.query.TeacherQueryDTO;
+import edu.zsq.eduservice.entity.vo.TeacherInfoVO;
 import edu.zsq.eduservice.mapper.EduTeacherMapper;
 import edu.zsq.eduservice.service.EduTeacherService;
+import edu.zsq.utils.exception.core.ExFactory;
+import edu.zsq.utils.page.PageData;
+import edu.zsq.utils.result.JsonResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -22,33 +30,80 @@ import org.springframework.stereotype.Service;
 public class EduTeacherServiceImpl extends ServiceImpl<EduTeacherMapper, EduTeacher> implements EduTeacherService {
 
     @Override
-    public void pageQuery(Page<EduTeacher> pageParam, TeacherQuery teacherQuery) {
+    public PageData<TeacherInfoVO> getTeacherListPage(TeacherQueryDTO teacherQueryDTO) {
 
-        QueryWrapper<EduTeacher> wrapper = new QueryWrapper<>();
-        //        坑 id为表中字段名
+        Page<EduTeacher> teacherPage = new Page<>(teacherQueryDTO.getCurrent(), teacherQueryDTO.getSize());
 
-        wrapper.orderByDesc("gmt_create");
-        if (teacherQuery != null) {
-            String name = teacherQuery.getName();
-            Integer level = teacherQuery.getLevel();
-            String begin = teacherQuery.getBegin();
-            String end = teacherQuery.getEnd();
+        lambdaQuery()
+                .eq(StringUtils.isNoneBlank(teacherQueryDTO.getName()), EduTeacher::getName, teacherQueryDTO.getName())
+                .eq(Objects.nonNull(teacherQueryDTO.getLevel()), EduTeacher::getLevel, teacherQueryDTO.getLevel())
+                .ge(Objects.nonNull(teacherQueryDTO.getBegin()), EduTeacher::getGmtCreate, teacherQueryDTO.getBegin())
+                .le(Objects.nonNull(teacherQueryDTO.getEnd()), EduTeacher::getGmtModified, teacherQueryDTO.getEnd())
+                .page(teacherPage);
 
-            if (!StringUtils.isEmpty(name)) {
-                wrapper.like("name", name);
-            }
-            if (level != null) {
-                wrapper.eq("level", level);
-            }
-            if (!StringUtils.isEmpty(begin)) {
-                wrapper.ge("gmt_create", begin);
-            }
-            if (!StringUtils.isEmpty(end)) {
-                wrapper.le("gmt_modified", end);
-            }
+        if (teacherPage.getRecords().isEmpty()) {
+            return PageData.empty();
         }
 
-//继承的ServiceImpl 自动注入了baseMapper
-        baseMapper.selectPage(pageParam, wrapper);
+        List<TeacherInfoVO> list = teacherPage.getRecords().stream()
+                .map(this::convertEduTeacher)
+                .collect(Collectors.toList());
+
+        return PageData.of(list, teacherPage.getCurrent(), teacherQueryDTO.getSize(), teacherQueryDTO.getTotal());
+    }
+
+    @Override
+    public JsonResult<Void> saveTeacher(TeacherDTO teacherDTO) {
+        if (!save(convertTeacherDTO(teacherDTO))) {
+            throw ExFactory.throwSystem("服务器错误, 教师添加失败！");
+        }
+        return JsonResult.OK;
+    }
+
+    @Override
+    public JsonResult<Void> delTeacher(String id) {
+        if (this.removeById(id)) {
+            throw ExFactory.throwSystem("服务器错误, 教师删除失败！");
+        }
+        return JsonResult.OK;
+    }
+
+    @Override
+    public TeacherInfoVO getTeacherInfo(String id) {
+        return convertEduTeacher(getById(id));
+    }
+
+    @Override
+    public JsonResult<Void> updateTeacher(TeacherDTO teacherDTO) {
+        boolean updateResult = lambdaUpdate()
+                .eq(EduTeacher::getId, teacherDTO.getId())
+                .update();
+        if (!updateResult) {
+            throw ExFactory.throwSystem("服务器错误, 教师修改失败！");
+        }
+        return JsonResult.OK;
+    }
+
+    private EduTeacher convertTeacherDTO(TeacherDTO teacherDTO) {
+        EduTeacher eduTeacher = new EduTeacher();
+        eduTeacher.setAvatar(teacherDTO.getAvatar());
+        eduTeacher.setCareer(teacherDTO.getCareer());
+        eduTeacher.setIntro(teacherDTO.getIntro());
+        eduTeacher.setLevel(teacherDTO.getLevel());
+        eduTeacher.setName(teacherDTO.getName());
+        eduTeacher.setSort(teacherDTO.getSort());
+        return eduTeacher;
+    }
+
+    private TeacherInfoVO convertEduTeacher(EduTeacher eduTeacher) {
+        return TeacherInfoVO.builder()
+                .id(eduTeacher.getId())
+                .avatar(eduTeacher.getAvatar())
+                .career(eduTeacher.getCareer())
+                .intro(eduTeacher.getIntro())
+                .sort(eduTeacher.getSort())
+                .level(eduTeacher.getLevel())
+                .name(eduTeacher.getName())
+                .build();
     }
 }

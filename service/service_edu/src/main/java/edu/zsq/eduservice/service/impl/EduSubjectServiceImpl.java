@@ -10,12 +10,12 @@ import edu.zsq.eduservice.entity.vo.subject.TwoSubject;
 import edu.zsq.eduservice.listener.SubjectExcelListener;
 import edu.zsq.eduservice.mapper.EduSubjectMapper;
 import edu.zsq.eduservice.service.EduSubjectService;
-import edu.zsq.utils.exception.servicexception.MyException;
+import edu.zsq.utils.exception.core.ExFactory;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ import java.util.List;
  * </p>
  *
  * @author zsq
- * @since 2020-08-15
+ * @since 2021-04-19
  */
 @Service
 public class EduSubjectServiceImpl extends ServiceImpl<EduSubjectMapper, EduSubject> implements EduSubjectService {
@@ -35,24 +35,22 @@ public class EduSubjectServiceImpl extends ServiceImpl<EduSubjectMapper, EduSubj
      * 添加课程  通过读取上传的excel文件写入到数据库中
      */
     @Override
-    public void saveSubject(MultipartFile file, EduSubjectService eduSubjectService) {
+    public JsonResult<Void> saveSubject(MultipartFile file, EduSubjectService eduSubjectService) {
 
 //        获取文件输入流  参数形式会自动关闭流
         try (InputStream inputStream = file.getInputStream()) {
-
             EasyExcel.read(inputStream, SubjectData.class, new SubjectExcelListener(eduSubjectService)).sheet().doRead();
-
-        } catch (IOException e) {
-            throw new MyException(20001, "文件处理失败");
-        } catch (NullPointerException e) {
-            throw new MyException(20001, "上传文件失败,请重新上传");
+        } catch (Exception e) {
+            throw ExFactory.throwSystem("excel文件解析失败");
         }
 
+        return JsonResult.OK;
     }
 
     /**
-     * 获取所有分类信息方法二
-     * @return
+     * 获取所有分类信息 方法二
+     *
+     * @return 分类信息
      */
     @Override
     public List<OneSubject> getAllSubject() {
@@ -71,23 +69,22 @@ public class EduSubjectServiceImpl extends ServiceImpl<EduSubjectMapper, EduSubj
 //        创建list集合用于最终封装的数据
         ArrayList<OneSubject> finalOneSubjectList = new ArrayList<>();
 
-        for (EduSubject one:oneSubjectList) {
+        for (EduSubject one : oneSubjectList) {
 
             ArrayList<TwoSubject> finalTwoSubjectList = new ArrayList<>();
-            for (EduSubject two:twoSubjectList) {
+            for (EduSubject two : twoSubjectList) {
                 TwoSubject twoSubject = new TwoSubject();
-                if (two.getParentId() .equals(one.getId())){
-                    BeanUtils.copyProperties(two,twoSubject);
+                if (two.getParentId().equals(one.getId())) {
+                    BeanUtils.copyProperties(two, twoSubject);
                     finalTwoSubjectList.add(twoSubject);
                 }
             }
 
             OneSubject oneSubject = new OneSubject();
-            BeanUtils.copyProperties(one,oneSubject);
+            BeanUtils.copyProperties(one, oneSubject);
             oneSubject.setChildren(finalTwoSubjectList);
             finalOneSubjectList.add(oneSubject);
         }
-
 
 
         return finalOneSubjectList;

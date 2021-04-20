@@ -1,21 +1,19 @@
 package edu.zsq.eduservice.entity.vo;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * 课程基本信息
- *
- * @author 张
+ * @author zhangsongqi
+ * @date 12:12 下午 2021/4/19
  */
 @Data
-@ApiModel(value = "课程基本信息", description = "编辑课程基本信息的表单对象")
-public class CourseInfoVO implements Serializable {
-    private static final long serialVersionUID = 1L;
+@Builder
+public class CourseVO {
+
     @ApiModelProperty(value = "课程ID")
     private String id;
 
@@ -32,9 +30,6 @@ public class CourseInfoVO implements Serializable {
     private String title;
 
     @ApiModelProperty(value = "课程销售价格，设置为0则可免费观看")
-/**
- *    BigDecimal类型精确计算 不会丢失精度 价格精确到0.01
- */
     private BigDecimal price;
 
     @ApiModelProperty(value = "课程优惠价格")
@@ -46,7 +41,13 @@ public class CourseInfoVO implements Serializable {
     @ApiModelProperty(value = "课程封面图片路径")
     private String cover;
 
-    @ApiModelProperty(value = "课程简介")
+    @ApiModelProperty(value = "销售数量")
+    private Long buyCount;
+
+    @ApiModelProperty(value = "浏览数量")
+    private Long viewCount;
+
+    @ApiModelProperty(value = "课程描述")
     private String description;
 
 }

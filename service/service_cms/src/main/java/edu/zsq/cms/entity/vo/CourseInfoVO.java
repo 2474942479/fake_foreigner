@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  */
 @ApiModel(value = "课程信息", description = "网站课程详情页需要的相关字段")
 @Data
-public class CourseInfoVO implements Serializable {
+public class CourseDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

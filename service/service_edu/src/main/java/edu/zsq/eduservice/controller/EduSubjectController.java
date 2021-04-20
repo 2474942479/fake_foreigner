@@ -8,13 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
  * 课程分类管理
  *
  * @author zsq
- * @since 2020-08-15
+ * @since 2021-04-19
  */
 @RestController
 @RequestMapping("/eduService/subject")
@@ -27,11 +28,8 @@ public class EduSubjectController {
      * 查询课程分类
      */
     @GetMapping("/getAllSubject")
-    public JsonResult getAllSubject() {
-
-        List<OneSubject> list = eduSubjectService.getAllSubject();
-
-        return JsonResult.success().data("list", list);
+    public JsonResult<List<OneSubject>> getAllSubject() {
+        return JsonResult.success(eduSubjectService.getAllSubject());
     }
 
 
@@ -41,11 +39,8 @@ public class EduSubjectController {
      */
 
     @PostMapping("/addSubject")
-    public JsonResult addSubject(MultipartFile file) {
-
-        eduSubjectService.saveSubject(file, eduSubjectService);
-
-        return JsonResult.success().message("文件上传成功");
+    public JsonResult<Void> addSubject(MultipartFile file) {
+        return eduSubjectService.saveSubject(file, eduSubjectService);
     }
 
 }

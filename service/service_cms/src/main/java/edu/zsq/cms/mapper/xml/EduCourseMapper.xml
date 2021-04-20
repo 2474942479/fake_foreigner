@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="edu.zsq.cms.mapper.EduCourseMapper">
 
-    <select id="getCourseBaseInfo" resultType="edu.zsq.cms.entity.vo.CourseInfoVO">
+    <select id="getCourseBaseInfo" resultType="edu.zsq.cms.entity.vo.CourseDTO">
         select  ec.id,ec.title,ec.price,ec.reduction_money,ec.lesson_num AS lessonNum, ec.cover,ec.buy_count AS buyCount,ec.view_count AS viewCount,
 			ecd.description,et.id AS teacherId,et.`name` AS teacherName, et.intro,et.avatar,es1.id AS subjectOneId,es1.title AS subjectOneTitle,es2.id AS subjectTwoId,es2.title AS subjectTwoTitle
 		from edu_course ec

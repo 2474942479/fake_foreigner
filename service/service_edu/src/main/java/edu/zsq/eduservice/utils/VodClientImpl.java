@@ -12,12 +12,12 @@ import java.util.List;
 @Component
 public class VodClientImpl  implements VodClient{
     @Override
-    public JsonResult removeVod(String videoSourceId) {
-        return JsonResult.failure().message("Vod服务器出错了");
+    public JsonResult<Void> removeVod(String videoSourceId) {
+        return JsonResult.failure("Vod服务器出错了");
     }
 
     @Override
-    public JsonResult removeVodList(List<String> vodIdList) {
-        return JsonResult.failure().message("Vod服务器出错了");
+    public JsonResult<Void> removeVodList(List<String> vodIdList) {
+        return JsonResult.failure("Vod服务器出错了");
     }
 }

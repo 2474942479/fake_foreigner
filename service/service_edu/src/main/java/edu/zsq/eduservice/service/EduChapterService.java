@@ -3,6 +3,7 @@ package edu.zsq.eduservice.service;
 import edu.zsq.eduservice.entity.EduChapter;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.eduservice.entity.vo.chapter.ChapterVO;
+import edu.zsq.utils.result.JsonResult;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface EduChapterService extends IService<EduChapter> {
      * @param chapterId
      * @return
      */
-    void deleteChapter(String chapterId);
+    JsonResult<Void> deleteChapter(String chapterId);
 
     /**
      * 根据根据课程id删除课程小节

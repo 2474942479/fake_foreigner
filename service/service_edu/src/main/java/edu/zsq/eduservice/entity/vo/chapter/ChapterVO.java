@@ -20,6 +20,6 @@ public class ChapterVO {
     /**
      * 小节列表(一对多关系)
      */
-    private List<VideoVo> children;
+    private List<VideoVO> children;
 
 }
