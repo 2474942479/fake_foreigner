@@ -71,7 +71,7 @@ public class EduTeacherController {
     /**
      * 条件分页查询
      */
-    @PostMapping("/getTeacherListPage/{current}/{size}")
+    @PostMapping("/getTeacherListPage")
     @ApiOperation(value = "讲师条件分页查询", notes = "根据获取的current size 以及teacherQuery查询并分页")
 
     public JsonResult<PageData<TeacherInfoVO>> getTeacherListPage(@RequestBody TeacherQueryDTO teacherQueryDTO) {
