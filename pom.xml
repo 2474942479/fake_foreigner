@@ -68,11 +68,6 @@
     <dependencyManagement>
         <dependencies>
 
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-            </dependency>
-
             <!--Spring Cloud-->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
