@@ -9,9 +9,7 @@ import edu.zsq.cms.entity.vo.CourseDTO;
 import edu.zsq.cms.entity.vo.CourseListVO;
 import edu.zsq.cms.mapper.EduCourseMapper;
 import edu.zsq.cms.service.EduCourseService;
-import edu.zsq.cms.wrapper.ChapterServiceWrapper;
 import edu.zsq.cms.wrapper.OrderServiceWrapper;
-import edu.zsq.eduservice.entity.vo.chapter.ChapterVO;
 import edu.zsq.utils.page.PageData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -32,8 +30,8 @@ import java.util.stream.Collectors;
 @Service
 public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse> implements EduCourseService {
 
-    @Resource
-    private ChapterServiceWrapper chapterServiceWrapper;
+//    @Resource
+//    private ChapterServiceWrapper chapterServiceWrapper;
 
     @Resource
     private OrderServiceWrapper orderServiceWrapper;
@@ -108,14 +106,14 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         CourseDTO courseInfo = baseMapper.getCourseBaseInfo(courseId);
 
         // 根据课程id获取大纲信息
-        List<ChapterVO> chapterList = chapterServiceWrapper.getAllChapterVO(courseId).getData();
+//        List<ChapterVO> chapterList = chapterServiceWrapper.getAllChapterVO(courseId).getData();
 
         // 根据用户id和课程id判断用户是否购买课程
         Boolean isBuy = orderServiceWrapper.isBuyCourse(userId, courseId).getData();
 
         return CourseAllInfoVO.builder()
-                .CourseDTO(courseInfo)
-                .chapterList(chapterList)
+                .courseDTO(courseInfo)
+//                .chapterList(chapterList)
                 .isBuy(isBuy)
                 .build();
 

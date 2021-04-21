@@ -1,10 +1,7 @@
 package edu.zsq.cms.entity.vo;
 
-import edu.zsq.eduservice.entity.vo.chapter.ChapterVO;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * @author zhangsongqi
@@ -14,7 +11,7 @@ import java.util.List;
 @Builder
 public class CourseAllInfoVO {
 
-    private CourseDTO CourseDTO;
-    private List<ChapterVO> chapterList;
+    private CourseDTO courseDTO;
+//    private List<ChapterVO> chapterList;
     private Boolean isBuy;
 }
