@@ -65,9 +65,8 @@ public class RoleController {
 
 
     @ApiOperation(value = "获取角色分页列表")
-    @GetMapping("/page")
-    public JsonResult<PageData<RoleVO>> index(@RequestBody RoleQueryDTO roleQueryDTO) {
-//        return JsonResult.success().data("items", pageParam.getRecords()).data("total", pageParam.getTotal());
+    @PostMapping("/pageRole")
+    public JsonResult<PageData<RoleVO>> pageRole(@RequestBody RoleQueryDTO roleQueryDTO) {
         return JsonResult.success(roleService.pageRole(roleQueryDTO));
     }
 
@@ -75,7 +74,6 @@ public class RoleController {
     @GetMapping("get/{id}")
     public JsonResult get(@PathVariable String id) {
         Role role = roleService.getById(id);
-//        return JsonResult.success().data("item", role);
         return JsonResult.success(role);
     }
 

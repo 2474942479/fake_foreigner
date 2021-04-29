@@ -1,7 +1,6 @@
 package edu.zsq.acl.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.acl.entity.Role;
@@ -14,9 +13,8 @@ import edu.zsq.acl.service.RolePermissionService;
 import edu.zsq.acl.service.RoleService;
 import edu.zsq.acl.service.UserRoleService;
 import edu.zsq.utils.page.PageData;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -54,9 +52,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             rolePermissions.add(rolePermission);
         }
 
-        boolean b = rolePermissionService.saveBatch(rolePermissions);
-
-        return b;
+        return rolePermissionService.saveBatch(rolePermissions);
     }
 
     @Override
@@ -116,9 +112,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     @Override
     public PageData<RoleVO> pageRole(RoleQueryDTO roleQueryDTO) {
-        IPage<Role> page = lambdaQuery()
-                .like(StringUtils.isEmpty(roleQueryDTO.getRoleName()), Role::getRoleName, roleQueryDTO.getRoleName())
-                .page(new Page<>(roleQueryDTO.getCurrent(), roleQueryDTO.getSize()));
+        Page<Role> page = new Page<>(roleQueryDTO.getCurrent(), roleQueryDTO.getSize());
+        lambdaQuery()
+                .like(StringUtils.isNotBlank(roleQueryDTO.getRoleName()), Role::getRoleName, roleQueryDTO.getRoleName())
+                .orderByDesc(Role::getGmtModified)
+                .page(page);
 
         if (page.getRecords().isEmpty()) {
             return PageData.empty();

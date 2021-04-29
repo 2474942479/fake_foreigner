@@ -1,5 +1,6 @@
 package edu.zsq.acl.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import edu.zsq.acl.entity.vo.UserInfoVO;
 import edu.zsq.acl.service.IndexService;
 import edu.zsq.utils.result.JsonResult;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author 张
@@ -36,7 +38,7 @@ public class IndexController {
      * @return 菜单列表
      */
     @GetMapping("menu")
-    public JsonResult getMenu(){
+    public JsonResult<List<JSONObject>> getMenu(){
         //获取当前登录用户用户名
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return JsonResult.success(indexService.getMenu(username));

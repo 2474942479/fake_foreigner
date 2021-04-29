@@ -51,7 +51,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
         List<Permission> permissions = this.list();
 //        复制到VO类中
-        ArrayList<PermissionTree> permissionTreeList = new ArrayList<>();
+        List<PermissionTree> permissionTreeList = new ArrayList<>();
         for (Permission permission : permissions) {
             PermissionTree permissionTree = new PermissionTree();
             BeanUtils.copyProperties(permission, permissionTree);

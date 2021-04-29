@@ -24,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -132,16 +134,16 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
 
         Page<EduCourse> coursePage = new Page<>(courseQueryDTO.getCurrent(), courseQueryDTO.getSize());
 
-        String title = courseQueryDTO.getTitle();
-        Integer status = courseQueryDTO.getStatus();
-        LocalDateTime buyCountSort = courseQueryDTO.getBegin();
-        LocalDateTime gmtCreateSort = courseQueryDTO.getEnd();
+        String title = Optional.ofNullable(courseQueryDTO.getTitle()).map(String::toLowerCase).orElse(null);
+        String status = courseQueryDTO.getStatus();
+        LocalDateTime begin = courseQueryDTO.getBegin();
+        LocalDateTime end = courseQueryDTO.getEnd();
 
         lambdaQuery()
-                .eq(StringUtils.isNotBlank(title), EduCourse::getSubjectParentId, title)
-                .eq(Objects.nonNull(status), EduCourse::getSubjectId, status)
-                .ge(Objects.nonNull(buyCountSort), EduCourse::getBuyCount, buyCountSort)
-                .le(Objects.nonNull(gmtCreateSort), EduCourse::getGmtCreate, gmtCreateSort)
+                .apply(StringUtils.isNotBlank(title), "lower(title) like '%" + title + "%'")
+                .eq(StringUtils.isNotBlank(status), EduCourse::getStatus, status)
+                .ge(Objects.nonNull(begin), EduCourse::getGmtCreate, begin)
+                .le(Objects.nonNull(end), EduCourse::getGmtModified, end)
                 .orderByDesc(EduCourse::getGmtCreate)
                 .page(coursePage);
 

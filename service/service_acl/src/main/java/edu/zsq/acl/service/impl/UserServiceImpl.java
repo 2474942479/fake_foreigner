@@ -1,6 +1,5 @@
 package edu.zsq.acl.service.impl;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.acl.entity.User;
@@ -9,8 +8,8 @@ import edu.zsq.acl.entity.vo.UserVO;
 import edu.zsq.acl.mapper.UserMapper;
 import edu.zsq.acl.service.UserService;
 import edu.zsq.utils.page.PageData;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,9 +35,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public PageData<UserVO> pageUser(UserQueryDTO userQueryDTO) {
-        IPage<User> page = lambdaQuery()
-                .like(StringUtils.isEmpty(userQueryDTO.getUserName()), User::getUsername, userQueryDTO.getUserName())
-                .page(new Page<>(userQueryDTO.getCurrent(), userQueryDTO.getSize()));
+        Page<User> page = new Page<>(userQueryDTO.getCurrent(), userQueryDTO.getSize());
+        lambdaQuery()
+                .like(StringUtils.isNotBlank(userQueryDTO.getUserName()), User::getUsername, userQueryDTO.getUserName())
+                .orderByDesc(User::getGmtModified)
+                .page(page);
 
         if (page.getRecords().isEmpty()) {
             return PageData.empty();

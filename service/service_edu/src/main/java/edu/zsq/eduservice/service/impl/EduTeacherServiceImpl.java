@@ -49,7 +49,7 @@ public class EduTeacherServiceImpl extends ServiceImpl<EduTeacherMapper, EduTeac
                 .map(this::convertEduTeacher)
                 .collect(Collectors.toList());
 
-        return PageData.of(list, teacherPage.getCurrent(), teacherQueryDTO.getSize(), teacherQueryDTO.getTotal());
+        return PageData.of(list, teacherPage.getCurrent(), teacherPage.getSize(), teacherPage.getTotal());
     }
 
     @Override

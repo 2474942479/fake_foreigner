@@ -22,8 +22,8 @@ public class CourseQueryDTO extends PageData<CourseVO> implements Serializable {
     @ApiModelProperty(value = "课程名称,模糊查询")
     private String title;
 
-    @ApiModelProperty(value = "发布状态 1高级讲师 2首席讲师")
-    private Integer status;
+    @ApiModelProperty(value = "课程状态 Draft未发布  Normal已发布")
+    private String status;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "查询开始时间", example = "2019-01-01 10:10:10")

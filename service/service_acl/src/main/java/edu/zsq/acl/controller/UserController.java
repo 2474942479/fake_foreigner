@@ -48,8 +48,8 @@ public class UserController {
     }
 
     @ApiOperation(value = "获取管理用户分页列表")
-    @GetMapping("/page")
-    public JsonResult<PageData<UserVO>> index(@RequestBody UserQueryDTO userQueryDTO) {
+    @PostMapping("/pageUser")
+    public JsonResult<PageData<UserVO>> pageUser(@RequestBody UserQueryDTO userQueryDTO) {
         return JsonResult.success(userService.pageUser(userQueryDTO));
     }
 
