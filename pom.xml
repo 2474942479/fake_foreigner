@@ -57,7 +57,7 @@
         <aliyun-sdk-oss.version>3.10.2</aliyun-sdk-oss.version>
         <aliyun-java-sdk-core.version>4.5.1</aliyun-java-sdk-core.version>
         <aliyun-java-sdk-vod.version>2.15.11</aliyun-java-sdk-vod.version>
-        <aliyun-java-vod-upload.version>1.4.12</aliyun-java-vod-upload.version>
+        <aliyun-java-vod-upload.version>1.4.14</aliyun-java-vod-upload.version>
         <aliyun-sdk-vod-upload.version>1.4.13</aliyun-sdk-vod-upload.version>
         <commons-dbutils.version>1.7</commons-dbutils.version>
         <canal.client.version>1.1.0</canal.client.version>

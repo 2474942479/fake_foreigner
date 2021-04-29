@@ -1,18 +1,24 @@
 package edu.zsq.acl.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.acl.entity.Role;
 import edu.zsq.acl.entity.RolePermission;
 import edu.zsq.acl.entity.UserRole;
+import edu.zsq.acl.entity.dto.RoleQueryDTO;
+import edu.zsq.acl.entity.vo.RoleVO;
 import edu.zsq.acl.mapper.RoleMapper;
 import edu.zsq.acl.service.RolePermissionService;
 import edu.zsq.acl.service.RoleService;
 import edu.zsq.acl.service.UserRoleService;
+import edu.zsq.utils.page.PageData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,5 +112,28 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             userRoleList.add(userRole);
         }
         userRoleService.saveBatch(userRoleList);
+    }
+
+    @Override
+    public PageData<RoleVO> pageRole(RoleQueryDTO roleQueryDTO) {
+        IPage<Role> page = lambdaQuery()
+                .like(StringUtils.isEmpty(roleQueryDTO.getRoleName()), Role::getRoleName, roleQueryDTO.getRoleName())
+                .page(new Page<>(roleQueryDTO.getCurrent(), roleQueryDTO.getSize()));
+
+        if (page.getRecords().isEmpty()) {
+            return PageData.empty();
+        }
+
+        List<RoleVO> collect = page.getRecords().stream().map(this::convert2RoleVO).collect(Collectors.toList());
+        return PageData.of(collect, page.getCurrent(), page.getSize(), page.getTotal());
+    }
+
+    private RoleVO convert2RoleVO(Role role) {
+        return RoleVO.builder()
+                .id(role.getId())
+                .roleCode(role.getRoleCode())
+                .roleName(role.getRoleName())
+                .remark(role.getRemark())
+                .build();
     }
 }

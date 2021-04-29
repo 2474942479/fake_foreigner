@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.zsq.acl.entity.User;
 import edu.zsq.acl.entity.dto.UserQueryDTO;
 import edu.zsq.acl.entity.vo.UserInfoVO;
+import edu.zsq.acl.entity.vo.UserVO;
 import edu.zsq.acl.service.RoleService;
 import edu.zsq.acl.service.UserService;
 import edu.zsq.utils.page.PageDTO;
@@ -19,6 +20,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
@@ -46,24 +48,9 @@ public class UserController {
     }
 
     @ApiOperation(value = "获取管理用户分页列表")
-    @GetMapping("{page}/{limit}")
-    public JsonResult<PageData<UserInfoVO>> index(
-            @ApiParam(name = "page", value = "当前页码", required = true)
-            @PathVariable Long page,
-
-            @ApiParam(name = "limit", value = "每页记录数", required = true)
-            @PathVariable Long limit,
-
-            @ApiParam(name = "courseQuery", value = "查询对象", required = false)
-                    UserQueryDTO userQueryDTO) {
-        Page<User> pageParam = new Page<>(page, limit);
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
-        if(!StringUtils.isEmpty(userQueryDTO.getUserName())) {
-            wrapper.like("username",userQueryDTO.getUserName());
-        }
-
-        IPage<User> pageModel = userService.page(pageParam, wrapper);
-        return JsonResult.success().data("items", pageModel.getRecords()).data("total", pageModel.getTotal());
+    @GetMapping("/page")
+    public JsonResult<PageData<UserVO>> index(@RequestBody UserQueryDTO userQueryDTO) {
+        return JsonResult.success(userService.pageUser(userQueryDTO));
     }
 
     @ApiOperation(value = "新增管理用户")

@@ -6,9 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.zsq.acl.entity.Role;
 import edu.zsq.acl.entity.RolePermission;
 import edu.zsq.acl.entity.UserRole;
+import edu.zsq.acl.entity.dto.RoleQueryDTO;
+import edu.zsq.acl.entity.vo.RoleVO;
 import edu.zsq.acl.service.RolePermissionService;
 import edu.zsq.acl.service.RoleService;
 import edu.zsq.acl.service.UserRoleService;
+import edu.zsq.utils.page.PageData;
 import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -53,7 +57,7 @@ public class RoleController {
             return JsonResult.success().message("角色添加权限成功！");
 
         }else{
-            return JsonResult.failure().message("角色添加权限失败！");
+            return JsonResult.failure("角色添加权限失败！");
         }
 
 
@@ -61,42 +65,32 @@ public class RoleController {
 
 
     @ApiOperation(value = "获取角色分页列表")
-    @GetMapping("{page}/{limit}")
-    public JsonResult index(
-            @ApiParam(name = "page", value = "当前页码", required = true)
-            @PathVariable Long page,
-
-            @ApiParam(name = "limit", value = "每页记录数", required = true)
-            @PathVariable Long limit,
-            Role role) {
-        Page<Role> pageParam = new Page<>(page, limit);
-        QueryWrapper<Role> wrapper = new QueryWrapper<>();
-        if(!StringUtils.isEmpty(role.getRoleName())) {
-            wrapper.like("role_name",role.getRoleName());
-        }
-        roleService.page(pageParam,wrapper);
-        return JsonResult.success().data("items", pageParam.getRecords()).data("total", pageParam.getTotal());
+    @GetMapping("/page")
+    public JsonResult<PageData<RoleVO>> index(@RequestBody RoleQueryDTO roleQueryDTO) {
+//        return JsonResult.success().data("items", pageParam.getRecords()).data("total", pageParam.getTotal());
+        return JsonResult.success(roleService.pageRole(roleQueryDTO));
     }
 
     @ApiOperation(value = "获取角色")
     @GetMapping("get/{id}")
     public JsonResult get(@PathVariable String id) {
         Role role = roleService.getById(id);
-        return JsonResult.success().data("item", role);
+//        return JsonResult.success().data("item", role);
+        return JsonResult.success(role);
     }
 
     @ApiOperation(value = "新增角色")
     @PostMapping("save")
     public JsonResult save(@RequestBody Role role) {
         roleService.save(role);
-        return JsonResult.success();
+        return JsonResult.OK;
     }
 
     @ApiOperation(value = "修改角色")
     @PutMapping("update")
     public JsonResult updateById(@RequestBody Role role) {
         roleService.updateById(role);
-        return JsonResult.success();
+        return JsonResult.OK;
     }
 
     @ApiOperation(value = "删除角色")
@@ -112,14 +106,14 @@ public class RoleController {
         userRoleService.remove(roleQueryWrapper);
         //删除角色
         roleService.removeById(id);
-        return JsonResult.success();
+        return JsonResult.OK;
     }
 
     @ApiOperation(value = "根据id列表删除角色")
     @DeleteMapping("batchRemove")
     public JsonResult batchRemove(@RequestBody List<String> idList) {
         roleService.removeByIds(idList);
-        return JsonResult.success();
+        return JsonResult.OK;
     }
 
 

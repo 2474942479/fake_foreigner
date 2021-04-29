@@ -12,13 +12,14 @@ import edu.zsq.acl.mapper.PermissionMapper;
 import edu.zsq.acl.service.PermissionService;
 import edu.zsq.acl.service.RolePermissionService;
 import edu.zsq.acl.service.UserService;
-import edu.zsq.acl.utils.MemuUtil;
+import edu.zsq.acl.utils.MenuUtil;
 import edu.zsq.acl.utils.PermissionUtil;
 import edu.zsq.acl.utils.RecursionFind;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
      * @return
      */
     @Override
-    public void getPermissionIds(String id, ArrayList<String> permissionIds) {
+    public void getPermissionIds(String id, List<String> permissionIds) {
 
 //        查找该id的子id
         QueryWrapper<Permission> wrapper = new QueryWrapper<>();
@@ -87,7 +88,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         List<Permission> permissionChildIds = baseMapper.selectList(wrapper);
 
 //        Java8新特性 Stream流 递归添加子节点
-        permissionChildIds.stream().forEach(childId -> {
+        permissionChildIds.forEach(childId -> {
 //            添加子节点
             permissionIds.add(childId.getId());
 //            递归添加子节点的子节点 直到没有子节点
@@ -105,7 +106,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
      */
     @Override
     public List<String> selectPermissionValueByUserId(String id) {
-        List<String> selectPermissionValueList = null;
+        List<String> selectPermissionValueList;
         User user = userService.getById(id);
         if (null != user && "admin".equals(user.getUsername())) {
             //如果是系统管理员，获取所有权限
@@ -117,21 +118,17 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public List<JSONObject> selectPermissionByUserId(String id) {
-        List<Permission> selectPermissionList = null;
-        User user = userService.getById(id);
-
-        if(null != user && "admin".equals(user.getUsername())) {
-            //如果是超级管理员，获取所有菜单
-            selectPermissionList = baseMapper.selectList(null);
-        } else {
-            selectPermissionList = baseMapper.selectPermissionByUserId(id);
-        }
-        System.out.println("selectPermissionList="+selectPermissionList);
+    public List<JSONObject> selectAdminPermission() {
+        List<Permission> selectPermissionList = lambdaQuery().list();
         List<Permission> permissionList = PermissionUtil.bulid(selectPermissionList);
-        System.out.println("permissionList="+permissionList);
-        List<JSONObject> result = MemuUtil.bulid(permissionList);
-        return result;
+        return MenuUtil.bulid(permissionList);
+    }
+
+    @Override
+    public List<JSONObject> selectPermissionByUserId(String userId) {
+        List<Permission> selectPermissionList = baseMapper.selectPermissionByUserId(userId);
+        List<Permission> permissionList = PermissionUtil.bulid(selectPermissionList);
+        return MenuUtil.bulid(permissionList);
     }
 
 
@@ -223,12 +220,10 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
      * @return
      */
     private static Permission findChildren(Permission treeNode, List<Permission> treeNodes) {
-        treeNode.setChildren(new ArrayList<Permission>());
-
+        treeNode.setChildren(new ArrayList<>());
         for (Permission it : treeNodes) {
             if (treeNode.getId().equals(it.getPid())) {
-                int level = treeNode.getLevel() + 1;
-                it.setLevel(level);
+                it.setLevel(treeNode.getLevel() + 1);
                 if (treeNode.getChildren() == null) {
                     treeNode.setChildren(new ArrayList<>());
                 }

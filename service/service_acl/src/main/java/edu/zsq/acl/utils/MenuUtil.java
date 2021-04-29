@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author 张
  */
-public class MemuUtil {
+public class MenuUtil {
 
     /**
      * 构建菜单
@@ -22,19 +22,19 @@ public class MemuUtil {
         if(treeNodes.size() == 1) {
             Permission topNode = treeNodes.get(0);
             //左侧一级菜单
-            List<Permission> oneMeunList = topNode.getChildren();
-            for(Permission one :oneMeunList) {
-                JSONObject oneMeun = new JSONObject();
-                oneMeun.put("path", one.getPath());
-                oneMeun.put("component", one.getComponent());
-                oneMeun.put("redirect", "noredirect");
-                oneMeun.put("name", "name_"+one.getId());
-                oneMeun.put("hidden", false);
+            List<Permission> oneMenuList = topNode.getChildren();
+            for(Permission one :oneMenuList) {
+                JSONObject oneMenu = new JSONObject();
+                oneMenu.put("path", one.getPath());
+                oneMenu.put("component", one.getComponent());
+                oneMenu.put("redirect", "noredirect");
+                oneMenu.put("name", "name_"+one.getId());
+                oneMenu.put("hidden", false);
 
                 JSONObject oneMeta = new JSONObject();
                 oneMeta.put("title", one.getName());
                 oneMeta.put("icon", one.getIcon());
-                oneMeun.put("meta", oneMeta);
+                oneMenu.put("meta", oneMeta);
 
                 List<JSONObject> children = new ArrayList<>();
                 List<Permission> twoMeunList = one.getChildren();
@@ -69,8 +69,8 @@ public class MemuUtil {
                         children.add(threeMeun);
                     }
                 }
-                oneMeun.put("children", children);
-                meuns.add(oneMeun);
+                oneMenu.put("children", children);
+                meuns.add(oneMenu);
             }
         }
         return meuns;

@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +33,8 @@ public class PermissionController {
      * @return
      */
     @GetMapping("/getAllPermission")
-    public JsonResult getAllPermission(){
-
-        List<PermissionTree> permissionList =  permissionService.getPermissionList();
-
-        return JsonResult.success().data("permissionList",permissionList);
+    public JsonResult<List<PermissionTree>> getAllPermission(){
+        return JsonResult.success(permissionService.getPermissionList());
     }
 
     /**
@@ -47,7 +45,7 @@ public class PermissionController {
 
     @DeleteMapping("/deleteAllById/{id}")
     public JsonResult deleteAllById(@PathVariable String id){
-        ArrayList<String> permissionIds =new ArrayList<>();
+        List<String> permissionIds =new ArrayList<>();
         permissionIds.add(id);
 //        根据父类id  递归获取到所有的子类id 并放进list集合以便批量删除
         permissionService.getPermissionIds(id,permissionIds);
@@ -67,7 +65,7 @@ public class PermissionController {
     @GetMapping("toAssign/{roleId}")
     public JsonResult toAssign(@PathVariable String roleId) {
         List<Permission> list = permissionService.selectAllMenu(roleId);
-        return JsonResult.success().data("children", list);
+        return JsonResult.success(list);
     }
 
 
@@ -83,7 +81,7 @@ public class PermissionController {
         if (save){
             return JsonResult.success().message("添加菜单成功");
         }else {
-            return JsonResult.failure().message("添加菜单失败");
+            return JsonResult.failure("添加菜单失败");
         }
     }
 
@@ -95,7 +93,7 @@ public class PermissionController {
         if (update){
             return JsonResult.success().message("修改菜单成功");
         }else {
-            return JsonResult.failure().message("修改菜单失败");
+            return JsonResult.failure("修改菜单失败");
         }
     }
 

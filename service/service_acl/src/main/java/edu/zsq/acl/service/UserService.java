@@ -2,6 +2,10 @@ package edu.zsq.acl.service;
 
 import edu.zsq.acl.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.zsq.acl.entity.dto.UserQueryDTO;
+import edu.zsq.acl.entity.vo.UserInfoVO;
+import edu.zsq.acl.entity.vo.UserVO;
+import edu.zsq.utils.page.PageData;
 
 /**
  * <p>
@@ -20,4 +24,11 @@ public interface UserService extends IService<User> {
      * @return
      */
     User selectByUsername(String username);
+
+    /**
+     * 分页获取用户信息
+     * @param userQueryDTO 分页参数
+     * @return 用户信息
+     */
+    PageData<UserVO> pageUser(UserQueryDTO userQueryDTO);
 }

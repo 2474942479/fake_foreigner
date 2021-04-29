@@ -2,6 +2,9 @@ package edu.zsq.acl.service;
 
 import edu.zsq.acl.entity.Role;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.zsq.acl.entity.dto.RoleQueryDTO;
+import edu.zsq.acl.entity.vo.RoleVO;
+import edu.zsq.utils.page.PageData;
 
 import java.util.List;
 import java.util.Map;
@@ -44,4 +47,11 @@ public interface RoleService extends IService<Role> {
      * @param roleId
      */
     void saveUserRoleRealtionShip(String userId, String[] roleId);
+
+    /**
+     * 分页获取角色信息
+     * @param roleQueryDTO 分页参数
+     * @return 分页结果
+     */
+    PageData<RoleVO> pageRole(RoleQueryDTO roleQueryDTO);
 }

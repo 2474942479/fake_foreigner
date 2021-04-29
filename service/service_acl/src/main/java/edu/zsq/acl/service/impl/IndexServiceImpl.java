@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.naming.Name;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,8 @@ public class IndexServiceImpl implements IndexService {
 
     @Resource
     private RedisTemplate redisTemplate;
+
+    private static final String ADMIN = "admin";
 
     /**
      * 根据用户名获取用户登录信息
@@ -81,14 +84,17 @@ public class IndexServiceImpl implements IndexService {
     /**
      * 根据用户名获取动态菜单
      *
-     * @param username
-     * @return
+     * @param username 用户名
+     * @return 菜单
      */
     @Override
     public List<JSONObject> getMenu(String username) {
+        if (ADMIN.equals(username)) {
+            return permissionService.selectAdminPermission();
+        }
+
         User user = userService.selectByUsername(username);
         //根据用户id获取用户菜单权限
-        List<JSONObject> permissionList = permissionService.selectPermissionByUserId(user.getId());
-        return permissionList;
+        return permissionService.selectPermissionByUserId(user.getId());
     }
 }

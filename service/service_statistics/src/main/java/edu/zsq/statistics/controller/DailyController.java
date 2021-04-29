@@ -30,7 +30,7 @@ public class DailyController {
         if (statisticsByDay){
             return JsonResult.success().message("添加统计数据成功");
         }else {
-            return JsonResult.failure().message("添加统计数据成功失败");
+            return JsonResult.failure("添加统计数据成功失败");
         }
     }
 

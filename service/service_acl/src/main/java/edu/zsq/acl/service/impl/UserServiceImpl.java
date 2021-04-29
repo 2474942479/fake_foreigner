@@ -1,11 +1,19 @@
 package edu.zsq.acl.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.acl.entity.User;
+import edu.zsq.acl.entity.dto.UserQueryDTO;
+import edu.zsq.acl.entity.vo.UserVO;
 import edu.zsq.acl.mapper.UserMapper;
 import edu.zsq.acl.service.UserService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.zsq.utils.page.PageData;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -20,6 +28,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public User selectByUsername(String username) {
-        return baseMapper.selectOne(new QueryWrapper<User>().eq("username", username));
+        return lambdaQuery()
+                .eq(User::getUsername, username)
+                .last("limit 1")
+                .one();
+    }
+
+    @Override
+    public PageData<UserVO> pageUser(UserQueryDTO userQueryDTO) {
+        IPage<User> page = lambdaQuery()
+                .like(StringUtils.isEmpty(userQueryDTO.getUserName()), User::getUsername, userQueryDTO.getUserName())
+                .page(new Page<>(userQueryDTO.getCurrent(), userQueryDTO.getSize()));
+
+        if (page.getRecords().isEmpty()) {
+            return PageData.empty();
+        }
+
+        List<UserVO> collect = page.getRecords().stream().map(this::convert2UserInfoVO).collect(Collectors.toList());
+        return PageData.of(collect, page.getCurrent(), page.getSize(), page.getTotal());
+    }
+
+    private UserVO  convert2UserInfoVO(User user) {
+        return UserVO.builder()
+                .id(user.getId())
+                .nickName(user.getNickName())
+                .salt(user.getSalt())
+                .build();
     }
 }

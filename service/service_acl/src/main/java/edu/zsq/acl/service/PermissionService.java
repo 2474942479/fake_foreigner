@@ -30,7 +30,7 @@ public interface PermissionService extends IService<Permission> {
      * @param permissionIds
      * @return
      */
-    void getPermissionIds(String id, ArrayList<String> permissionIds);
+    void getPermissionIds(String id, List<String> permissionIds);
 
     /**
      * 根据用户id获取用户菜单
@@ -40,9 +40,16 @@ public interface PermissionService extends IService<Permission> {
     List<String> selectPermissionValueByUserId(String id);
 
     /**
+     * 获取管理员权限
+     * @return 所有权限
+     */
+    List<JSONObject> selectAdminPermission();
+
+    /**
+     *根据用户id获取用户权限
      *
-     * @param id
-     * @return
+     * @param id 用户id
+     * @return 用户权限
      */
     List<JSONObject> selectPermissionByUserId(String id);
 

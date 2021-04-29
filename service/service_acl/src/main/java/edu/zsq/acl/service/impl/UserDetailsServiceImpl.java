@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -47,9 +48,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         edu.zsq.security.entity.User curUser = new edu.zsq.security.entity.User();
         BeanUtils.copyProperties(user,curUser);
 
-        /**
-         * 根据id获取权限列表
-         */
+        // 根据id获取权限列表
         List<String> authorities = permissionService.selectPermissionValueByUserId(user.getId());
         SecurityUser securityUser = new SecurityUser(curUser);
         securityUser.setPermissionValueList(authorities);
