@@ -2,10 +2,16 @@ package edu.zsq.acl.entity.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
+/**
+ * @author 张
+ */
 @Data
 @Builder
 public class UserVO {
@@ -14,8 +20,15 @@ public class UserVO {
     private String id;
 
     @ApiModelProperty(value = "昵称")
+    private String username;
+
+    @ApiModelProperty(value = "昵称")
     private String nickName;
 
     @ApiModelProperty(value = "用户头像")
     private String salt;
+
+    @ApiModelProperty("创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime gmtCreate;
 }

@@ -1,17 +1,27 @@
 package edu.zsq.acl.service.impl;
 
+import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.acl.entity.User;
+import edu.zsq.acl.entity.dto.UserDTO;
 import edu.zsq.acl.entity.dto.UserQueryDTO;
 import edu.zsq.acl.entity.vo.UserVO;
 import edu.zsq.acl.mapper.UserMapper;
+import edu.zsq.acl.service.UserRoleService;
 import edu.zsq.acl.service.UserService;
+import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.page.PageData;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
 
+import javax.annotation.Resource;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +35,14 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
+    @Resource
+    private UserRoleService userRoleService;
+
+    @Override
+    public UserVO getUser(String id) {
+        return convert2UserVO(getById(id));
+    }
+
     @Override
     public User selectByUsername(String username) {
         return lambdaQuery()
@@ -37,7 +55,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public PageData<UserVO> pageUser(UserQueryDTO userQueryDTO) {
         Page<User> page = new Page<>(userQueryDTO.getCurrent(), userQueryDTO.getSize());
         lambdaQuery()
-                .like(StringUtils.isNotBlank(userQueryDTO.getUserName()), User::getUsername, userQueryDTO.getUserName())
+                .like(StringUtils.isNotBlank(userQueryDTO.getUsername()), User::getUsername, userQueryDTO.getUsername())
                 .orderByDesc(User::getGmtModified)
                 .page(page);
 
@@ -45,15 +63,55 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return PageData.empty();
         }
 
-        List<UserVO> collect = page.getRecords().stream().map(this::convert2UserInfoVO).collect(Collectors.toList());
+        List<UserVO> collect = page.getRecords().stream().map(this::convert2UserVO).collect(Collectors.toList());
         return PageData.of(collect, page.getCurrent(), page.getSize(), page.getTotal());
     }
 
-    private UserVO  convert2UserInfoVO(User user) {
+    @Override
+    public void saveOrUpdateUserInfo(UserDTO userDTO) {
+        Integer count = lambdaQuery()
+                .eq(User::getUsername, userDTO.getUsername())
+                .count();
+
+        if (count > 0) {
+            throw ExFactory.throwBusiness("该用户名已存在!");
+        }
+
+        if (!saveOrUpdate(convert2User(userDTO))) {
+            throw ExFactory.throwSystem("系统异常, 操作失败");
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchRemove(List<String> userIds) {
+        if (!removeByIds(userIds)) {
+            throw ExFactory.throwSystem("系统异常, 用户删除失败");
+        }
+        userRoleService.batchRemove(userIds);
+    }
+
+    private User convert2User(UserDTO userDTO) {
+        String pwd = Optional.ofNullable(userDTO.getPassword())
+                .map(SecureUtil::md5)
+                .orElse(null);
+
+        User user = new User();
+        user.setId(Optional.ofNullable(userDTO.getId()).orElse(null));
+        user.setUsername(userDTO.getUsername());
+        user.setPassword(pwd);
+        user.setNickName(userDTO.getNickName());
+        user.setSalt(userDTO.getSalt());
+        return user;
+    }
+
+    private UserVO  convert2UserVO(User user) {
         return UserVO.builder()
                 .id(user.getId())
+                .username(user.getUsername())
                 .nickName(user.getNickName())
                 .salt(user.getSalt())
+                .gmtCreate(user.getGmtCreate())
                 .build();
     }
 }

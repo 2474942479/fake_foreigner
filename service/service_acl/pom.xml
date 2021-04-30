@@ -26,6 +26,10 @@
             <artifactId>mybatis-plus-generator</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

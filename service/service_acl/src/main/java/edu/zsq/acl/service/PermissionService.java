@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import edu.zsq.acl.entity.Permission;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.acl.entity.vo.PermissionTree;
+import edu.zsq.acl.entity.vo.PermissionVO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +23,13 @@ public interface PermissionService extends IService<Permission> {
      * 查询所有的菜单
      * @return
      */
-    List<PermissionTree> getPermissionList();
+    List<PermissionVO> getPermissionList();
 
     /**
-     * 通过id 递归获取到该id下的所有子id 并放进list集合
-     * @param id
-     * @param permissionIds
-     * @return
+     * 递归删除该id下的所有权限
+     * @param id id
      */
-    void getPermissionIds(String id, List<String> permissionIds);
+    void deleteAllById(String id);
 
     /**
      * 根据用户id获取用户菜单
@@ -55,15 +54,15 @@ public interface PermissionService extends IService<Permission> {
 
     /**
      * 给角色分配权限
-     * @param roleId
-     * @param permissionId
+     * @param roleId 角色id
+     * @param permissionIds 权限id列表
      */
-    void saveRolePermissionRealtionShipGuli(String roleId, String[] permissionId);
+    void saveRolePermission(String roleId, List<String> permissionIds);
 
     /**
      *根据角色获取菜单
-     * @param roleId
-     * @return
+     * @param roleId 角色id
+     * @return 菜单数据
      */
-    List<Permission> selectAllMenu(String roleId);
+    List<PermissionVO> selectAllMenu(String roleId);
 }

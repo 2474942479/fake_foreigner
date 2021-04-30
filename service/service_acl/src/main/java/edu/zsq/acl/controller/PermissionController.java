@@ -2,8 +2,11 @@ package edu.zsq.acl.controller;
 
 
 import edu.zsq.acl.entity.Permission;
+import edu.zsq.acl.entity.dto.PermissionDTO;
 import edu.zsq.acl.entity.vo.PermissionTree;
+import edu.zsq.acl.entity.vo.PermissionVO;
 import edu.zsq.acl.service.PermissionService;
+import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,75 +31,67 @@ public class PermissionController {
 
     @Resource
     private PermissionService permissionService;
+
     /**
      * 获取所有的菜单
+     *
      * @return
      */
     @GetMapping("/getAllPermission")
-    public JsonResult<List<PermissionTree>> getAllPermission(){
+    public JsonResult<List<PermissionVO>> getAllPermission() {
         return JsonResult.success(permissionService.getPermissionList());
     }
 
     /**
      * 递归删除菜单列表
+     *
      * @param id
      * @return
      */
 
     @DeleteMapping("/deleteAllById/{id}")
-    public JsonResult deleteAllById(@PathVariable String id){
-        List<String> permissionIds =new ArrayList<>();
-        permissionIds.add(id);
-//        根据父类id  递归获取到所有的子类id 并放进list集合以便批量删除
-        permissionService.getPermissionIds(id,permissionIds);
-        permissionService.removeByIds(permissionIds);
-        return JsonResult.success().message("删除成功,以全部删除！");
+    public JsonResult<Void> deleteAllById(@PathVariable String id) {
+        permissionService.deleteAllById(id);
+        return JsonResult.OK;
     }
 
 
     @ApiOperation(value = "给角色分配权限")
     @PostMapping("/doAssign")
-    public JsonResult doAssign(String roleId,String[] permissionId) {
-        permissionService.saveRolePermissionRealtionShipGuli(roleId,permissionId);
-        return JsonResult.success();
+    public JsonResult<Void> doAssign(String roleId, List<String> permissionIds) {
+        permissionService.saveRolePermission(roleId, permissionIds);
+        return JsonResult.OK;
     }
 
     @ApiOperation(value = "根据角色获取菜单")
     @GetMapping("toAssign/{roleId}")
-    public JsonResult toAssign(@PathVariable String roleId) {
-        List<Permission> list = permissionService.selectAllMenu(roleId);
-        return JsonResult.success(list);
+    public JsonResult<List<PermissionVO>> toAssign(@PathVariable String roleId) {
+        return JsonResult.success(permissionService.selectAllMenu(roleId));
     }
-
 
 
     /**
      * 添加菜单
-     * @param permission
+     *
+     * @param permission 权限
      * @return
      */
-    @PostMapping("/savePermission")
-    public JsonResult savePermission(@RequestBody Permission permission){
-        boolean save = permissionService.save(permission);
-        if (save){
-            return JsonResult.success().message("添加菜单成功");
-        }else {
-            return JsonResult.failure("添加菜单失败");
+        @PostMapping("/savePermission")
+    public JsonResult<Void> savePermission(@RequestBody Permission permission) {
+        if (!permissionService.save(permission)) {
+            throw ExFactory.throwSystem("系统异常，添加失败");
         }
+        return JsonResult.OK;
     }
 
 
     @PutMapping("/updatePermission")
-    public JsonResult updatePermission(@RequestBody Permission permission){
-
-        boolean update = permissionService.updateById(permission);
-        if (update){
-            return JsonResult.success().message("修改菜单成功");
-        }else {
-            return JsonResult.failure("修改菜单失败");
+    public JsonResult<Void> updatePermission(@RequestBody Permission permission) {
+        if (!permissionService.updateById(permission)) {
+            throw ExFactory.throwSystem("系统异常，修改菜单失败");
         }
+        return JsonResult.OK;
     }
-
 
 }
 

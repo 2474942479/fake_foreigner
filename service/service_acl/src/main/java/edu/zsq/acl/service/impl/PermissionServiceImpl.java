@@ -3,25 +3,23 @@ package edu.zsq.acl.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sun.javafx.tk.PermissionHelper;
 import edu.zsq.acl.entity.Permission;
 import edu.zsq.acl.entity.RolePermission;
 import edu.zsq.acl.entity.User;
-import edu.zsq.acl.entity.vo.PermissionTree;
+import edu.zsq.acl.entity.vo.PermissionVO;
 import edu.zsq.acl.mapper.PermissionMapper;
 import edu.zsq.acl.service.PermissionService;
 import edu.zsq.acl.service.RolePermissionService;
 import edu.zsq.acl.service.UserService;
 import edu.zsq.acl.utils.MenuUtil;
 import edu.zsq.acl.utils.PermissionUtil;
-import edu.zsq.acl.utils.RecursionFind;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import edu.zsq.utils.exception.core.ExFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -44,59 +42,34 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     /**
      * 查询所有的菜单
      *
-     * @return
+     * @return 菜单树
      */
     @Override
-    public List<PermissionTree> getPermissionList() {
+    public List<PermissionVO> getPermissionList() {
 
-        List<Permission> permissions = this.list();
+        List<Permission> list = lambdaQuery().list();
 //        复制到VO类中
-        List<PermissionTree> permissionTreeList = new ArrayList<>();
-        for (Permission permission : permissions) {
-            PermissionTree permissionTree = new PermissionTree();
-            BeanUtils.copyProperties(permission, permissionTree);
-            permissionTreeList.add(permissionTree);
-        }
-
-        List<PermissionTree> permissionList = new ArrayList<>();
-//        查找递归入口
-        for (PermissionTree permissionTree : permissionTreeList) {
-            if ("0".equals(permissionTree.getPid())) {
-                permissionTree.setLevel(1);
-                permissionList.add(RecursionFind.findChildren(permissionTree, permissionTreeList));
-            }
-        }
-
-
-        return permissionList;
+        List<PermissionVO> collect = list.stream()
+                .map(this::convert2PermissionVO)
+                .collect(Collectors.toList());
+        return convert2PermissionTree(collect);
     }
 
     /**
-     * 通过id 递归获取到该id下的所有子id
+     * 通过id 递归获取到该id下的所有子id 并添加到permissionIds中
      *
-     * @param id
-     * @param permissionIds
-     * @return
+     * @param id id
      */
     @Override
-    public void getPermissionIds(String id, List<String> permissionIds) {
-
-//        查找该id的子id
-        QueryWrapper<Permission> wrapper = new QueryWrapper<>();
-        wrapper.eq("pid", id);
-        wrapper.select("id");
-        List<Permission> permissionChildIds = baseMapper.selectList(wrapper);
-
-//        Java8新特性 Stream流 递归添加子节点
-        permissionChildIds.forEach(childId -> {
-//            添加子节点
-            permissionIds.add(childId.getId());
-//            递归添加子节点的子节点 直到没有子节点
-            this.getPermissionIds(childId.getId(), permissionIds);
-        });
-
+    public void deleteAllById(String id) {
+        List<String> permissionIds = new ArrayList<>();
+        permissionIds.add(id);
+        // 根据父类id  递归获取到所有的子类id 并放进list集合以便批量删除
+        getPermissionIds(id, permissionIds);
+        if (!removeByIds(permissionIds)) {
+            throw ExFactory.throwSystem("系统错误, 删除失败");
+        }
     }
-
 
     /**
      * 根据用户id获取用户菜单
@@ -133,32 +106,51 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
 
     @Override
-    public void saveRolePermissionRealtionShipGuli(String roleId, String[] permissionIds) {
+    public void saveRolePermission(String roleId, List<String> permissionIds) {
 
-        QueryWrapper<RolePermission> wrapper = new QueryWrapper<>();
-        wrapper.eq("role_id", roleId);
-        int count = rolePermissionService.count(wrapper);
-        if (count > 0) {
-            rolePermissionService.remove(wrapper);
+        boolean remove = rolePermissionService.lambdaUpdate()
+                .eq(RolePermission::getRoleId, roleId)
+                .remove();
+
+        if (!remove) {
+            throw ExFactory.throwSystem("系统异常, 权限清除失败, 请稍后重试");
         }
 
         if (permissionIds != null) {
-            //roleId角色id
-            //permissionId菜单id 数组形式
-            //1 创建list集合，用于封装添加数据
-            List<RolePermission> rolePermissionList = new ArrayList<>();
-            //遍历所有菜单数组
-            for (String perId : permissionIds) {
-                //RolePermission对象
-                RolePermission rolePermission = new RolePermission();
-                rolePermission.setRoleId(roleId);
-                rolePermission.setPermissionId(perId);
-                //封装到list集合
-                rolePermissionList.add(rolePermission);
+            List<RolePermission> rolePermissionList = permissionIds.parallelStream()
+                    .map(permissionId -> convert2RolePermission(roleId, permissionId))
+                    .collect(Collectors.toList());
+
+            if (!rolePermissionService.saveBatch(rolePermissionList)) {
+                throw ExFactory.throwSystem("系统异常, 添加权限失败");
             }
-            //添加到角色菜单关系表
-            rolePermissionService.saveBatch(rolePermissionList);
         }
+
+    }
+
+    public void getPermissionIds(String id, List<String> permissionIds) {
+
+        // 查找该id的子id
+        List<Permission> permissionChildIds = lambdaQuery()
+                .eq(Permission::getPid, id)
+                .select(Permission::getId)
+                .list();
+
+        // 递归添加子节点
+        permissionChildIds.forEach(childId -> {
+            // 添加子节点
+            permissionIds.add(childId.getId());
+            // 递归添加子节点的子节点 直到没有子节点
+            this.getPermissionIds(childId.getId(), permissionIds);
+        });
+
+    }
+
+    private RolePermission convert2RolePermission(String roleId, String permissionId) {
+        RolePermission rolePermission = new RolePermission();
+        rolePermission.setRoleId(roleId);
+        rolePermission.setPermissionId(permissionId);
+        return rolePermission;
     }
 
 
@@ -166,70 +158,81 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     //获取全部菜单
 
     @Override
-    public List<Permission> selectAllMenu(String roleId) {
-        List<Permission> allPermissionList = baseMapper.selectList(new QueryWrapper<Permission>().orderByAsc("CAST(id AS SIGNED)"));
+    public List<PermissionVO> selectAllMenu(String roleId) {
+        List<Permission> allPermissionList = lambdaQuery()
+                .apply("CAST(id AS SIGNED)")
+                .list();
 
         //根据角色id获取角色权限
-        List<RolePermission> rolePermissionList = rolePermissionService.list(new QueryWrapper<RolePermission>().eq("role_id",roleId));
+        List<RolePermission> rolePermissionList = rolePermissionService.lambdaQuery()
+                .eq(RolePermission::getRoleId, roleId)
+                .select(RolePermission::getPermissionId)
+                .list();
+
         //转换给角色id与角色权限对应Map对象
-//        List<String> permissionIdList = rolePermissionList.stream().map(e -> e.getPermissionId()).collect(Collectors.toList());
-//        allPermissionList.forEach(permission -> {
-//            if(permissionIdList.contains(permission.getId())) {
-//                permission.setSelect(true);
-//            } else {
-//                permission.setSelect(false);
-//            }
-//        });
-        for (int i = 0; i < allPermissionList.size(); i++) {
-            Permission permission = allPermissionList.get(i);
-            for (int m = 0; m < rolePermissionList.size(); m++) {
-                RolePermission rolePermission = rolePermissionList.get(m);
-                if(rolePermission.getPermissionId().equals(permission.getId())) {
-                    permission.setSelect(true);
-                }
-            }
-        }
+        List<String> permissionIds = rolePermissionList.stream()
+                .map(RolePermission::getPermissionId)
+                .collect(Collectors.toList());
 
+        // 设置是否选中
+        allPermissionList.forEach(permission -> permission.setSelect(permissionIds.contains(permission.getId())));
+        List<PermissionVO> treeNodes = allPermissionList.stream().map(this::convert2PermissionVO).collect(Collectors.toList());
+        return convert2PermissionTree(treeNodes);
+    }
 
-        List<Permission> permissionList = bulid(allPermissionList);
-        return permissionList;
+    private PermissionVO convert2PermissionVO(Permission permission) {
+        return PermissionVO.builder()
+                .id(permission.getId())
+                .pid(permission.getPid())
+                .name(permission.getName())
+                .path(permission.getPath())
+                .permissionValue(permission.getPermissionValue())
+                .component(permission.getComponent())
+                .icon(permission.getIcon())
+                .type(permission.getType())
+                .status(permission.getStatus())
+                .level(permission.getLevel())
+                .selected(permission.isSelect())
+                .build();
     }
 
 
     /**
-     * 使用递归方法建菜单
+     * 构建菜单树
      *
-     * @param treeNodes
-     * @return
+     * @param treeNodes 树的所有节点
+     * @return 树
      */
-    private static List<Permission> bulid(List<Permission> treeNodes) {
-        List<Permission> trees = new ArrayList<>();
-        for (Permission treeNode : treeNodes) {
+    private static List<PermissionVO> convert2PermissionTree(List<PermissionVO> treeNodes) {
+        List<PermissionVO> tree = new ArrayList<>();
+
+        treeNodes.forEach(treeNode -> {
+            // 选择根节点
             if ("0".equals(treeNode.getPid())) {
                 treeNode.setLevel(1);
-                trees.add(findChildren(treeNode, treeNodes));
+                tree.add(findChildren(treeNode, treeNodes));
             }
-        }
-        return trees;
+        });
+        return tree;
     }
 
     /**
      * 递归查找子节点
      *
-     * @param treeNodes
-     * @return
+     * @param treeNode  根节点
+     * @param treeNodes 子节点
+     * @return 子节点
      */
-    private static Permission findChildren(Permission treeNode, List<Permission> treeNodes) {
+    private static PermissionVO findChildren(PermissionVO treeNode, List<PermissionVO> treeNodes) {
         treeNode.setChildren(new ArrayList<>());
-        for (Permission it : treeNodes) {
-            if (treeNode.getId().equals(it.getPid())) {
-                it.setLevel(treeNode.getLevel() + 1);
-                if (treeNode.getChildren() == null) {
-                    treeNode.setChildren(new ArrayList<>());
-                }
-                treeNode.getChildren().add(findChildren(it, treeNodes));
+
+        treeNodes.forEach(node -> {
+            if (treeNode.getId().equalsIgnoreCase(node.getPid())) {
+                node.setLevel(treeNode.getLevel() + 1);
+                treeNode.getChildren().add(findChildren(node, treeNodes));
             }
-        }
+        });
+
         return treeNode;
     }
 }

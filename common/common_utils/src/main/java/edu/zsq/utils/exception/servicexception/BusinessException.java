@@ -9,8 +9,11 @@ import edu.zsq.utils.exception.core.ExDefinition;
  */
 public class BusinessException extends BaseException {
 
+    public ExDefinition exDefinition;
+
     public BusinessException(ExDefinition exDefinition) {
         super(exDefinition);
+        this.exDefinition = exDefinition;
     }
 
 }

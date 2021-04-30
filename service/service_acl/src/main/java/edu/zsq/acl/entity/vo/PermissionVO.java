@@ -1,19 +1,18 @@
 package edu.zsq.acl.entity.vo;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
  * @author 张
  */
+@Builder
 @Data
-public class PermissionTree implements Serializable {
+public class PermissionVO {
 
-    private static final long serialVersionUID=1L;
-    
     @ApiModelProperty(value = "编号")
     private String id;
 
@@ -45,8 +44,9 @@ public class PermissionTree implements Serializable {
     private Integer level;
 
     @ApiModelProperty(value = "下级")
-    private List<PermissionTree> children;
+    private List<PermissionVO> children;
 
     @ApiModelProperty(value = "是否选中")
-    private boolean isSelect;
+    private Boolean selected;
+
 }

@@ -8,7 +8,10 @@ import edu.zsq.utils.exception.core.ExDefinition;
  * @date 5:30 下午 2021/3/30
  */
 public class SystemException extends BaseException {
+    public ExDefinition exDefinition;
+
     public SystemException(ExDefinition exDefinition) {
         super(exDefinition);
+        this.exDefinition = exDefinition;
     }
 }
