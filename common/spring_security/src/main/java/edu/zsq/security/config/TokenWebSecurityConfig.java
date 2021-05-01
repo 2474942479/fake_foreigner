@@ -2,12 +2,11 @@ package edu.zsq.security.config;
 
 import edu.zsq.security.filter.TokenAuthenticationFilter;
 import edu.zsq.security.filter.TokenLoginFilter;
+import edu.zsq.security.provider.MyAuthenticationProvider;
 import edu.zsq.security.security.DefaultPasswordEncoder;
 import edu.zsq.security.security.TokenLogoutHandler;
 import edu.zsq.security.security.TokenManager;
 import edu.zsq.security.security.UnauthorizedEntryPoint;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -33,28 +32,26 @@ import javax.annotation.Resource;
 public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
-     *    自定义UserDetailsService
-     *    自定义该接口的实现类，查询数据库 获取权限列表
+     * 自定义UserDetailsService
+     * 自定义该接口的实现类，查询数据库 获取权限列表
      */
+    @Resource
     private UserDetailsService userDetailsService;
-    private TokenManager tokenManager;
-    private DefaultPasswordEncoder defaultPasswordEncoder;
-    private RedisTemplate<String,String> redisTemplate;
 
-    @Autowired
-    public TokenWebSecurityConfig(UserDetailsService userDetailsService, DefaultPasswordEncoder defaultPasswordEncoder,
-                                  TokenManager tokenManager, RedisTemplate redisTemplate) {
-        this.userDetailsService = userDetailsService;
-        this.defaultPasswordEncoder = defaultPasswordEncoder;
-        this.tokenManager = tokenManager;
-        this.redisTemplate = redisTemplate;
-    }
+    @Resource
+    private TokenManager tokenManager;
+
+    @Resource
+    private DefaultPasswordEncoder defaultPasswordEncoder;
+
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
+
 
     /**
      * 配置设置
      *
-     * @param http
-     * @throws Exception
+     * @param http http
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -73,19 +70,18 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * 密码处理
      *
-     * @param auth
-     * @throws Exception
+     * @param auth auth
      */
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(new MyAuthenticationProvider(userDetailsService, defaultPasswordEncoder));
         auth.userDetailsService(userDetailsService).passwordEncoder(defaultPasswordEncoder);
     }
 
     /**
      * 配置哪些请求不拦截
      *
-     * @param web
-     * @throws Exception
+     * @param web web
      */
     @Override
     public void configure(WebSecurity web) throws Exception {

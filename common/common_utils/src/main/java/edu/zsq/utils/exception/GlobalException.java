@@ -6,17 +6,17 @@ import edu.zsq.utils.exception.servicexception.MyException;
 import edu.zsq.utils.exception.servicexception.SystemException;
 import edu.zsq.utils.result.JsonResult;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * 统一异常处理类
  *
  * @author 张
  */
-@ControllerAdvice
 @Slf4j
+@RestControllerAdvice
 public class GlobalException<T> {
 
     /**

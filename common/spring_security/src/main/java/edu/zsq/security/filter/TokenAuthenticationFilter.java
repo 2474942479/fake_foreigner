@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -19,8 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +42,6 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
             throws IOException, ServletException {
-        logger.info("=================" + req.getRequestURI());
         if (!req.getRequestURI().contains("admin")) {
             chain.doFilter(req, res);
             return;
@@ -55,15 +51,14 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
         try {
             authentication = getAuthentication(req);
         } catch (Exception e) {
-
             JsonResult.failure(ErrorCode.UNDEFINED_ERROR, "获取授权失败");
         }
 
-        if (authentication != null) {
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else {
-            JsonResult.failure(ErrorCode.FORBIDDEN);
+        if (authentication == null) {
+            JsonResult.failure(ErrorCode.FORBIDDEN, "请管理员授权后再登录");
         }
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(req, res);
     }
 
@@ -71,8 +66,8 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
     /**
      * 获取授权
      *
-     * @param request
-     * @return
+     * @param request 请求
+     * @return 授权信息
      */
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         // 从header里获取token

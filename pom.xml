@@ -53,6 +53,7 @@
         <commons.lang3.version>3.8.1</commons.lang3.version>
         <hutool-all.version>5.6.3</hutool-all.version>
         <knife4j-spring-boot-starter.version>2.0.7</knife4j-spring-boot-starter.version>
+        <commons-lang.version>2.6</commons-lang.version>
 
         <aliyun-sdk-oss.version>3.10.2</aliyun-sdk-oss.version>
         <aliyun-java-sdk-core.version>4.5.1</aliyun-java-sdk-core.version>
@@ -141,6 +142,13 @@
                 <artifactId>joda-time</artifactId>
                 <version>${jodatime.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons-lang.version}</version>
+            </dependency>
+
             <!--xls-->
             <dependency>
                 <groupId>org.apache.poi</groupId>

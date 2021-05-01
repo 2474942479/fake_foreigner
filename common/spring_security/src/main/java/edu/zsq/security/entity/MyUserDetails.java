@@ -2,14 +2,13 @@ package edu.zsq.security.entity;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -20,47 +19,46 @@ import java.util.List;
  */
 @Data
 @Slf4j
-public class SecurityUser implements UserDetails {
+public class MyUserDetails implements UserDetails {
 
     /**
      * 当前登录用户
      */
-    private transient User currentUserInfo;
+    private transient UserInfoDTO userInfo;
 
     /**
      * 当前权限
      */
     private List<String> permissionValueList;
 
-    public SecurityUser() {
+    public MyUserDetails() {
     }
 
-    public SecurityUser(User user) {
-        if (user != null) {
-            this.currentUserInfo = user;
+    public MyUserDetails(UserInfoDTO userInfoDTO, List<String> permissionValueList) {
+        if (userInfoDTO != null) {
+            this.userInfo = userInfoDTO;
         }
+
+        this.permissionValueList = permissionValueList;
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = new ArrayList<>();
-        for (String permissionValue : permissionValueList) {
-            if (StringUtils.isEmpty(permissionValue)) continue;
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(permissionValue);
-            authorities.add(authority);
-        }
+    public List<GrantedAuthority> getAuthorities() {
 
-        return authorities;
+        return permissionValueList.parallelStream()
+                .filter(StringUtils::isNoneBlank)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        return currentUserInfo.getPassword();
+        return userInfo.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return currentUserInfo.getUsername();
+        return userInfo.getUsername();
     }
 
     @Override
