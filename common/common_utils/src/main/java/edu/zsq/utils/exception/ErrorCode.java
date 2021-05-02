@@ -69,6 +69,10 @@ public enum ErrorCode implements IErrorEnum {
      * 503
      */
     SERVICE_UNAVAILABLE(ExType.SYSTEM_ERROR, 2015, "服务不可用: {}"),
+
+    PAYING(ExType.SYSTEM_BUSY, 2016, "支付中"),
+
+    GATEWAY_UNDEFINED_ERROR(ExType.SYSTEM_ERROR, 1000, "GateWay网关异常: {}")
     ;
 
 

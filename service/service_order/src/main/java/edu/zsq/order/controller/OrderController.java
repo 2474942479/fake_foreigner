@@ -45,12 +45,10 @@ public class OrderController {
 //        订单状态（0：未支付 1：已支付）
         orderInfo.setStatus(0);
 
-        boolean b = orderService.saveOrUpdate(orderInfo);
-        if (b){
-            return JsonResult.success().message("订单添加成功").data("orderNumber", orderNumber);
-
+        if (orderService.saveOrUpdate(orderInfo)){
+            return JsonResult.success(orderNumber).message("订单添加成功");
         }else {
-            return JsonResult.failure().message("订单添加失败");
+            return JsonResult.failure("订单添加失败");
 
         }
 
@@ -66,8 +64,7 @@ public class OrderController {
     public JsonResult getOrderInfo(@PathVariable String orderNumber){
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
         wrapper.eq("order_number",orderNumber);
-        Order order = orderService.getOne(wrapper);
-        return JsonResult.success().data("orderInfo",order).message("订单创建成功，请确认！");
+        return JsonResult.success(orderService.getOne(wrapper)).message("订单创建成功，请确认！");
     }
 
     /**
@@ -94,7 +91,7 @@ public class OrderController {
         if (remove){
             return JsonResult.success().message("已取消订单");
         }else {
-            return JsonResult.failure().message("取消订单失败");
+            return JsonResult.failure("取消订单失败");
         }
     }
 

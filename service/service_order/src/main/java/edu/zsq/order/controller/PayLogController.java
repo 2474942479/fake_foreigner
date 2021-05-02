@@ -2,11 +2,12 @@ package edu.zsq.order.controller;
 
 
 import edu.zsq.order.service.PayLogService;
+import edu.zsq.utils.exception.ErrorCode;
 import edu.zsq.utils.exception.servicexception.MyException;
 import edu.zsq.utils.result.JsonResult;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -45,7 +46,6 @@ public class PayLogController {
     public JsonResult getPayStatus(@PathVariable String orderNumber){
 //        调用wx接口查询扫码支付后返回的信息
         Map<String,String> map = payLogService.getPayStatus(orderNumber);
-        System.out.println(map);
         if (map == null){
             throw new MyException(20001,"支付出错了！请重试");
         }
@@ -54,7 +54,7 @@ public class PayLogController {
             payLogService.insertPayLogAndUpdateStatus(map);
             return JsonResult.success().message("支付成功！");
         }
-        return JsonResult.failure().code(25000).message("支付中！");
+        return JsonResult.failure(ErrorCode.PAYING);
     }
 
 }

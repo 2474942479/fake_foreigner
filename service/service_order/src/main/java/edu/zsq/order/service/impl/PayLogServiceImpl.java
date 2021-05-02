@@ -15,6 +15,7 @@ import edu.zsq.utils.exception.servicexception.MyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
@@ -139,7 +140,7 @@ public class PayLogServiceImpl extends ServiceImpl<PayLogMapper, PayLog> impleme
         wrapper.eq("order_number", orderNumber);
         Order order = orderService.getOne(wrapper);
 
-        if (order.getStatus().intValue() == 1) {
+        if (order.getStatus() == 1) {
             return;
         }
         order.setStatus(1);

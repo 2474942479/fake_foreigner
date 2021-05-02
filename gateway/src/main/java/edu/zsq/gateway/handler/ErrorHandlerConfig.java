@@ -23,8 +23,8 @@ import java.util.List;
  * @author zsq
  *
  */
-@Configuration
-@EnableConfigurationProperties({ServerProperties.class, ResourceProperties.class})
+//@Configuration
+//@EnableConfigurationProperties({ServerProperties.class, ResourceProperties.class})
 public class ErrorHandlerConfig {
 
     private final ServerProperties serverProperties;
