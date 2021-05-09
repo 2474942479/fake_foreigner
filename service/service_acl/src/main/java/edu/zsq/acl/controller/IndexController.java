@@ -26,7 +26,7 @@ public class IndexController {
     /**
      * 根据token获取用户信息
      */
-    @GetMapping("info")
+    @GetMapping("/info")
     public JsonResult<UserInfoVO> info(){
         //获取当前登录用户用户名
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -37,14 +37,14 @@ public class IndexController {
      *根据username 获取菜单
      * @return 菜单列表
      */
-    @GetMapping("menu")
+    @GetMapping("/menu")
     public JsonResult<List<JSONObject>> getMenu(){
         //获取当前登录用户用户名
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return JsonResult.success(indexService.getMenu(username));
     }
 
-    @PostMapping("logout")
+    @PostMapping("/logout")
     public JsonResult<Void> logout(){
         return JsonResult.success();
     }

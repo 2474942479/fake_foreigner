@@ -8,6 +8,7 @@ import edu.zsq.eduservice.entity.dto.query.BannerQueryDTO;
 import edu.zsq.eduservice.entity.vo.BannerVO;
 import edu.zsq.eduservice.mapper.EduBannerMapper;
 import edu.zsq.eduservice.service.EduBannerService;
+import edu.zsq.servicebase.common.Constants;
 import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.page.PageData;
 import edu.zsq.utils.result.JsonResult;
@@ -45,7 +46,7 @@ public class EduBannerServiceImpl extends ServiceImpl<EduBannerMapper, EduBanner
 
     @Override
     public BannerVO getBanner(String id) {
-        EduBanner one = lambdaQuery().eq(EduBanner::getId, id).last("limit 1").one();
+        EduBanner one = lambdaQuery().eq(EduBanner::getId, id).last(Constants.LIMIT_ONE).one();
         return convertEduBanner(one);
     }
 

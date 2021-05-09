@@ -1,10 +1,11 @@
 package edu.zsq.eduservice.entity.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * @author zhangsongqi
@@ -12,7 +13,7 @@ import lombok.Data;
  */
 @Builder
 @Data
-public class TeacherInfoVO {
+public class TeacherVO {
 
     @ApiModelProperty(value = "讲师ID")
     private String id;
@@ -35,4 +36,7 @@ public class TeacherInfoVO {
     @ApiModelProperty(value = "排序")
     private Integer sort;
 
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private LocalDateTime gmtCreate;
 }

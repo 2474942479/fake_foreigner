@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class UserVO {
-    @ApiModelProperty(value = "会员id")
+    @ApiModelProperty(value = "用户id")
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
-    @ApiModelProperty(value = "昵称")
+    @ApiModelProperty(value = "用户名")
     private String username;
 
     @ApiModelProperty(value = "昵称")
@@ -29,6 +29,6 @@ public class UserVO {
     private String salt;
 
     @ApiModelProperty("创建时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private LocalDateTime gmtCreate;
 }

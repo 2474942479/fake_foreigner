@@ -10,11 +10,10 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author zsq
@@ -24,10 +23,10 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("acl_user_role")
-@ApiModel(value="UserRole对象", description="")
+@ApiModel(value = "UserRole对象", description = "UserRole对象")
 public class UserRole implements Serializable {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "主键id")
     @TableId(value = "id", type = IdType.ID_WORKER_STR)

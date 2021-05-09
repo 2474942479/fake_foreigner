@@ -2,7 +2,6 @@ package edu.zsq.servicebase;
 
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
@@ -68,9 +67,8 @@ public class RedisConfig extends CachingConfigurerSupport {
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer))
                 .disableCachingNullValues();
-        RedisCacheManager cacheManager = RedisCacheManager.builder(factory)
+        return RedisCacheManager.builder(factory)
                 .cacheDefaults(config)
                 .build();
-        return cacheManager;
     }
 }

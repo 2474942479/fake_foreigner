@@ -3,6 +3,7 @@ package edu.zsq.acl.controller;
 
 import edu.zsq.acl.entity.dto.UserDTO;
 import edu.zsq.acl.entity.dto.UserQueryDTO;
+import edu.zsq.acl.entity.vo.RoleVO;
 import edu.zsq.acl.entity.vo.UserVO;
 import edu.zsq.acl.service.RoleService;
 import edu.zsq.acl.service.UserService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -69,17 +71,17 @@ public class UserController {
         return JsonResult.success();
     }
 
-    @ApiOperation(value = "根据用户获取角色数据")
-    @GetMapping("/toAssign/{userId}")
-    public JsonResult toAssign(@PathVariable String userId) {
-        return JsonResult.success(roleService.findRoleByUserId(userId));
+    @ApiOperation(value = "根据用户id获取角色信息")
+    @GetMapping("/getRoleInfo/{userId}")
+    public JsonResult<Map<String, List<RoleVO>>> getRoleInfo(@PathVariable String userId) {
+        return JsonResult.success(roleService.getRoleInfo(userId));
     }
 
-    @ApiOperation(value = "根据用户分配角色")
-    @PostMapping("/doAssign")
-    public JsonResult doAssign(@RequestParam String userId, @RequestParam String[] roleId) {
-        roleService.saveUserRoleRealtionShip(userId, roleId);
-        return JsonResult.success();
+    @ApiOperation(value = "根据用户id分配角色")
+    @PostMapping("/assignRole")
+    public JsonResult<Void> assignRole(@RequestParam String userId, @RequestParam List<String> roleId) {
+        roleService.assignRole(userId, roleId);
+        return JsonResult.OK;
     }
 
 

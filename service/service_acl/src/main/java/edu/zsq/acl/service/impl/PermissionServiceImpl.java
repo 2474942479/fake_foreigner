@@ -15,6 +15,8 @@ import edu.zsq.acl.utils.MenuUtil;
 import edu.zsq.acl.utils.PermissionUtil;
 import edu.zsq.utils.exception.core.ExFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -74,8 +76,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     /**
      * 根据用户id获取用户菜单
      *
-     * @param id
-     * @return
+     * @param id 用户id
+     * @return 用户权限值
      */
     @Override
     public List<String> selectPermissionValueByUserId(String id) {
@@ -106,6 +108,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
     public void saveRolePermission(String roleId, List<String> permissionIds) {
 
         boolean remove = rolePermissionService.lambdaUpdate()

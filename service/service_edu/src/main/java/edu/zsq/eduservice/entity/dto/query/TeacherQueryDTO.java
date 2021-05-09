@@ -1,8 +1,7 @@
 package edu.zsq.eduservice.entity.dto.query;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import edu.zsq.eduservice.entity.EduTeacher;
-import edu.zsq.eduservice.entity.vo.TeacherInfoVO;
+import edu.zsq.eduservice.entity.vo.TeacherVO;
 import edu.zsq.utils.page.PageData;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.time.LocalDateTime;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class TeacherQueryDTO extends PageData<TeacherInfoVO> implements Serializable {
+public class TeacherQueryDTO extends PageData<TeacherVO> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

@@ -11,16 +11,16 @@ import java.util.Map;
  */
 public interface IndexService {
     /**
-     * 根据用户名获取用户登录信息
-     * @param username
-     * @return
+     * 根据用户名获取用户信息
+     * @param username 用户名
+     * @return 用户信息
      */
     UserInfoVO getUserInfo(String username);
 
     /**
      * 根据用户名获取动态菜单
-     * @param username
-     * @return
+     * @param username 用户名
+     * @return 菜单
      */
     List<JSONObject> getMenu(String username);
 

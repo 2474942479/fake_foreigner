@@ -4,9 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.eduservice.entity.EduTeacher;
 import edu.zsq.eduservice.entity.dto.TeacherDTO;
 import edu.zsq.eduservice.entity.dto.query.TeacherQueryDTO;
-import edu.zsq.eduservice.entity.vo.TeacherInfoVO;
+import edu.zsq.eduservice.entity.vo.TeacherVO;
 import edu.zsq.utils.page.PageData;
-import edu.zsq.utils.result.JsonResult;
 
 /**
  * <p>
@@ -14,7 +13,7 @@ import edu.zsq.utils.result.JsonResult;
  * </p>
  *
  * @author zsq
- * @since 2020-08-10
+ * @since 2021-05-09
  */
 public interface EduTeacherService extends IService<EduTeacher> {
 
@@ -24,23 +23,21 @@ public interface EduTeacherService extends IService<EduTeacher> {
      * @param teacherQueryDTO 查询条件
      * @return 教师信息分页结果
      */
-    PageData<TeacherInfoVO> getTeacherListPage(TeacherQueryDTO teacherQueryDTO);
+    PageData<TeacherVO> getTeacherListPage(TeacherQueryDTO teacherQueryDTO);
 
     /**
      * 添加教师
      *
      * @param teacherDTO 教师信息
-     * @return 添加结果
      */
-    JsonResult<Void> saveTeacher(TeacherDTO teacherDTO);
+    void saveTeacher(TeacherDTO teacherDTO);
 
     /**
      * 删除教师
      *
      * @param id 教师id
-     * @return 删除结果
      */
-    JsonResult<Void> delTeacher(String id);
+    void delTeacher(String id);
 
     /**
      * 查询单个教师信息
@@ -48,13 +45,12 @@ public interface EduTeacherService extends IService<EduTeacher> {
      * @param id 教师id
      * @return 教师信息
      */
-    TeacherInfoVO getTeacherInfo(String id);
+    TeacherVO getTeacherInfo(String id);
 
     /**
      * 根据教师id修改教师信息
      *
      * @param teacherDTO 教师信息
-     * @return 修改结果
      */
-    JsonResult<Void> updateTeacher(TeacherDTO teacherDTO);
+    void updateTeacher(TeacherDTO teacherDTO);
 }

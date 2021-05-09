@@ -8,6 +8,7 @@ import edu.zsq.eduservice.entity.vo.chapter.VideoVO;
 import edu.zsq.eduservice.mapper.EduVideoMapper;
 import edu.zsq.eduservice.service.EduVideoService;
 import edu.zsq.eduservice.utils.VodClient;
+import edu.zsq.servicebase.common.Constants;
 import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.result.JsonResult;
 import org.apache.commons.lang3.StringUtils;
@@ -82,7 +83,7 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
         EduVideo eduVideo = lambdaQuery()
                 .eq(EduVideo::getId, id)
                 .select(EduVideo::getId, EduVideo::getVideoSourceId)
-                .last("limit 1")
+                .last(Constants.LIMIT_ONE)
                 .one();
 
         // 判断是否有视频
@@ -160,7 +161,7 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
     public EduVideoVO getVideo(String id) {
         EduVideo eduVideo = lambdaQuery()
                 .eq(EduVideo::getId, id)
-                .last("limit 1")
+                .last(Constants.LIMIT_ONE)
                 .one();
         return convertEduVideo(eduVideo);
     }

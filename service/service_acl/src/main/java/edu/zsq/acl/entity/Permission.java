@@ -10,7 +10,6 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,10 +24,10 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("acl_permission")
-@ApiModel(value="Permission对象", description="权限")
+@ApiModel(value = "Permission对象", description = "权限")
 public class Permission implements Serializable {
 
-    private static final long serialVersionUID=1L;
+    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "编号")
     @TableId(value = "id", type = IdType.ID_WORKER_STR)

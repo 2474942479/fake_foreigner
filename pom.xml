@@ -36,6 +36,7 @@
 
         <online-edu.version>0.0.1-SNAPSHOT</online-edu.version>
 
+        <redisson.version>3.11.4</redisson.version>
         <mybatis-plus.version>3.2.0</mybatis-plus.version>
         <velocity.version>2.0</velocity.version>
         <swagger.version>2.7.0</swagger.version>
@@ -69,6 +70,11 @@
     <dependencyManagement>
         <dependencies>
 
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
 
             <!--Spring Cloud-->
             <dependency>

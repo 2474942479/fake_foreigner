@@ -4,13 +4,12 @@ package edu.zsq.eduservice.controller;
 import edu.zsq.eduservice.entity.EduTeacher;
 import edu.zsq.eduservice.entity.dto.TeacherDTO;
 import edu.zsq.eduservice.entity.dto.query.TeacherQueryDTO;
-import edu.zsq.eduservice.entity.vo.TeacherInfoVO;
+import edu.zsq.eduservice.entity.vo.TeacherVO;
 import edu.zsq.eduservice.service.EduTeacherService;
 import edu.zsq.utils.page.PageData;
 import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,7 @@ import java.util.List;
  *
  * @author zsq
  * @CrossOrigin 跨域注解
- * @since 2020-08-10
+ * @since 2021-05-09
  */
 @RestController
 @RequestMapping("/eduService/teacher")
@@ -41,39 +40,11 @@ public class EduTeacherController {
     }
 
     /**
-     * 无条件分页查询
-     */
-    /*
-    @GetMapping("pageTeacher/{current}/{size}")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "current", value = "当前页", required = true, dataType = "Long", paramType = "path"),
-            @ApiImplicitParam(name = "size", value = "每页记录数", required = true, dataType = "Long", paramType = "path")
-    })
-    public JsonResult<PageData<TeacherInfoVO>> pageTeacher(@PathVariable Long current, @PathVariable Long size) {
-
-
-        Page<EduTeacher> page = new Page<>(current, size);
-        teacherService.page(page);
-
-
-//        总记录数
-        long total = page.getTotal();
-//        每页数据List集合
-        if (page.getRecords().isEmpty()) {
-            return JsonResult.success(PageData.empty());
-        }
-
-
-        return JsonResult.success(PageData.of(list, current, size, total));
-    }*/
-
-
-    /**
      * 条件分页查询
      */
     @PostMapping("/getTeacherListPage")
     @ApiOperation(value = "讲师条件分页查询", notes = "根据获取的current size 以及teacherQuery查询并分页")
-    public JsonResult<PageData<TeacherInfoVO>> getTeacherListPage(@RequestBody TeacherQueryDTO teacherQueryDTO) {
+    public JsonResult<PageData<TeacherVO>> getTeacherListPage(@RequestBody TeacherQueryDTO teacherQueryDTO) {
         return JsonResult.success(teacherService.getTeacherListPage(teacherQueryDTO));
     }
 
@@ -86,9 +57,10 @@ public class EduTeacherController {
      */
     @PostMapping("/addTeacher")
     @ApiOperation(value = "增加讲师", notes = "根据获取的EduTeacher对象新增讲师")
-    @ApiImplicitParam(name = "teacherInfo", value = "讲师详细实体EduTeacher", required = true, dataType = "EduTeacher", paramType = "body")
+    @ApiImplicitParam(name = "teacherDTO", value = "讲师详细信息", required = true, dataType = "TeacherDTO", paramType = "body")
     public JsonResult<Void> addTeacher(@RequestBody TeacherDTO teacherDTO) {
-        return teacherService.saveTeacher(teacherDTO);
+        teacherService.saveTeacher(teacherDTO);
+        return JsonResult.OK;
     }
 
 
@@ -102,7 +74,8 @@ public class EduTeacherController {
     @ApiOperation(value = "删除讲师", notes = "根据获取的id删除讲师")
     @ApiImplicitParam(name = "id", value = "讲师ID", required = true, dataType = "String", paramType = "path")
     public JsonResult<Void> removeTeacher(@PathVariable String id) {
-        return teacherService.delTeacher(id);
+        teacherService.delTeacher(id);
+        return JsonResult.OK;
     }
 
 
@@ -113,7 +86,7 @@ public class EduTeacherController {
      * @return 教师信息
      */
     @GetMapping("/getTeacherInfo/{id}")
-    public JsonResult<TeacherInfoVO> getTeacherInfo(@PathVariable String id) {
+    public JsonResult<TeacherVO> getTeacherInfo(@PathVariable String id) {
         return JsonResult.success(teacherService.getTeacherInfo(id));
     }
 
@@ -126,12 +99,9 @@ public class EduTeacherController {
      */
     @PutMapping("/updateTeacher")
     @ApiOperation(value = "修改讲师", notes = "根据获取的EduTeacher对象修改讲师")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "讲师Id", required = true, dataType = "String", paramType = "path"),
-            @ApiImplicitParam(name = "teacherInfo", value = "讲师详细实体EduTeacher", required = true, dataType = "EduTeacher", paramType = "body")
-    })
     public JsonResult<Void> updateTeacher(@RequestBody TeacherDTO teacherDTO) {
-        return teacherService.updateTeacher(teacherDTO);
+        teacherService.updateTeacher(teacherDTO);
+        return JsonResult.OK;
     }
 
 }

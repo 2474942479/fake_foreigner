@@ -10,11 +10,13 @@ import edu.zsq.acl.entity.vo.UserVO;
 import edu.zsq.acl.mapper.UserMapper;
 import edu.zsq.acl.service.UserRoleService;
 import edu.zsq.acl.service.UserService;
+import edu.zsq.servicebase.common.Constants;
 import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.page.PageData;
 import net.bytebuddy.implementation.bytecode.Throw;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
@@ -47,7 +49,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public User selectByUsername(String username) {
         return lambdaQuery()
                 .eq(User::getUsername, username)
-                .last("limit 1")
+                .last(Constants.LIMIT_ONE)
                 .one();
     }
 
@@ -83,7 +85,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
     public void batchRemove(List<String> userIds) {
         if (!removeByIds(userIds)) {
             throw ExFactory.throwSystem("系统异常, 用户删除失败");
