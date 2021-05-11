@@ -7,7 +7,7 @@ import edu.zsq.eduservice.entity.vo.EduVideoVO;
 import edu.zsq.eduservice.entity.vo.chapter.VideoVO;
 import edu.zsq.eduservice.mapper.EduVideoMapper;
 import edu.zsq.eduservice.service.EduVideoService;
-import edu.zsq.eduservice.utils.VodClient;
+import edu.zsq.eduservice.service.VodService;
 import edu.zsq.servicebase.common.Constants;
 import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.result.JsonResult;
@@ -33,7 +33,7 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
 
 
     @Resource
-    private VodClient vodClient;
+    private VodService vodService;
 
     @Override
     public JsonResult<Void> saveVideo(VideoDTO videoDTO) {
@@ -86,25 +86,14 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
                 .last(Constants.LIMIT_ONE)
                 .one();
 
-        // 判断是否有视频
-        if (StringUtils.isNotBlank(eduVideo.getVideoSourceId())) {
-            try {
-                JsonResult<Void> jsonResult = vodClient.removeVod(eduVideo.getVideoSourceId());
-
-                if (!jsonResult.isSuccess()) {
-                    // 删除小节信息
-                    throw ExFactory.throwBusiness("调用Vod服务失败");
-                }
-            } catch (Exception e) {
-                throw ExFactory.throwSystem("调用Vod服务异常");
-            }
-
-        }
-
-        if (baseMapper.deleteById(id) == 0) {
+        if (removeById(id)) {
             throw ExFactory.throwSystem("服务器异常, 删除小节失败");
         }
 
+        // 判断是否有视频
+        if (StringUtils.isNotBlank(eduVideo.getVideoSourceId()) && !vodService.removeVod(eduVideo.getVideoSourceId())) {
+            throw ExFactory.throwSystem("阿里云删除视频失败");
+        }
         return JsonResult.OK;
     }
 
@@ -115,6 +104,7 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
      * @return 删除结果
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public boolean removeVideoByCourseId(String courseId) {
 
         List<EduVideo> videoList = lambdaQuery()
@@ -122,29 +112,26 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
                 .select(EduVideo::getId, EduVideo::getVideoSourceId)
                 .list();
 
-//        遍历删除掉小节中所有的阿里云视频
-        List<String> vodIdList = videoList.stream()
+//        遍历获取要删除掉的小节中所有的阿里云视频id
+        List<String> vodSourceIds = videoList.stream()
                 .map(EduVideo::getVideoSourceId)
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.toList());
 
+        List<String> ids = videoList.stream()
+                .map(EduVideo::getId)
+                .collect(Collectors.toList());
 
-        if (vodIdList.size() > 0) {
-            // 根据多个视频id批量删除
-            try {
-                JsonResult<Void> jsonResult = vodClient.removeVodList(vodIdList);
-                if (!jsonResult.isSuccess()) {
-                    // 删除小节信息
-                    throw ExFactory.throwBusiness("调用Vod服务失败");
-                }
-            } catch (Exception e) {
-                throw ExFactory.throwSystem("调用Vod服务异常");
-            }
+        if (!ids.isEmpty() && !removeByIds(ids)) {
+            throw ExFactory.throwSystem("系统异常，删除失败");
         }
 
-        List<String> ids = videoList.stream().map(EduVideo::getId).collect(Collectors.toList());
+        // 根据多个视频id批量删除
+        if (!vodSourceIds.isEmpty() && !vodService.removeVodList(vodSourceIds)) {
+            throw ExFactory.throwSystem("阿里云删除视频失败");
+        }
 
-        return removeByIds(ids);
+        return true;
     }
 
 

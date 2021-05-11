@@ -2,7 +2,7 @@ package edu.zsq.eduservice.controller;
 
 
 import edu.zsq.eduservice.entity.dto.query.CourseQueryDTO;
-import edu.zsq.eduservice.entity.vo.CourseDTO;
+import edu.zsq.eduservice.entity.dto.CourseDTO;
 import edu.zsq.eduservice.entity.vo.CourseVO;
 import edu.zsq.eduservice.entity.vo.FinalReleaseVO;
 import edu.zsq.eduservice.service.EduCourseService;
@@ -66,9 +66,9 @@ public class EduCourseController {
      * @param id 课程id
      * @return 课程基本信息
      */
-    @GetMapping("/getCourseDTOById/{id}")
+    @GetMapping("/getCourseInfoById/{id}")
     public JsonResult<CourseVO> getCourseInfoById(@PathVariable String id) {
-        return JsonResult.success(eduCourseService.getCourseDTO(id));
+        return JsonResult.success(eduCourseService.getCourseInfoById(id));
     }
 
     /**
@@ -77,9 +77,10 @@ public class EduCourseController {
      * @param courseDTO 课程基本信息VO类
      * @return 修改结果
      */
-    @PutMapping("/updateCourseDTO")
-    public JsonResult<Void> updateCourseDTO(@RequestBody CourseDTO courseDTO) {
-        return eduCourseService.updateCourseDTO(courseDTO);
+    @PutMapping("/updateCourseInfo")
+    public JsonResult<Void> updateCourseInfo(@RequestBody CourseDTO courseDTO) {
+        eduCourseService.updateCourseDTO(courseDTO);
+        return JsonResult.OK;
     }
 
     /**

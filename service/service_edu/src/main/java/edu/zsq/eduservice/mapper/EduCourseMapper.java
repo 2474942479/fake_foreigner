@@ -18,7 +18,7 @@ public interface EduCourseMapper extends BaseMapper<EduCourse> {
     /**
      * 获取最终发布信息
      * @param courseId 课程id
-     * @return
+     * @return 最终发布信息
      */
     FinalReleaseVO getFinalReleaseVO(String courseId);
 

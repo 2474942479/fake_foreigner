@@ -35,7 +35,9 @@
                ec.cover,
                ec.buy_count AS buyCount,
                ec.view_count AS viewCount,
-               ecd.description
+               ecd.description,
+               ec.gmt_create AS gmtcreate,
+               ec.status
         FROM edu_course ec
                  LEFT JOIN edu_course_description ecd ON ec.id = ecd.id
         WHERE ec.id = #{courseId}

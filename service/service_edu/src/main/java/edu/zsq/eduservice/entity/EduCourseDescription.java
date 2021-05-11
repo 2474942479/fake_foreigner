@@ -1,6 +1,7 @@
 package edu.zsq.eduservice.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -35,7 +36,7 @@ public class EduCourseDescription implements Serializable {
      * TableId type 默认为type = IdType.NONE
      */
     @ApiModelProperty(value = "课程ID")
-    @TableId(value = "id")
+    @TableId(value = "id", type = IdType.INPUT)
     private String id;
 
     @ApiModelProperty(value = "课程简介")

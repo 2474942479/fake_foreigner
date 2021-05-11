@@ -1,4 +1,4 @@
-package edu.zsq.eduservice.entity.vo;
+package edu.zsq.eduservice.entity.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

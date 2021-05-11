@@ -1,6 +1,5 @@
 package edu.zsq.eduservice.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.eduservice.entity.EduChapter;
 import edu.zsq.eduservice.entity.EduVideo;
@@ -11,6 +10,7 @@ import edu.zsq.eduservice.service.EduChapterService;
 import edu.zsq.eduservice.service.EduVideoService;
 import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.result.JsonResult;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -90,9 +90,14 @@ public class EduChapterServiceImpl extends ServiceImpl<EduChapterMapper, EduChap
     @Override
     public boolean removeChapterByCourseId(String courseId) {
 
-        QueryWrapper<EduChapter> chapterWrapper = new QueryWrapper<>();
-        chapterWrapper.eq("course_id", courseId);
-        int delete = baseMapper.delete(chapterWrapper);
-        return delete > 0;
+        boolean result = lambdaQuery()
+                .eq(StringUtils.isNotBlank(courseId), EduChapter::getCourseId, courseId)
+                .list()
+                .isEmpty();
+
+        boolean remove = lambdaUpdate()
+                .eq(StringUtils.isNotBlank(courseId), EduChapter::getCourseId, courseId)
+                .remove();
+        return result || remove;
     }
 }

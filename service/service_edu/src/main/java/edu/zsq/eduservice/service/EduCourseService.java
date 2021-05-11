@@ -3,7 +3,7 @@ package edu.zsq.eduservice.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.eduservice.entity.EduCourse;
 import edu.zsq.eduservice.entity.dto.query.CourseQueryDTO;
-import edu.zsq.eduservice.entity.vo.CourseDTO;
+import edu.zsq.eduservice.entity.dto.CourseDTO;
 import edu.zsq.eduservice.entity.vo.CourseVO;
 import edu.zsq.eduservice.entity.vo.FinalReleaseVO;
 import edu.zsq.utils.page.PageData;
@@ -35,15 +35,14 @@ public interface EduCourseService extends IService<EduCourse> {
      * @param id 课程id
      * @return 课程基本信息VO类
      */
-    CourseVO getCourseDTO(String id);
+    CourseVO getCourseInfoById(String id);
 
     /**
      * 修改课程基本信息
      *
      * @param courseDTO 课程基本信息V
-     * @return 修改结果
      */
-    JsonResult<Void> updateCourseDTO(CourseDTO courseDTO);
+    void updateCourseDTO(CourseDTO courseDTO);
 
     /**
      * 根据课程id查询返回最终发布信息

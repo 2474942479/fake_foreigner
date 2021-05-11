@@ -1,6 +1,0 @@
-#    阿里云oss
-#不同服务器地址不同
-aliyun:
-  file:
-    keyid: LTAI5tDKF8exviFAHAx1VVZt
-      keysecret: BhsVUzPcT4GMqZcL7sPiAcSM7tfxxt

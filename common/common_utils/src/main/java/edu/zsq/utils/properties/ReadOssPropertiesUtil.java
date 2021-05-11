@@ -3,6 +3,7 @@ package edu.zsq.utils.properties;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
@@ -15,31 +16,40 @@ import org.springframework.stereotype.Component;
  * @author 张
  */
 @Component
-@PropertySource("classpath:aliyun.yml")
-@ConfigurationProperties(prefix = "aliyun.file")
-public class ReadPropertiesUtil implements InitializingBean {
+@RefreshScope
+public class ReadOssPropertiesUtil implements InitializingBean {
 
     /**
      * 用spring中的Value注解读取配置文件内容
      */
 
-    @Value("${keyid}")
+    @Value("${aliyun.oss.file.keyid}")
     private String keyId;
 
-    @Value("${keysecret}")
+    @Value("${aliyun.oss.file.keysecret}")
     private String keySecret;
+
+    @Value("${aliyun.oss.file.endpoint}")
+    private String endpoint;
+
+    @Value("${aliyun.oss.file.bucketname}")
+    private String bucketName;
 
 
     /**
      * 定义公开静态常量 在方法中进行复制 方便使用
      */
+    public static String END_POINT;
     public static String ACCESS_KEY_ID;
     public static String ACCESS_KEY_SECRET;
+    public static String BUCKET_NAME;
 
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
+        END_POINT = endpoint;
         ACCESS_KEY_ID = keyId;
         ACCESS_KEY_SECRET = keySecret;
+        BUCKET_NAME = bucketName;
     }
 }

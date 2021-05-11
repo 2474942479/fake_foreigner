@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.eduservice.entity.EduCourse;
 import edu.zsq.eduservice.entity.EduCourseDescription;
 import edu.zsq.eduservice.entity.dto.query.CourseQueryDTO;
-import edu.zsq.eduservice.entity.vo.CourseDTO;
+import edu.zsq.eduservice.entity.dto.CourseDTO;
 import edu.zsq.eduservice.entity.vo.CourseVO;
 import edu.zsq.eduservice.entity.vo.FinalReleaseVO;
 import edu.zsq.eduservice.mapper.EduCourseMapper;
@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -84,7 +83,7 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
      * @return 课程基本信息
      */
     @Override
-    public CourseVO getCourseDTO(String id) {
+    public CourseVO getCourseInfoById(String id) {
         return baseMapper.getCourseById(id);
     }
 
@@ -92,13 +91,14 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
      * 修改课程基本信息
      *
      * @param courseDTO 课程基本信息VO类
-     * @return 修改结果
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
-    public JsonResult<Void> updateCourseDTO(CourseDTO courseDTO) {
+    public void updateCourseDTO(CourseDTO courseDTO) {
 
-        if (!lambdaUpdate().update(convertCourseDTO(courseDTO))) {
+        if (!lambdaUpdate()
+                .eq(EduCourse::getId, courseDTO.getId())
+                .update(convertCourseDTO(courseDTO))) {
             throw ExFactory.throwSystem("服务器异常，修改课程基本信息失败");
         }
 
@@ -108,8 +108,6 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         if (!courseDescriptionService.updateById(eduCourseDescription)) {
             throw ExFactory.throwSystem("服务器异常，修改课程简介失败");
         }
-
-        return JsonResult.OK;
     }
 
     /**
@@ -151,7 +149,12 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
             return PageData.empty();
         }
 
-        List<CourseVO> courseList = coursePage.getRecords().stream().map(this::convertEduCourse).collect(Collectors.toList());
+        List<CourseVO> courseList = coursePage
+                .getRecords()
+                .stream()
+                .map(this::convertEduCourse)
+                .collect(Collectors.toList());
+
         return PageData.of(courseList, coursePage.getCurrent(), coursePage.getSize(), coursePage.getTotal());
 
     }
@@ -185,12 +188,13 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         }
 
 //      3  根据课程id删除课程描述
-        if (!courseDescriptionService.removeById(courseId)) {
+        if (courseDescriptionService.getById(courseId) != null
+                && !courseDescriptionService.removeById(courseId)) {
             throw ExFactory.throwSystem("系统异常, 删除课程简介失败");
         }
 
 //      4  根据课程id删除课程基本信息
-        if (baseMapper.deleteById(courseId) == 0) {
+        if (getById(courseId) != null && !removeById(courseId)) {
             throw ExFactory.throwSystem("系统异常, 删除课程基本信息失败");
         }
 
@@ -217,7 +221,11 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
                 .teacherId(eduCourse.getTeacherId())
                 .viewCount(eduCourse.getViewCount())
                 .title(eduCourse.getTitle())
-                .description(courseDescriptionService.getById(eduCourse.getId()).getDescription())
+                .description(Optional.ofNullable(courseDescriptionService.getById(eduCourse.getId()))
+                        .map(EduCourseDescription::getDescription)
+                        .orElse(null))
+                .gmtCreate(eduCourse.getGmtCreate())
+                .status(eduCourse.getStatus())
                 .build();
     }
 
@@ -232,6 +240,7 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         eduCourse.setSubjectParentId(courseDTO.getSubjectParentId());
         eduCourse.setTeacherId(courseDTO.getTeacherId());
         eduCourse.setTitle(courseDTO.getTitle());
+        eduCourse.setStatus(courseDTO.getStatus());
         return eduCourse;
     }
 

@@ -27,15 +27,14 @@ public interface EduChapterService extends IService<EduChapter> {
 
     /**
      * 删除章节  当有小节是不允许删除
-     * @param chapterId
-     * @return
+     * @param chapterId 章节id
      */
     JsonResult<Void> deleteChapter(String chapterId);
 
     /**
      * 根据根据课程id删除课程小节
-     * @param courseId
-     * @return
+     * @param courseId 课程id
+     * @return 课程小节删除结果
      */
     boolean removeChapterByCourseId(String courseId);
 }
