@@ -1,10 +1,7 @@
 package edu.zsq.acl.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import edu.zsq.acl.entity.Role;
-import edu.zsq.acl.entity.RolePermission;
-import edu.zsq.acl.entity.UserRole;
 import edu.zsq.acl.entity.dto.RoleQueryDTO;
 import edu.zsq.acl.entity.vo.RoleVO;
 import edu.zsq.acl.service.RolePermissionService;
@@ -32,12 +29,6 @@ public class RoleController {
 
     @Resource
     private RoleService roleService;
-
-    @Resource
-    private RolePermissionService rolePermissionService;
-
-    @Resource
-    private UserRoleService userRoleService;
 
     @ApiOperation(value = "获取角色分页列表")
     @PostMapping("/pageRole")

@@ -55,8 +55,8 @@ public class EduCourseController {
      * @return 添加结果
      */
     @PostMapping("/addCourseInfo")
-    public JsonResult<Void> addCourseInfo(@RequestBody CourseDTO courseDTO) {
-        return eduCourseService.saveCourse(courseDTO);
+    public JsonResult<String> addCourseInfo(@RequestBody CourseDTO courseDTO) {
+        return JsonResult.success(eduCourseService.saveCourse(courseDTO));
     }
 
 

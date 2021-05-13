@@ -75,7 +75,7 @@ public class VodServiceImpl implements VodService {
     public boolean removeVod(String videoSourceId) {
         try {
             // 初始化对象
-            DefaultAcsClient client = InitVodClient.initVodClient(ReadOssPropertiesUtil.ACCESS_KEY_ID, ReadOssPropertiesUtil.ACCESS_KEY_SECRET);
+            DefaultAcsClient client = InitVodClient.initVodClient();
             // 创建删除视频request对象
             DeleteVideoRequest request = new DeleteVideoRequest();
             request.setVideoIds(videoSourceId);
@@ -98,7 +98,7 @@ public class VodServiceImpl implements VodService {
     public boolean removeVodList(List<String> vodIds) {
         try {
             //        初始化对象
-            DefaultAcsClient client = InitVodClient.initVodClient(ReadOssPropertiesUtil.ACCESS_KEY_ID, ReadOssPropertiesUtil.ACCESS_KEY_SECRET);
+            DefaultAcsClient client = InitVodClient.initVodClient();
 //            创建删除视频request对象
             DeleteVideoRequest request = new DeleteVideoRequest();
             String videoSourceIds = StringUtils.join(vodIds.toArray(), ",");
@@ -115,7 +115,7 @@ public class VodServiceImpl implements VodService {
     public JsonResult<String> getPlayAuth(String videoId) {
         try {
 //          初始化对象
-            DefaultAcsClient client = InitVodClient.initVodClient(ReadOssPropertiesUtil.ACCESS_KEY_ID, ReadOssPropertiesUtil.ACCESS_KEY_SECRET);
+            DefaultAcsClient client = InitVodClient.initVodClient();
             GetVideoPlayAuthRequest request = new GetVideoPlayAuthRequest();
             request.setVideoId(videoId);
             GetVideoPlayAuthResponse response = client.getAcsResponse(request);

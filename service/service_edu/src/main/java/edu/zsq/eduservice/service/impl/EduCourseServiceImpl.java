@@ -56,10 +56,11 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
-    public JsonResult<Void> saveCourse(CourseDTO courseDTO) {
+    public String saveCourse(CourseDTO courseDTO) {
 
 //      1  添加课程基本信息到课程表
-        if (!save(convertCourseDTO(courseDTO))) {
+        EduCourse eduCourse = convertCourseDTO(courseDTO);
+        if (!save(eduCourse)) {
             throw ExFactory.throwSystem("系统错误，添加课程信息失败");
         }
 
@@ -68,12 +69,12 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         eduCourseDescription.setDescription(courseDTO.getDescription());
 
         // (手动设置外键——程序控制数据一致性) 获取添加之后课程id
-        eduCourseDescription.setId(courseDTO.getId());
-        if (courseDescriptionService.save(eduCourseDescription)) {
+        eduCourseDescription.setId(eduCourse.getId());
+        if (!courseDescriptionService.save(eduCourseDescription)) {
             throw ExFactory.throwSystem("系统错误，课程详情信息添加失败");
         }
 
-        return JsonResult.OK;
+        return eduCourse.getId();
     }
 
     /**
@@ -96,9 +97,10 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
     @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
     public void updateCourseDTO(CourseDTO courseDTO) {
 
-        if (!lambdaUpdate()
+        boolean update = lambdaUpdate()
                 .eq(EduCourse::getId, courseDTO.getId())
-                .update(convertCourseDTO(courseDTO))) {
+                .update(convertCourseDTO(courseDTO));
+        if (!update) {
             throw ExFactory.throwSystem("服务器异常，修改课程基本信息失败");
         }
 

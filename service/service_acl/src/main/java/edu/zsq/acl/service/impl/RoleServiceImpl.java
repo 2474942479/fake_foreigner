@@ -109,11 +109,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Override
     @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
     public void assignRole(String userId, List<String> roleIds) {
-        userRoleService.remove(new QueryWrapper<UserRole>().eq("user_id", userId));
-        boolean remove = userRoleService.lambdaUpdate().eq(UserRole::getUserId, userId).remove();
 
-        if (!remove) {
-            throw ExFactory.throwSystem("服务器错误，请重新授权");
+        if (!userRoleService.lambdaQuery().eq(UserRole::getUserId, userId).list().isEmpty()
+                && !userRoleService.lambdaUpdate().eq(UserRole::getUserId, userId).remove()) {
+            throw ExFactory.throwSystem("服务器错误，重置角色权限失败, 请重试");
         }
 
         if (roleIds.isEmpty()) {
@@ -125,7 +124,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
                 .collect(Collectors.toList());
 
         if (!userRoleService.saveBatch(userRoleList)) {
-            throw ExFactory.throwSystem("服务器错误, 请重新授权");
+            throw ExFactory.throwSystem("服务器错误, 添加角色权限失败, 请重试");
         }
     }
 

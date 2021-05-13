@@ -25,9 +25,9 @@ public interface EduCourseService extends IService<EduCourse> {
      * 添加课程基本信息
      *
      * @param courseDTO 课程基本信息
-     * @return 添加结果
+     * @return 课程id
      */
-    JsonResult<Void> saveCourse(CourseDTO courseDTO);
+    String saveCourse(CourseDTO courseDTO);
 
     /**
      * 回显课程基本信息

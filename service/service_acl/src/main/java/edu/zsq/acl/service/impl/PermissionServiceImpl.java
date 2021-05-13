@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.acl.entity.Permission;
 import edu.zsq.acl.entity.RolePermission;
 import edu.zsq.acl.entity.User;
+import edu.zsq.acl.entity.dto.PermissionDTO;
+import edu.zsq.acl.entity.dto.RolePermissionDTO;
 import edu.zsq.acl.entity.vo.PermissionVO;
 import edu.zsq.acl.mapper.PermissionMapper;
 import edu.zsq.acl.service.PermissionService;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,6 +60,25 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         return convert2PermissionTree(collect);
     }
 
+    @Override
+    public void savePermission(PermissionDTO permissionDTO) {
+        if (!save(convert2Permission(permissionDTO))) {
+            throw ExFactory.throwSystem("系统异常, 菜单添加失败");
+        }
+    }
+
+    @Override
+    public void updatePermission(PermissionDTO permissionDTO) {
+        boolean update = lambdaUpdate()
+                .eq(Permission::getId, permissionDTO.getId())
+                .update(convert2Permission(permissionDTO));
+
+        if (!update) {
+            throw ExFactory.throwSystem("系统异常, 菜单修改失败");
+        }
+    }
+
+
     /**
      * 通过id 递归获取到该id下的所有子id 并添加到permissionIds中
      *
@@ -74,7 +96,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     /**
-     * 根据用户id获取用户菜单
+     * 根据用户id获取用户权限值
      *
      * @param id 用户id
      * @return 用户权限值
@@ -101,34 +123,70 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     @Override
     public List<JSONObject> selectPermissionByUserId(String userId) {
-        List<Permission> selectPermissionList = baseMapper.selectPermissionByUserId(userId);
-        List<Permission> permissionList = PermissionUtil.bulid(selectPermissionList);
-        return MenuUtil.bulid(permissionList);
+        return MenuUtil.bulid(PermissionUtil.bulid(baseMapper.selectPermissionByUserId(userId)
+                .parallelStream()
+                .distinct()
+                .collect(Collectors.toList())));
     }
 
 
+    /**
+     * 给角色分配权限
+     *
+     * @param rolePermissionDTO 角色权限DTO
+     */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
-    public void saveRolePermission(String roleId, List<String> permissionIds) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void saveRolePermission(RolePermissionDTO rolePermissionDTO) {
+
+        List<RolePermission> rolePermissions = rolePermissionService.lambdaQuery().eq(RolePermission::getRoleId, rolePermissionDTO.getRoleId()).list();
 
         boolean remove = rolePermissionService.lambdaUpdate()
-                .eq(RolePermission::getRoleId, roleId)
+                .eq(RolePermission::getRoleId, rolePermissionDTO.getRoleId())
                 .remove();
-
-        if (!remove) {
+        if (!rolePermissions.isEmpty() && !remove) {
             throw ExFactory.throwSystem("系统异常, 权限清除失败, 请稍后重试");
         }
 
-        if (permissionIds != null) {
+        List<String> permissionIds = Arrays.asList(rolePermissionDTO.getPermissionIds().split(","));
+
+        if (!permissionIds.isEmpty()) {
             List<RolePermission> rolePermissionList = permissionIds.parallelStream()
-                    .map(permissionId -> convert2RolePermission(roleId, permissionId))
+                    .map(permissionId -> convert2RolePermission(rolePermissionDTO.getRoleId(), permissionId))
                     .collect(Collectors.toList());
 
             if (!rolePermissionService.saveBatch(rolePermissionList)) {
                 throw ExFactory.throwSystem("系统异常, 添加权限失败");
             }
         }
+    }
 
+    /**
+     * 根据角色id获取当前角色权限树
+     *
+     * @param roleId 角色id
+     * @return 权限树
+     */
+
+    @Override
+    public List<PermissionVO> getRolePermission(String roleId) {
+        List<Permission> allPermissionList = lambdaQuery()
+                .apply("CAST(id AS SIGNED)")
+                .list();
+
+        //根据角色id获取当前角色拥有的权限id列表
+        List<String> permissionIds = rolePermissionService.lambdaQuery()
+                .eq(RolePermission::getRoleId, roleId)
+                .select(RolePermission::getPermissionId)
+                .list()
+                .stream()
+                .map(RolePermission::getPermissionId)
+                .collect(Collectors.toList());
+
+        // 设置是否拥有该权限
+        allPermissionList.forEach(permission -> permission.setSelect(permissionIds.contains(permission.getId())));
+        List<PermissionVO> treeNodes = allPermissionList.stream().map(this::convert2PermissionVO).collect(Collectors.toList());
+        return convert2PermissionTree(treeNodes);
     }
 
     public void getPermissionIds(String id, List<String> permissionIds) {
@@ -156,31 +214,17 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         return rolePermission;
     }
 
-
-    //========================递归查询所有菜单================================================
-    //获取全部菜单
-
-    @Override
-    public List<PermissionVO> selectAllMenu(String roleId) {
-        List<Permission> allPermissionList = lambdaQuery()
-                .apply("CAST(id AS SIGNED)")
-                .list();
-
-        //根据角色id获取角色权限
-        List<RolePermission> rolePermissionList = rolePermissionService.lambdaQuery()
-                .eq(RolePermission::getRoleId, roleId)
-                .select(RolePermission::getPermissionId)
-                .list();
-
-        //转换给角色id与角色权限对应Map对象
-        List<String> permissionIds = rolePermissionList.stream()
-                .map(RolePermission::getPermissionId)
-                .collect(Collectors.toList());
-
-        // 设置是否选中
-        allPermissionList.forEach(permission -> permission.setSelect(permissionIds.contains(permission.getId())));
-        List<PermissionVO> treeNodes = allPermissionList.stream().map(this::convert2PermissionVO).collect(Collectors.toList());
-        return convert2PermissionTree(treeNodes);
+    private Permission convert2Permission(PermissionDTO permissionDTO) {
+        Permission permission = new Permission();
+        permission.setPid(permissionDTO.getPid());
+        permission.setPermissionValue(permissionDTO.getPermissionValue());
+        permission.setComponent(permissionDTO.getComponent());
+        permission.setIcon(permissionDTO.getIcon());
+        permission.setName(permissionDTO.getName());
+        permission.setStatus(permissionDTO.getStatus());
+        permission.setType(permissionDTO.getType());
+        permission.setPath(permissionDTO.getPath());
+        return permission;
     }
 
     private PermissionVO convert2PermissionVO(Permission permission) {
