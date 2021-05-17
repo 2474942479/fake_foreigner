@@ -1,7 +1,6 @@
 package edu.zsq.acl.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.acl.entity.Permission;
 import edu.zsq.acl.entity.RolePermission;
@@ -117,13 +116,13 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public List<JSONObject> selectAdminPermission() {
         List<Permission> selectPermissionList = lambdaQuery().list();
-        List<Permission> permissionList = PermissionUtil.bulid(selectPermissionList);
+        List<Permission> permissionList = PermissionUtil.build(selectPermissionList);
         return MenuUtil.bulid(permissionList);
     }
 
     @Override
     public List<JSONObject> selectPermissionByUserId(String userId) {
-        return MenuUtil.bulid(PermissionUtil.bulid(baseMapper.selectPermissionByUserId(userId)
+        return MenuUtil.bulid(PermissionUtil.build(baseMapper.selectPermissionByUserId(userId)
                 .parallelStream()
                 .distinct()
                 .collect(Collectors.toList())));

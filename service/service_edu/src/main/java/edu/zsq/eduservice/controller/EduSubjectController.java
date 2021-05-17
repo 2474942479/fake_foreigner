@@ -1,10 +1,12 @@
 package edu.zsq.eduservice.controller;
 
 
-import edu.zsq.eduservice.entity.vo.subject.OneSubject;
+import edu.zsq.eduservice.entity.dto.SubjectDTO;
+import edu.zsq.eduservice.entity.vo.SubjectTree;
+import edu.zsq.eduservice.entity.vo.SubjectVO;
 import edu.zsq.eduservice.service.EduSubjectService;
 import edu.zsq.utils.result.JsonResult;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,26 +24,41 @@ import java.util.List;
 public class EduSubjectController {
 
     @Resource
-    EduSubjectService eduSubjectService;
+    EduSubjectService subjectService;
 
-    /**
-     * 查询课程分类
-     */
     @GetMapping("/getAllSubject")
-    public JsonResult<List<OneSubject>> getAllSubject() {
-        return JsonResult.success(eduSubjectService.getAllSubject());
+    @ApiOperation(value = "查询课程分类")
+    public JsonResult<List<SubjectTree>> getAllSubject() {
+        return JsonResult.success(subjectService.getAllSubject());
     }
 
+    @GetMapping("/getSubjectInfo/{id}")
+    @ApiOperation(value = "根据id获取课程分类详细信息")
+    public JsonResult<SubjectVO> getSubjectInfo(@PathVariable("id") String id) {
+        return JsonResult.success(subjectService.getSubjectInfo(id));
+    }
 
-    /**
-     * 添加课程分类
-     * 获取上传的文件,并进行读取
-     */
 
     @PostMapping("/addSubject")
+    @ApiOperation(value = "导入课程分类", notes = "根据excel导入课程分类")
     public JsonResult<Void> addSubject(MultipartFile file) {
-        return eduSubjectService.saveSubject(file, eduSubjectService);
+        return subjectService.saveSubject(file, subjectService);
     }
+
+    @PostMapping("/saveOrUpdateSubject")
+    @ApiOperation(value = "添加或修改课程分类")
+    public JsonResult<Void> saveOrUpdateSubject(@RequestBody SubjectDTO subjectDTO) {
+        subjectService.saveOrUpdateSubject(subjectDTO);
+        return JsonResult.success();
+    }
+
+    @DeleteMapping("/deleteSubject/{id}")
+    @ApiOperation(value = "删除课程分类")
+    public JsonResult<Void> deleteSubject(@PathVariable("id") String id) {
+        subjectService.deleteSubject(id);
+        return JsonResult.success();
+    }
+
 
 }
 

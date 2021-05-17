@@ -1,24 +1,25 @@
 package edu.zsq.eduservice.service.impl;
 
 import com.alibaba.excel.EasyExcel;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.eduservice.entity.EduSubject;
+import edu.zsq.eduservice.entity.dto.SubjectDTO;
 import edu.zsq.eduservice.entity.excel.SubjectData;
-import edu.zsq.eduservice.entity.vo.subject.OneSubject;
-import edu.zsq.eduservice.entity.vo.subject.TwoSubject;
+import edu.zsq.eduservice.entity.vo.SubjectTree;
+import edu.zsq.eduservice.entity.vo.SubjectVO;
 import edu.zsq.eduservice.listener.SubjectExcelListener;
 import edu.zsq.eduservice.mapper.EduSubjectMapper;
 import edu.zsq.eduservice.service.EduSubjectService;
+import edu.zsq.servicebase.common.Constants;
 import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.result.JsonResult;
-import org.springframework.beans.BeanUtils;
+import edu.zsq.utils.tree.TreeShapeUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -31,9 +32,6 @@ import java.util.List;
 @Service
 public class EduSubjectServiceImpl extends ServiceImpl<EduSubjectMapper, EduSubject> implements EduSubjectService {
 
-    /**
-     * 添加课程  通过读取上传的excel文件写入到数据库中
-     */
     @Override
     public JsonResult<Void> saveSubject(MultipartFile file, EduSubjectService eduSubjectService) {
 
@@ -47,96 +45,71 @@ public class EduSubjectServiceImpl extends ServiceImpl<EduSubjectMapper, EduSubj
         return JsonResult.OK;
     }
 
-    /**
-     * 获取所有分类信息 方法二
-     *
-     * @return 分类信息
-     */
     @Override
-    public List<OneSubject> getAllSubject() {
-
-//      1  查询所有一级分类  parent_id=0
-        QueryWrapper<EduSubject> oneWrapper = new QueryWrapper<>();
-        oneWrapper.eq("parent_id", "0");
-        List<EduSubject> oneSubjectList = baseMapper.selectList(oneWrapper);
-
-//       2 查询所有二级分类 parent_id != 0
-
-        QueryWrapper<EduSubject> twoWrapper = new QueryWrapper<>();
-        twoWrapper.ne("parent_id", "0");
-        List<EduSubject> twoSubjectList = baseMapper.selectList(twoWrapper);
-
-//        创建list集合用于最终封装的数据
-        ArrayList<OneSubject> finalOneSubjectList = new ArrayList<>();
-
-        for (EduSubject one : oneSubjectList) {
-
-            ArrayList<TwoSubject> finalTwoSubjectList = new ArrayList<>();
-            for (EduSubject two : twoSubjectList) {
-                TwoSubject twoSubject = new TwoSubject();
-                if (two.getParentId().equals(one.getId())) {
-                    BeanUtils.copyProperties(two, twoSubject);
-                    finalTwoSubjectList.add(twoSubject);
-                }
-            }
-
-            OneSubject oneSubject = new OneSubject();
-            BeanUtils.copyProperties(one, oneSubject);
-            oneSubject.setChildren(finalTwoSubjectList);
-            finalOneSubjectList.add(oneSubject);
-        }
-
-
-        return finalOneSubjectList;
+    public SubjectVO getSubjectInfo(String id) {
+        return convert2SubjectVO(lambdaQuery()
+                .eq(EduSubject::getId, id)
+                .last(Constants.LIMIT_ONE)
+                .one());
     }
 
-    /**
-     * 获取所有分类信息方法一
-     *
-     * @return 通过OneSubject/TwoSubject实体类封装为前端需要的格式
-     */
+    @Override
+    public List<SubjectTree> getAllSubject() {
+        List<SubjectTree> treeNodes = lambdaQuery()
+                .list()
+                .parallelStream()
+                .map(this::convert2SubjectTree)
+                .collect(Collectors.toList());
 
-    public List<OneSubject> getAllSubject1() {
-
-
-//      一级分类条件
-        QueryWrapper<EduSubject> oneWrapper = new QueryWrapper<>();
-        oneWrapper.eq("parent_id", "0");
-//      根据一级分类条件  查询并获取到所有一级分类
-        List<EduSubject> oneSubjects = baseMapper.selectList(oneWrapper);
+        return new TreeShapeUtil().build(treeNodes, "0");
+    }
 
 
-//      oneSubjectArrayList集合:将每个一级分类的所有二级分类 封装进一级分类集合中 此为前端所需要的格式
-        ArrayList<OneSubject> finalOneSubjectArrayList = new ArrayList<>();
-
-        String id = "";
-
-        for (EduSubject one : oneSubjects) {
-            OneSubject oneSubject = new OneSubject();
-
-//            获取一级分类id
-            id = one.getId();
-
-//        根据获取到的一级分类id 查询并获取到该一级分类有哪些二级分类 并放进二级分类list集合中
-            QueryWrapper<EduSubject> twoWrapper = new QueryWrapper<>();
-//        二级分类条件
-            twoWrapper.eq("parent_id", id);
-            List<EduSubject> twoSubjects = baseMapper.selectList(twoWrapper);
-
-            ArrayList<TwoSubject> finalTwoSubjectArrayList = new ArrayList<>();
-
-            for (EduSubject two : twoSubjects) {
-                TwoSubject twoSubject = new TwoSubject();
-                BeanUtils.copyProperties(two, twoSubject);
-                finalTwoSubjectArrayList.add(twoSubject);
-            }
-
-//            对Object2.setId(Object1.getId())的简写
-            BeanUtils.copyProperties(one, oneSubject);
-            oneSubject.setChildren(finalTwoSubjectArrayList);
-            finalOneSubjectArrayList.add(oneSubject);
+    @Override
+    public void saveOrUpdateSubject(SubjectDTO subjectDTO) {
+        if (!saveOrUpdate(convert2Subject(subjectDTO))) {
+            throw ExFactory.throwBusiness("操作课程分类失败！");
         }
+    }
 
-        return finalOneSubjectArrayList;
+    @Override
+    public void deleteSubject(String id) {
+        List<String> ids = lambdaQuery()
+                .eq(EduSubject::getParentId, id)
+                .select(EduSubject::getId)
+                .list()
+                .parallelStream()
+                .map(EduSubject::getId)
+                .collect(Collectors.toList());
+        ids.add(id);
+
+        if (!ids.isEmpty() && !removeByIds(ids)) {
+            throw ExFactory.throwBusiness("删除课程失败");
+        }
+    }
+
+
+    private EduSubject convert2Subject(SubjectDTO subjectDTO) {
+        EduSubject eduSubject = new EduSubject();
+        eduSubject.setId(subjectDTO.getId());
+        eduSubject.setParentId(subjectDTO.getParentId());
+        eduSubject.setTitle(subjectDTO.getTitle());
+        return eduSubject;
+    }
+
+    private SubjectVO convert2SubjectVO(EduSubject subject) {
+        return SubjectVO.builder()
+                .id(subject.getId())
+                .title(subject.getTitle())
+                .parentId(subject.getParentId())
+                .build();
+    }
+
+    private SubjectTree convert2SubjectTree(EduSubject subject) {
+        SubjectTree subjectTree = new SubjectTree();
+        subjectTree.setId(subject.getId());
+        subjectTree.setParentId(subject.getParentId());
+        subjectTree.setTitle(subject.getTitle());
+        return subjectTree;
     }
 }

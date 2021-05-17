@@ -15,7 +15,7 @@ public class PermissionUtil {
      * @param treeNodes 全部节点
      * @return 菜单树
      */
-    public static List<Permission> bulid(List<Permission> treeNodes) {
+    public static List<Permission> build(List<Permission> treeNodes) {
         List<Permission> trees = new ArrayList<>();
         for (Permission treeNode : treeNodes) {
             if ("0".equals(treeNode.getPid())) {
