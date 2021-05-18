@@ -52,12 +52,13 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
      */
     @Override
     public List<VideoVO> getAllVideoByCourseId(String courseId) {
-        List<EduVideo> list = lambdaQuery()
+        return lambdaQuery()
                 .eq(EduVideo::getCourseId, courseId)
                 .select(EduVideo::getId, EduVideo::getTitle, EduVideo::getVideoSourceId)
-                .list();
-
-        return list.stream().map(this::convertVideoVO).collect(Collectors.toList());
+                .list()
+                .parallelStream()
+                .map(this::convertVideoVO)
+                .collect(Collectors.toList());
     }
 
     private VideoVO convertVideoVO(EduVideo eduVideo) {

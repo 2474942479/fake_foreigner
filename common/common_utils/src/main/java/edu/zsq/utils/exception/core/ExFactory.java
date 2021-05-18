@@ -14,7 +14,6 @@ import java.util.Objects;
 public class ExFactory {
 
     public static ExDefinition of(IErrorEnum code, Object... messages) {
-
         return code.toDefinition(messages);
     }
 
@@ -28,11 +27,11 @@ public class ExFactory {
         return throwWith(ErrorCode.SYSTEM_ERROR, message);
     }
 
-    private static BaseException throwWith(IErrorEnum code, Object... messages) {
+    public static BaseException throwWith(IErrorEnum code, Object... messages) {
         return throwWith(of(code, messages));
     }
 
-    private static BaseException throwWith(ExDefinition exDefinition) {
+    public static BaseException throwWith(ExDefinition exDefinition) {
         if (exDefinition.getExType().equals(ExType.BUSINESS_ERROR)) {
             return new BusinessException(exDefinition);
         } else {

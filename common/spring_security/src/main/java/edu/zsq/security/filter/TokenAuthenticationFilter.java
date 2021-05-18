@@ -2,11 +2,14 @@ package edu.zsq.security.filter;
 
 import edu.zsq.security.security.TokenManager;
 import edu.zsq.utils.exception.ErrorCode;
+import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.result.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -31,9 +34,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
     private final TokenManager tokenManager;
-    private RedisTemplate redisTemplate;
+    private final RedisTemplate<String, List<String>> redisTemplate;
 
-    public TokenAuthenticationFilter(AuthenticationManager authManager, TokenManager tokenManager, RedisTemplate redisTemplate) {
+    public TokenAuthenticationFilter(AuthenticationManager authManager, TokenManager tokenManager, RedisTemplate<String, List<String>> redisTemplate) {
         super(authManager);
         this.tokenManager = tokenManager;
         this.redisTemplate = redisTemplate;
@@ -42,20 +45,16 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
             throws IOException, ServletException {
-        if (!req.getRequestURI().contains("admin")) {
-            chain.doFilter(req, res);
-            return;
-        }
 
-        UsernamePasswordAuthenticationToken authentication = null;
+        UsernamePasswordAuthenticationToken authentication;
         try {
             authentication = getAuthentication(req);
         } catch (Exception e) {
-            JsonResult.failure(ErrorCode.UNDEFINED_ERROR, "获取授权失败");
+            throw new AuthenticationServiceException("获取授权失败");
         }
 
         if (authentication == null) {
-            JsonResult.failure(ErrorCode.FORBIDDEN, "请管理员授权后再登录");
+            throw new AuthenticationServiceException("请管理员授权后再登录");
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -84,18 +83,7 @@ public class TokenAuthenticationFilter extends BasicAuthenticationFilter {
         }
 
 //          根据用户名从redis中获取权限列表
-        List<String> permissionValueList = (List<String>) redisTemplate.opsForValue().get(userName);
-//            Collection<GrantedAuthority> authorities = new ArrayList<>();
-
-//            给当前用户 循环 赋予权限
-//            for (String permissionValue : permissionValueList) {
-//                if (StringUtils.isEmpty(permissionValue)) {
-//                    continue;
-//                }
-//                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(permissionValue);
-//                authorities.add(authority);
-//            }
-
+        List<String> permissionValueList = redisTemplate.opsForValue().get(userName);
         if (CollectionUtils.isEmpty(permissionValueList)) {
             return null;
         }

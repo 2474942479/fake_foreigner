@@ -38,7 +38,7 @@ public class EduChapterServiceImpl extends ServiceImpl<EduChapterMapper, EduChap
      * @return 课程大纲list集合
      */
     @Override
-    public List<ChapterVO> getChapterVoByCourseId(String courseId) {
+    public List<ChapterVO> getAllChapterVO(String courseId) {
 
         // 查询并获取章节所有信息
         List<EduChapter> chapterList = lambdaQuery()

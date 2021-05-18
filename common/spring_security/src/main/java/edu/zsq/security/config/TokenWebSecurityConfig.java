@@ -3,10 +3,7 @@ package edu.zsq.security.config;
 import edu.zsq.security.filter.TokenAuthenticationFilter;
 import edu.zsq.security.filter.TokenLoginFilter;
 import edu.zsq.security.provider.MyAuthenticationProvider;
-import edu.zsq.security.security.DefaultPasswordEncoder;
-import edu.zsq.security.security.TokenLogoutHandler;
-import edu.zsq.security.security.TokenManager;
-import edu.zsq.security.security.UnauthorizedEntryPoint;
+import edu.zsq.security.security.*;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -45,7 +43,13 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     private DefaultPasswordEncoder defaultPasswordEncoder;
 
     @Resource
-    private RedisTemplate<String, String> redisTemplate;
+    private RedisTemplate<String, List<String>> redisTemplate;
+
+    @Resource
+    private UnAuthorizedEntryPoint unAuthorizedEntryPoint;
+
+    @Resource
+    private UnAccessDeniedHandler unAccessDeniedHandler;
 
 
     /**
@@ -56,15 +60,23 @@ public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.exceptionHandling()
-                .authenticationEntryPoint(new UnauthorizedEntryPoint())
-                .and().csrf().disable()
+                .authenticationEntryPoint(unAuthorizedEntryPoint)
+                .accessDeniedHandler(unAccessDeniedHandler)
+                .and()
+                .csrf()
+                .disable()
                 .authorizeRequests()
-                .anyRequest().authenticated()
-//                退出地址
-                .and().logout().logoutUrl("/admin/acl/index/logout")
-                .addLogoutHandler(new TokenLogoutHandler(tokenManager, redisTemplate)).and()
+                .anyRequest()
+                .authenticated()
+                // 退出地址
+                .and()
+                .logout()
+                .logoutUrl("/admin/acl/index/logout")
+                .addLogoutHandler(new TokenLogoutHandler(tokenManager, redisTemplate))
+                .and()
                 .addFilter(new TokenLoginFilter(authenticationManager(), tokenManager, redisTemplate))
-                .addFilter(new TokenAuthenticationFilter(authenticationManager(), tokenManager, redisTemplate)).httpBasic();
+                .addFilter(new TokenAuthenticationFilter(authenticationManager(), tokenManager, redisTemplate))
+                .httpBasic();
     }
 
     /**

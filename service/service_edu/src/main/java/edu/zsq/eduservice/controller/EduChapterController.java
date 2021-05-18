@@ -77,9 +77,9 @@ public class EduChapterController {
      * @param courseId 课程id
      * @return 课程大纲列表
      */
-    @GetMapping("/getAllChapterVo/{courseId}")
-    public JsonResult<List<ChapterVO>> getAllChapterVo(@PathVariable String courseId){
-        return JsonResult.success(chapterService.getChapterVoByCourseId(courseId));
+    @GetMapping("/getAllChapterVO/{courseId}")
+    public JsonResult<List<ChapterVO>> getAllChapterVO(@PathVariable String courseId){
+        return JsonResult.success(chapterService.getAllChapterVO(courseId));
     }
 
 }

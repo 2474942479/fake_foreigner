@@ -2,8 +2,10 @@ package edu.zsq.security.security;
 
 import edu.zsq.utils.exception.ErrorCode;
 import edu.zsq.utils.result.JsonResult;
+import edu.zsq.utils.result.ResponseUtil;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,11 +17,12 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author 张
  */
-public class UnauthorizedEntryPoint implements AuthenticationEntryPoint {
+@Component
+public class UnAuthorizedEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) {
-        JsonResult.failure(ErrorCode.FORBIDDEN, "请管理员添加权限后重新登陆");
+        ResponseUtil.out(response, JsonResult.failure(ErrorCode.FORBIDDEN, authException.getMessage()));
     }
 }

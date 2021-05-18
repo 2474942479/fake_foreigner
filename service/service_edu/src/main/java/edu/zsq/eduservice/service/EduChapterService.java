@@ -23,7 +23,7 @@ public interface EduChapterService extends IService<EduChapter> {
      * @return  课程大纲list集合
      */
 
-    List<ChapterVO> getChapterVoByCourseId(String courseId);
+    List<ChapterVO> getAllChapterVO(String courseId);
 
     /**
      * 删除章节  当有小节是不允许删除

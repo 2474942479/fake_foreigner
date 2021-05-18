@@ -32,8 +32,6 @@ public class TreeShapeUtil {
      * @return 子节点
      */
     public <T extends TreeDTO> T findChildren(T treeNode, List<T> treeNodes) {
-        treeNode.setChildren(new ArrayList<>());
-
         for (T it : treeNodes) {
             if (treeNode.getId().equals(it.getParentId())) {
                 it.setLevel(treeNode.getLevel() + 1);

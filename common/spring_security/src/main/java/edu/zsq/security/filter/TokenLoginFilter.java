@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,14 +37,14 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final TokenManager tokenManager;
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, List<String>> redisTemplate;
 
-    public TokenLoginFilter(AuthenticationManager authenticationManager, TokenManager tokenManager, RedisTemplate redisTemplate) {
+    public TokenLoginFilter(AuthenticationManager authenticationManager, TokenManager tokenManager, RedisTemplate<String, List<String>> redisTemplate) {
         this.authenticationManager = authenticationManager;
         this.tokenManager = tokenManager;
         this.redisTemplate = redisTemplate;
         this.setPostOnly(false);
-//        设置登录是地址和提交方式
+        // 设置登录时地址和提交方式
         this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/admin/acl/login", "POST"));
     }
 
@@ -91,9 +92,7 @@ public class TokenLoginFilter extends UsernamePasswordAuthenticationFilter {
 //        登录成功  以用户名作为key 权限表作为value 放入redis中
         redisTemplate.opsForValue().set(user.getUserInfo().getUsername(), user.getPermissionValueList());
 
-        Map<String, String> data = new HashMap<>(16);
-        data.put("token", token);
-        ResponseUtil.out(res, JsonResult.success(data, "登陆成功"));
+        ResponseUtil.out(res, JsonResult.success(token, "登陆成功"));
     }
 
     /**

@@ -17,9 +17,6 @@ public class ChapterVO {
 
     private String title;
 
-    /**
-     * 小节列表(一对多关系)
-     */
     private List<VideoVO> children;
 
 }
