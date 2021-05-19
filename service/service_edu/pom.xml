@@ -31,11 +31,6 @@
             <artifactId>aliyun-java-sdk-vod</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-sdk-vod-upload</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>

@@ -26,8 +26,7 @@
     <select id="getCourseById" resultType="edu.zsq.eduservice.entity.vo.CourseVO">
         SELECT ec.id,
                ec.teacher_id AS teacherId,
-               ec.subject_id AS subjectId,
-               ec.subject_parent_id AS subjectParentId,
+               ec.subject_ids AS subjectIds,
                ec.title,
                ec.price,
                ec.reduction_money AS reductionMoney,

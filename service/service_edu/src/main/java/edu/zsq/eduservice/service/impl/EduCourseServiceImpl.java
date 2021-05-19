@@ -218,8 +218,7 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
                 .lessonNum(eduCourse.getLessonNum())
                 .price(eduCourse.getPrice())
                 .reductionMoney(eduCourse.getReductionMoney())
-                .subjectId(eduCourse.getSubjectId())
-                .subjectParentId(eduCourse.getSubjectParentId())
+                .subjectIds(eduCourse.getSubjectIds())
                 .teacherId(eduCourse.getTeacherId())
                 .viewCount(eduCourse.getViewCount())
                 .title(eduCourse.getTitle())
@@ -238,8 +237,7 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
         eduCourse.setLessonNum(courseDTO.getLessonNum());
         eduCourse.setPrice(courseDTO.getPrice());
         eduCourse.setReductionMoney(courseDTO.getReductionMoney());
-        eduCourse.setSubjectId(courseDTO.getSubjectId());
-        eduCourse.setSubjectParentId(courseDTO.getSubjectParentId());
+        eduCourse.setSubjectIds(courseDTO.getSubjectIds());
         eduCourse.setTeacherId(courseDTO.getTeacherId());
         eduCourse.setTitle(courseDTO.getTitle());
         eduCourse.setStatus(courseDTO.getStatus());
