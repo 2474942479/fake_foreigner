@@ -1,7 +1,5 @@
 package edu.zsq.eduservice.entity.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +10,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class EduVideoVO {
+public class VideoInfoVO {
     @ApiModelProperty(value = "视频ID")
     private String id;
 
@@ -22,8 +20,11 @@ public class EduVideoVO {
     @ApiModelProperty(value = "章节ID")
     private String chapterId;
 
-    @ApiModelProperty(value = "节点名称")
+    @ApiModelProperty(value = "视频名称")
     private String title;
+
+    @ApiModelProperty(value = "视频简介")
+    private String description;
 
     @ApiModelProperty(value = "云端视频资源")
     private String videoSourceId;

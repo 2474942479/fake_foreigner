@@ -12,7 +12,7 @@ import java.util.List;
  * @author 张
  */
 @RestController
-@RequestMapping("/eduService/video")
+@RequestMapping("/eduService/vod")
 public class VodController {
 
     @Resource
@@ -26,7 +26,7 @@ public class VodController {
      */
     @PostMapping("/uploadVideo")
     public JsonResult<String> uploadVideo(MultipartFile file) {
-        return vodService.uploadVideo(file);
+        return JsonResult.success(vodService.uploadVideo(file));
     }
 
 
@@ -37,9 +37,7 @@ public class VodController {
      */
     @DeleteMapping("/removeVod/{videoSourceId}")
     public JsonResult<Void> removeVod(@PathVariable String videoSourceId) {
-        if (!vodService.removeVod(videoSourceId)) {
-            return JsonResult.failure("阿里云删除视频失败");
-        }
+        vodService.removeVod(videoSourceId);
         return JsonResult.OK;
     }
 
@@ -50,9 +48,7 @@ public class VodController {
      */
     @DeleteMapping("/removeVodList")
     public JsonResult<Void> removeVodList(@RequestParam List<String> vodIds) {
-        if (!vodService.removeVodList(vodIds)) {
-            return JsonResult.failure("阿里云批量删除视频失败");
-        }
+        vodService.removeVodList(vodIds);
         return JsonResult.OK;
     }
 
@@ -65,7 +61,7 @@ public class VodController {
      */
     @GetMapping("/getVideoPlayAuth/{videoId}")
     public JsonResult<String> getVideoPlayAuth(@PathVariable String videoId) {
-        return vodService.getPlayAuth(videoId);
+        return JsonResult.success(vodService.getPlayAuth(videoId));
     }
 }
 

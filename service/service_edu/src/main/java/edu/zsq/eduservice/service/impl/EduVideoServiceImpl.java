@@ -3,14 +3,13 @@ package edu.zsq.eduservice.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.eduservice.entity.EduVideo;
 import edu.zsq.eduservice.entity.dto.VideoDTO;
-import edu.zsq.eduservice.entity.vo.EduVideoVO;
+import edu.zsq.eduservice.entity.vo.VideoInfoVO;
 import edu.zsq.eduservice.entity.vo.chapter.VideoVO;
 import edu.zsq.eduservice.mapper.EduVideoMapper;
 import edu.zsq.eduservice.service.EduVideoService;
 import edu.zsq.eduservice.service.VodService;
 import edu.zsq.servicebase.common.Constants;
 import edu.zsq.utils.exception.core.ExFactory;
-import edu.zsq.utils.result.JsonResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -36,12 +35,11 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
     private VodService vodService;
 
     @Override
-    public JsonResult<Void> saveVideo(VideoDTO videoDTO) {
-
-        if (!save(convertVideoDTO(videoDTO))) {
+    public void saveOrUpdateVideo(VideoDTO videoDTO) {
+        //TODO 添加视频详细信息
+        if (!saveOrUpdate(convert2EduVideo(videoDTO))) {
             throw ExFactory.throwSystem("系统异常，课程视频添加失败");
         }
-        return JsonResult.OK;
     }
 
     /**
@@ -54,31 +52,23 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
     public List<VideoVO> getAllVideoByCourseId(String courseId) {
         return lambdaQuery()
                 .eq(EduVideo::getCourseId, courseId)
-                .select(EduVideo::getId, EduVideo::getTitle, EduVideo::getVideoSourceId)
+                .select(EduVideo::getId, EduVideo::getChapterId, EduVideo::getTitle, EduVideo::getVideoSourceId)
+                .orderByAsc(EduVideo::getSort)
                 .list()
                 .parallelStream()
-                .map(this::convertVideoVO)
+                .map(this::convert2VideoVO)
                 .collect(Collectors.toList());
     }
 
-    private VideoVO convertVideoVO(EduVideo eduVideo) {
-        return VideoVO.builder()
-                .id(eduVideo.getId())
-                .title(eduVideo.getTitle())
-                .chapterId(eduVideo.getChapterId())
-                .videoSourceId(eduVideo.getVideoSourceId())
-                .build();
-    }
 
     /**
      * 删除小节并调用service_vod服务的删除阿里云上的视频
      *
      * @param id 小节id
-     * @return 删除结果
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
-    public JsonResult<Void> removeVideoAndVodById(String id) {
+    public void removeVideoAndVodById(String id) {
 
         // 根据小节id查询获取视频id 然后调用vod服务删除视频
         EduVideo eduVideo = lambdaQuery()
@@ -87,15 +77,15 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
                 .last(Constants.LIMIT_ONE)
                 .one();
 
-        if (removeById(id)) {
+        if (!removeById(id)) {
             throw ExFactory.throwSystem("服务器异常, 删除小节失败");
         }
 
         // 判断是否有视频
-        if (StringUtils.isNotBlank(eduVideo.getVideoSourceId()) && !vodService.removeVod(eduVideo.getVideoSourceId())) {
+        if (StringUtils.isNotBlank(eduVideo.getVideoSourceId())
+                && !vodService.removeVod(eduVideo.getVideoSourceId())) {
             throw ExFactory.throwSystem("阿里云删除视频失败");
         }
-        return JsonResult.OK;
     }
 
     /**
@@ -137,25 +127,17 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
 
 
     @Override
-    public JsonResult<Void> updateVideo(VideoDTO videoDTO) {
-        if (baseMapper.updateById(convertVideoDTO(videoDTO)) == 0) {
-            throw ExFactory.throwSystem("服务器异常, 修改失败");
-        }
-
-        return JsonResult.OK;
-    }
-
-    @Override
-    public EduVideoVO getVideo(String id) {
+    public VideoInfoVO getVideoInfo(String id) {
         EduVideo eduVideo = lambdaQuery()
                 .eq(EduVideo::getId, id)
                 .last(Constants.LIMIT_ONE)
                 .one();
-        return convertEduVideo(eduVideo);
+        return convert2VideoInfoVO(eduVideo);
     }
 
-    private EduVideo convertVideoDTO(VideoDTO videoDTO) {
+    private EduVideo convert2EduVideo(VideoDTO videoDTO) {
         EduVideo eduVideo = new EduVideo();
+        eduVideo.setId(videoDTO.getId());
         eduVideo.setChapterId(videoDTO.getChapterId());
         eduVideo.setDuration(videoDTO.getDuration());
         eduVideo.setCourseId(videoDTO.getCourseId());
@@ -167,15 +149,17 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
         eduVideo.setSort(videoDTO.getSort());
         eduVideo.setStatus(videoDTO.getStatus());
         eduVideo.setTitle(videoDTO.getTitle());
+        eduVideo.setDescription(videoDTO.getDescription());
         eduVideo.setVideoOriginalName(videoDTO.getVideoOriginalName());
         return eduVideo;
     }
 
-    private EduVideoVO convertEduVideo(EduVideo eduVideo) {
-        return EduVideoVO.builder()
+    private VideoInfoVO convert2VideoInfoVO(EduVideo eduVideo) {
+        return VideoInfoVO.builder()
                 .id(eduVideo.getId())
                 .chapterId(eduVideo.getChapterId())
                 .title(eduVideo.getTitle())
+                .description(eduVideo.getDescription())
                 .duration(eduVideo.getDuration())
                 .videoSourceId(eduVideo.getVideoSourceId())
                 .isFree(eduVideo.getIsFree())
@@ -185,6 +169,16 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
                 .courseId(eduVideo.getCourseId())
                 .status(eduVideo.getStatus())
                 .size(eduVideo.getSize())
+                .build();
+    }
+
+    private VideoVO convert2VideoVO(EduVideo eduVideo) {
+        return VideoVO.builder()
+                .id(eduVideo.getId())
+                .title(eduVideo.getTitle())
+                .chapterId(eduVideo.getChapterId())
+                .description(eduVideo.getDescription())
+                .videoSourceId(eduVideo.getVideoSourceId())
                 .build();
     }
 }

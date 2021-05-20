@@ -3,7 +3,7 @@ package edu.zsq.eduservice.service;
 import edu.zsq.eduservice.entity.EduVideo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.eduservice.entity.dto.VideoDTO;
-import edu.zsq.eduservice.entity.vo.EduVideoVO;
+import edu.zsq.eduservice.entity.vo.VideoInfoVO;
 import edu.zsq.eduservice.entity.vo.chapter.VideoVO;
 import edu.zsq.utils.result.JsonResult;
 
@@ -24,9 +24,8 @@ public interface EduVideoService extends IService<EduVideo> {
      * 添加小节
      *
      * @param videoDTO 小节信息
-     * @return 添加结果
      */
-    JsonResult<Void> saveVideo(VideoDTO videoDTO);
+    void saveOrUpdateVideo(VideoDTO videoDTO);
 
     /**
      *  根据课程id查询所有小节
@@ -46,17 +45,8 @@ public interface EduVideoService extends IService<EduVideo> {
      * 删除小节并调用service_vod服务的删除阿里云上的视频
      *
      * @param id 小节id
-     * @return 删除结果
      */
-    JsonResult<Void> removeVideoAndVodById(String id);
-
-    /**
-     * 更新小节
-     *
-     * @param videoDTO 小节信息
-     * @return 更新结果
-     */
-    JsonResult<Void> updateVideo(VideoDTO videoDTO);
+    void removeVideoAndVodById(String id);
 
     /**
      * 根据id获取小节信息
@@ -64,5 +54,5 @@ public interface EduVideoService extends IService<EduVideo> {
      * @param id 小节id
      * @return 小节信息
      */
-    EduVideoVO getVideo(String id);
+    VideoInfoVO getVideoInfo(String id);
 }

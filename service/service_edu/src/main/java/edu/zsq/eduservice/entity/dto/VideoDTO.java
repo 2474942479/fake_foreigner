@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 @Builder
 public class VideoDTO {
-    @ApiModelProperty(value = "视频ID")
+    @ApiModelProperty(value = "id")
     private String id;
 
     @ApiModelProperty(value = "课程ID")
@@ -22,8 +22,11 @@ public class VideoDTO {
     @ApiModelProperty(value = "章节ID")
     private String chapterId;
 
-    @ApiModelProperty(value = "节点名称")
+    @ApiModelProperty(value = "视频名称")
     private String title;
+
+    @ApiModelProperty(value = "视频简介")
+    private String description;
 
     @ApiModelProperty(value = "云端视频资源")
     private String videoSourceId;

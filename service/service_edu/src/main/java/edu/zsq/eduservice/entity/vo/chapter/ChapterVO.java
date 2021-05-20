@@ -1,5 +1,6 @@
 package edu.zsq.eduservice.entity.vo.chapter;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -11,12 +12,15 @@ import java.util.List;
  * @author 张
  */
 @Data
+@Builder
 public class ChapterVO {
 
     private String id;
 
     private String title;
 
-    private List<VideoVO> children;
+    private String description;
+
+    private List<VideoVO> videoVOList;
 
 }
