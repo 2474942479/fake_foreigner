@@ -2,6 +2,7 @@ package edu.zsq.eduservice.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import edu.zsq.eduservice.entity.EduCourse;
 import edu.zsq.eduservice.entity.EduCourseDescription;
 import edu.zsq.eduservice.entity.dto.query.CourseQueryDTO;
@@ -9,10 +10,7 @@ import edu.zsq.eduservice.entity.dto.CourseDTO;
 import edu.zsq.eduservice.entity.vo.CourseVO;
 import edu.zsq.eduservice.entity.vo.FinalReleaseVO;
 import edu.zsq.eduservice.mapper.EduCourseMapper;
-import edu.zsq.eduservice.service.EduChapterService;
-import edu.zsq.eduservice.service.EduCourseDescriptionService;
-import edu.zsq.eduservice.service.EduCourseService;
-import edu.zsq.eduservice.service.EduVideoService;
+import edu.zsq.eduservice.service.*;
 import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.page.PageData;
 import edu.zsq.utils.result.JsonResult;
@@ -46,6 +44,8 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
     private EduChapterService chapterService;
     @Resource
     private EduVideoService videoService;
+    @Resource
+    private OssService ossService;
 
 
     /**
@@ -99,6 +99,7 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
 
         boolean update = lambdaUpdate()
                 .eq(EduCourse::getId, courseDTO.getId())
+                .set(EduCourse::getCover, courseDTO.getCover())
                 .update(convertCourseDTO(courseDTO));
         if (!update) {
             throw ExFactory.throwSystem("服务器异常，修改课程基本信息失败");
@@ -179,24 +180,30 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
     @Transactional(propagation = Propagation.REQUIRED, timeout = 3, rollbackFor = Exception.class)
     public JsonResult<Void> removeCourseAllById(String courseId) {
 
-//      1  根据课程id删除小节
+        // 根据课程id删除小节以及视频
         if (!videoService.removeVideoByCourseId(courseId)) {
             throw ExFactory.throwSystem("系统异常, 删除课程小节失败");
         }
 
-//      2  根据课程id删除章节
+        // 根据课程id删除章节
         if (!chapterService.removeChapterByCourseId(courseId)) {
             throw ExFactory.throwSystem("系统异常, 删除课程章节失败");
         }
 
-//      3  根据课程id删除课程描述
+        // 根据课程id删除课程描述
         if (courseDescriptionService.getById(courseId) != null
                 && !courseDescriptionService.removeById(courseId)) {
             throw ExFactory.throwSystem("系统异常, 删除课程简介失败");
         }
 
-//      4  根据课程id删除课程基本信息
-        if (getById(courseId) != null && !removeById(courseId)) {
+        // 删除OSS服务器上对应的课程封面
+        // 根据课程id删除课程基本信息
+        EduCourse courseInfo = getById(courseId);
+        if (courseInfo != null) {
+            ossService.removeBatchOssFile(Lists.newArrayList(courseInfo.getCover()));
+        }
+
+        if (!removeById(courseId)) {
             throw ExFactory.throwSystem("系统异常, 删除课程基本信息失败");
         }
 

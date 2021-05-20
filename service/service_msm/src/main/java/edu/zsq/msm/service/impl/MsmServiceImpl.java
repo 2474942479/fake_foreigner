@@ -6,11 +6,10 @@ import com.aliyuncs.CommonResponse;
 import com.aliyuncs.DefaultAcsClient;
 import com.aliyuncs.IAcsClient;
 import com.aliyuncs.exceptions.ClientException;
-import com.aliyuncs.exceptions.ServerException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import edu.zsq.msm.service.MsmService;
-import edu.zsq.utils.properties.ReadOssPropertiesUtil;
+import edu.zsq.utils.properties.OssProperties;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +25,7 @@ public class MsmServiceImpl implements MsmService {
 
         if (StringUtils.isEmpty(mobile)) {return false;}
 
-        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", ReadOssPropertiesUtil.ACCESS_KEY_ID, ReadOssPropertiesUtil.ACCESS_KEY_SECRET);
+        DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", OssProperties.ACCESS_KEY_ID, OssProperties.ACCESS_KEY_SECRET);
         IAcsClient client = new DefaultAcsClient(profile);
 
 

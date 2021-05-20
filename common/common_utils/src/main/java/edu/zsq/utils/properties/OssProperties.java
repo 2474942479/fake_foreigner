@@ -1,7 +1,10 @@
 package edu.zsq.utils.properties;
 
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,8 +16,8 @@ import org.springframework.stereotype.Component;
  * @author 张
  */
 @Component
-public class ReadOssPropertiesUtil implements InitializingBean {
-
+@RefreshScope
+public class OssProperties implements InitializingBean {
     /**
      * 用spring中的Value注解读取配置文件内容
      */
@@ -40,6 +43,9 @@ public class ReadOssPropertiesUtil implements InitializingBean {
     public static String ACCESS_KEY_SECRET;
     public static String BUCKET_NAME;
 
+    public static OSS getOssClient() {
+        return new OSSClientBuilder().build(END_POINT, ACCESS_KEY_ID, ACCESS_KEY_SECRET);
+    }
 
     @Override
     public void afterPropertiesSet() {

@@ -11,7 +11,7 @@ import com.aliyuncs.vod.model.v20170321.GetVideoPlayAuthResponse;
 import edu.zsq.eduservice.service.VodService;
 import edu.zsq.eduservice.utils.InitVodClient;
 import edu.zsq.utils.exception.core.ExFactory;
-import edu.zsq.utils.properties.ReadOssPropertiesUtil;
+import edu.zsq.utils.properties.OssProperties;
 import edu.zsq.utils.result.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -46,7 +46,7 @@ public class VodServiceImpl implements VodService {
 
             // inputStream:上传文件流
             InputStream inputStream = file.getInputStream();
-            UploadStreamRequest request = new UploadStreamRequest(ReadOssPropertiesUtil.ACCESS_KEY_ID, ReadOssPropertiesUtil.ACCESS_KEY_SECRET, title, fileName, inputStream);
+            UploadStreamRequest request = new UploadStreamRequest(OssProperties.ACCESS_KEY_ID, OssProperties.ACCESS_KEY_SECRET, title, fileName, inputStream);
 
             UploadVideoImpl uploader = new UploadVideoImpl();
             UploadStreamResponse response = uploader.uploadStream(request);
