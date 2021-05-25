@@ -52,7 +52,6 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
     public List<VideoVO> getAllVideoByCourseId(String courseId) {
         return lambdaQuery()
                 .eq(EduVideo::getCourseId, courseId)
-                .select(EduVideo::getId, EduVideo::getChapterId, EduVideo::getTitle, EduVideo::getVideoSourceId)
                 .orderByAsc(EduVideo::getSort)
                 .list()
                 .parallelStream()
@@ -175,10 +174,15 @@ public class EduVideoServiceImpl extends ServiceImpl<EduVideoMapper, EduVideo> i
     private VideoVO convert2VideoVO(EduVideo eduVideo) {
         return VideoVO.builder()
                 .id(eduVideo.getId())
+                .courseId(eduVideo.getCourseId())
                 .title(eduVideo.getTitle())
                 .chapterId(eduVideo.getChapterId())
                 .description(eduVideo.getDescription())
                 .videoSourceId(eduVideo.getVideoSourceId())
+                .videoOriginalName(eduVideo.getVideoOriginalName())
+                .isFree(eduVideo.getIsFree())
+                .duration(eduVideo.getDuration())
+                .size(eduVideo.getSize())
                 .build();
     }
 }

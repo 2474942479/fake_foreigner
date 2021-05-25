@@ -1,10 +1,12 @@
 package edu.zsq.eduservice.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import edu.zsq.eduservice.entity.EduCourse;
 import edu.zsq.eduservice.entity.EduCourseDescription;
+import edu.zsq.eduservice.entity.EduSubject;
 import edu.zsq.eduservice.entity.dto.query.CourseQueryDTO;
 import edu.zsq.eduservice.entity.dto.CourseDTO;
 import edu.zsq.eduservice.entity.vo.CourseVO;
@@ -38,6 +40,8 @@ import java.util.stream.Collectors;
 public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse> implements EduCourseService {
 
 
+    @Resource
+    private EduSubjectService subjectService;
     @Resource
     private EduCourseDescriptionService courseDescriptionService;
     @Resource
@@ -121,7 +125,19 @@ public class EduCourseServiceImpl extends ServiceImpl<EduCourseMapper, EduCourse
      */
     @Override
     public FinalReleaseVO getFinalReleaseVo(String id) {
-        return baseMapper.getFinalReleaseVO(id);
+        FinalReleaseVO finalReleaseVO = baseMapper.getFinalReleaseVO(id);
+        List<String> subjectIds = JSON.parseArray(finalReleaseVO.getSubjectIds(), String.class);
+        String subjectName = subjectService.lambdaQuery()
+                .in(EduSubject::getId, subjectIds)
+                .select(EduSubject::getTitle)
+                .orderByAsc(EduSubject::getId)
+                .list()
+                .stream()
+                .map(EduSubject::getTitle)
+                .collect(Collectors.joining("-"));
+
+        finalReleaseVO.setSubjectName(subjectName);
+        return finalReleaseVO;
     }
 
     /**
