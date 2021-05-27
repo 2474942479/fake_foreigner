@@ -27,7 +27,7 @@ public class CodeGenerator {
         // 2、全局配置
         GlobalConfig gc = new GlobalConfig();
         String projectPath = System.getProperty("user.dir");
-        gc.setOutputDir("E:\\IDEA\\project\\online_edu\\service\\service_cms" + "/src/main/java");    //修改1 输出目录 projectPath改成绝对路径
+        gc.setOutputDir("E:\\IDEA\\project\\fake_foreigner\\service\\service_cms" + "/src/main/java");    //修改1 输出目录 projectPath改成绝对路径
 
         gc.setAuthor("zsq");
         gc.setOpen(false); //生成后是否打开资源管理器
@@ -41,7 +41,7 @@ public class CodeGenerator {
 
         // 3、数据源配置      修改三 修改为自己数据库 和驱动
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://localhost:3307/online_edu?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=utf-8");
+        dsc.setUrl("jdbc:mysql://localhost:3307/fake_foreigner?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=utf-8");
         dsc.setDriverName("com.mysql.cj.jdbc.Driver");
         dsc.setUsername("root");
         dsc.setPassword("root");

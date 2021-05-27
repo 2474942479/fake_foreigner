@@ -18,9 +18,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RefreshScope
 public class OssProperties implements InitializingBean {
-    /**
-     * 用spring中的Value注解读取配置文件内容
-     */
 
     @Value("${aliyun.oss.file.keyid}")
     private String keyId;

@@ -21,7 +21,7 @@ public class Knife4jConfiguration {
     @Bean
     public Docket webApiConfig() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("online_edu")
+                .groupName("fake_foreigner")
                 .apiInfo(webApiInfo())
                 .select()
                 //这里指定Controller扫描包路径
