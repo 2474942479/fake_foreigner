@@ -15,8 +15,8 @@ public interface UserMapper extends BaseMapper<User> {
 
     /**
      * 根据日期获取这一天的注册人数  用于统计服务
-     * @param day
-     * @return
+     * @param day 日期
+     * @return 注册人数
      */
     Integer getRegisterNumber(String day);
 }

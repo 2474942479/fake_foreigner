@@ -14,11 +14,11 @@ public class OrderNumberUtil {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String date = sdf.format(new Date());
-        String result = "";
+        StringBuilder result = new StringBuilder();
         Random random = new Random();
         for (int i = 0 ;i< 4 ;i++){
 
-            result +=random.nextInt(10);
+            result.append(random.nextInt(10));
         }
 
         return date + result;

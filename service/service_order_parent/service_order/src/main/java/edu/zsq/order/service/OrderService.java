@@ -18,7 +18,7 @@ public interface OrderService extends IService<Order> {
      * 判断用户是否购买课程
      * @param userId 用户id
      * @param courseId  课程id
-     * @return
+     * @return 是否购买
      */
 
     boolean isBuyCourse(String userId, String courseId);
