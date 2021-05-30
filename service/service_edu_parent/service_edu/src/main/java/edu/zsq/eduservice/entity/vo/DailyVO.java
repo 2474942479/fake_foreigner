@@ -1,8 +1,11 @@
 package edu.zsq.eduservice.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 /**
  * @author 张
@@ -15,7 +18,8 @@ public class DailyVO {
     private String id;
 
     @ApiModelProperty(value = "统计日期")
-    private String dateCalculated;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private LocalDate dateCalculated;
 
     @ApiModelProperty(value = "注册人数")
     private Integer registerNum;

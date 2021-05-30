@@ -3,6 +3,8 @@ package edu.zsq.user.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import edu.zsq.user.entity.User;
 
+import java.time.LocalDate;
+
 /**
  * <p>
  * 会员表 Mapper 接口
@@ -18,5 +20,5 @@ public interface UserMapper extends BaseMapper<User> {
      * @param day 日期
      * @return 注册人数
      */
-    Integer getRegisterNumber(String day);
+    Integer getRegisterNumber(LocalDate day);
 }

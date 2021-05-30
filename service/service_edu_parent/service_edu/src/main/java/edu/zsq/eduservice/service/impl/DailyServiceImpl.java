@@ -8,12 +8,14 @@ import edu.zsq.eduservice.mapper.DailyMapper;
 import edu.zsq.eduservice.service.DailyService;
 import edu.zsq.eduservice.wrapper.UserStatisticsWrapper;
 import edu.zsq.service_user_api.service.UserStatisticsApi;
+import edu.zsq.servicebase.common.Constants;
 import edu.zsq.utils.exception.core.ExFactory;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,16 +32,21 @@ public class DailyServiceImpl extends ServiceImpl<DailyMapper, Daily> implements
     private UserStatisticsWrapper userStatisticsWrapper;
 
     @Override
-    public void createStatisticsByDay(String day) {
+    public void createStatisticsByDay(LocalDate day) {
+
+        if (day == null) {
+            throw ExFactory.throwBusiness("生成日期不能为空");
+        }
+
         Integer registerNumber = userStatisticsWrapper.getRegisterNumber(day);
 
         // 统计日期
         Daily daily = new Daily();
         daily.setDateCalculated(day);
         daily.setRegisterNum(registerNumber);
-        daily.setCourseNum(RandomUtils.nextInt(0, 100));
-        daily.setLoginNum(RandomUtils.nextInt(0, 1000));
-        daily.setVideoViewNum(RandomUtils.nextInt(0, 1000));
+        daily.setCourseNum(RandomUtils.nextInt(0, 10));
+        daily.setLoginNum(RandomUtils.nextInt(0, 10000));
+        daily.setVideoViewNum(RandomUtils.nextInt(0, 5000));
         QueryWrapper<Daily> wrapper = new QueryWrapper<>();
         wrapper.eq("date_calculated", day);
 
@@ -60,6 +67,20 @@ public class DailyServiceImpl extends ServiceImpl<DailyMapper, Daily> implements
                 .map(this::convert2DailyVO)
                 .collect(Collectors.toList());
 
+    }
+
+    @Override
+    public DailyVO getStatisticsByDay(LocalDate day) {
+
+        if (day == null) {
+            throw ExFactory.throwBusiness("生成日期不能为空");
+        }
+
+        Daily daily = lambdaQuery()
+                .eq(Daily::getDateCalculated, day)
+                .last(Constants.LIMIT_ONE)
+                .one();
+        return convert2DailyVO(daily);
     }
 
     private DailyVO convert2DailyVO(Daily daily) {

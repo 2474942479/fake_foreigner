@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 
 /**
  * <p>
@@ -46,27 +47,15 @@ public class UserController {
         return JsonResult.success(userService.getById(JwtUtils.getMemberIdByJwtToken(request)));
     }
 
-    /**
-     * 根据用户id获取用户信息
-     *
-     * @param userId
-     * @return
-     */
     @ApiOperation(value = "根据用户id获取用户信息")
     @GetMapping("/getUserInfoById/{userId}")
     public JsonResult<User> getUserInfoById(@PathVariable String userId) {
         return JsonResult.success(userService.getById(userId));
     }
 
-
-    /**
-     * 根据日期获取这一天的注册人数  用于统计服务
-     *
-     * @param day
-     * @return
-     */
     @GetMapping("/getRegisterNumber/{day}")
-    public JsonResult<Integer> getRegisterNumber(@PathVariable String day) {
+    @ApiOperation(value = "根据日期获取这一天的注册人数  用于统计服务")
+    public JsonResult<Integer> getRegisterNumber(@PathVariable LocalDate day) {
         return JsonResult.success(userService.getRegisterNumber(day));
     }
 

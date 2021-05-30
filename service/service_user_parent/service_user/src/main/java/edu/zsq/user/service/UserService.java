@@ -6,6 +6,8 @@ import edu.zsq.user.entity.dto.LoginDTO;
 import edu.zsq.user.entity.dto.RegisterDTO;
 import edu.zsq.utils.result.JsonResult;
 
+import java.time.LocalDate;
+
 /**
  * <p>
  * 会员表 服务类
@@ -41,5 +43,5 @@ public interface UserService extends IService<User> {
      * @param day 天
      * @return 人数
      */
-    Integer getRegisterNumber(String day);
+    Integer getRegisterNumber(LocalDate day);
 }

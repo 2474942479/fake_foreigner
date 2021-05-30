@@ -2,6 +2,10 @@ package edu.zsq.order.service;
 
 import edu.zsq.order.entity.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.zsq.order.entity.dto.OrderDTO;
+import edu.zsq.service_order_api.entity.OrderVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,6 +17,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface OrderService extends IService<Order> {
 
+    /**
+     * 获取全部订单
+     *
+     * @return 订单列表
+     */
+    List<OrderVO> getAllOrder();
 
     /**
      * 判断用户是否购买课程
@@ -22,4 +32,11 @@ public interface OrderService extends IService<Order> {
      */
 
     boolean isBuyCourse(String userId, String courseId);
+
+    /**
+     * 生成订单
+     * @param orderDTO 订单信息
+     * @return 订单号
+     */
+    String createOrder(OrderDTO orderDTO);
 }

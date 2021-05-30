@@ -6,6 +6,7 @@ import edu.zsq.utils.result.JsonResult;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 
 /**
  * @author 张
@@ -17,7 +18,7 @@ public class UserStatisticsProvider implements UserStatisticsApi {
     private UserService userService;
 
     @Override
-    public JsonResult<Integer> getRegisterNumber(String day) {
+    public JsonResult<Integer> getRegisterNumber(LocalDate day) {
         return JsonResult.success(userService.getRegisterNumber(day));
     }
 }

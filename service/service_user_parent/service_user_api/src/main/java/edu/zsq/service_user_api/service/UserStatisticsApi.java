@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.LocalDate;
+
 /**
  * @author 张
  */
-@FeignClient(name = "service8006-user", path = "/")
+@FeignClient(name = "service8003-user", path = "/")
 @Api(value = "用户服务", tags = {"用户统计服务"})
 @Component
 public interface UserStatisticsApi {
@@ -20,5 +22,5 @@ public interface UserStatisticsApi {
     @GetMapping("/getRegisterNumber/{day}")
     @ApiOperation(value = "统计注册人数")
     @ApiImplicitParam(name = "day", value = "当前日期", required = true)
-    JsonResult<Integer> getRegisterNumber(@PathVariable String day);
+    JsonResult<Integer> getRegisterNumber(@PathVariable LocalDate day);
 }

@@ -3,10 +3,12 @@ package edu.zsq.order.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import edu.zsq.order.entity.Order;
+import edu.zsq.order.entity.dto.OrderDTO;
 import edu.zsq.order.service.OrderService;
 import edu.zsq.order.utils.OrderNumberUtil;
 import edu.zsq.utils.exception.servicexception.MyException;
 import edu.zsq.utils.result.JsonResult;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -25,63 +27,30 @@ public class OrderController {
 
     @Resource
     private OrderService orderService;
-    /**
-     * 根据课程id和用户id创建订单，返回订单id
-     * @param orderInfo
-     * @return
-     */
+
+
     @PostMapping("/createOrder")
-    public JsonResult createOrder(@RequestBody Order orderInfo) {
-        String userId = orderInfo.getUserId();
-        if (userId ==null || "".equals(userId)){
-            throw new MyException(28004,"您未登录，三秒后跳转登录页面");
-        }
-        String orderNumber = OrderNumberUtil.getOrderNumber();
-        orderInfo.setOrderNumber(orderNumber);
-//        支付类型（1：微信 2：支付宝）
-        orderInfo.setPayType(1);
-//        订单状态（0：未支付 1：已支付）
-        orderInfo.setStatus(0);
-
-        if (orderService.saveOrUpdate(orderInfo)){
-            return JsonResult.success(orderNumber).message("订单添加成功");
-        }else {
-            return JsonResult.failure("订单添加失败");
-
-        }
-
+    @ApiOperation(value = "根据课程id和用户id创建订单，返回订单id")
+    public JsonResult<String> createOrder(@RequestBody OrderDTO orderDTO) {
+        return JsonResult.success(orderService.createOrder(orderDTO));
     }
 
-
-    /**
-     * 根据订单id查询订单
-     * @param orderNumber
-     * @return
-     */
     @GetMapping("/getOrderInfo/{orderNumber}")
+    @ApiOperation(value = "根据订单id查询订单")
     public JsonResult getOrderInfo(@PathVariable String orderNumber){
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
         wrapper.eq("order_number",orderNumber);
         return JsonResult.success(orderService.getOne(wrapper)).message("订单创建成功，请确认！");
     }
 
-    /**
-     * 判断用户是否购买课程
-     * @param userId 用户id
-     * @param courseId  课程id
-     * @return
-     */
     @GetMapping("/isBuyCourse/{userId}/{courseId}")
+    @ApiOperation(value = "判断用户是否购买课程")
     public JsonResult<Boolean> isBuyCourse(@PathVariable String userId, @PathVariable String courseId){
         return JsonResult.success(orderService.isBuyCourse(userId,courseId));
     }
 
-    /**
-     * 取消订单
-     * @param orderNumber
-     * @return
-     */
     @DeleteMapping("/removeOrder/{orderNumber}")
+    @ApiOperation(value = "取消订单")
     public JsonResult removeOrder(@PathVariable String orderNumber){
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
         wrapper.eq("order_number",orderNumber);

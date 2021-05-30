@@ -16,6 +16,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 
 /**
  * <p>
@@ -133,7 +134,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @return 人数
      */
     @Override
-    public Integer getRegisterNumber(String day) {
+    public Integer getRegisterNumber(LocalDate day) {
         return baseMapper.getRegisterNumber(day);
     }
 }

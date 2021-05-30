@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -33,7 +34,8 @@ public class Daily implements Serializable {
     private String id;
 
     @ApiModelProperty(value = "统计日期")
-    private String dateCalculated;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private LocalDate dateCalculated;
 
     @ApiModelProperty(value = "注册人数")
     private Integer registerNum;
