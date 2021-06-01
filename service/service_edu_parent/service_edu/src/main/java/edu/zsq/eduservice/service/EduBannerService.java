@@ -24,7 +24,7 @@ public interface EduBannerService extends IService<EduBanner> {
      * @param bannerQueryDTO 查询条件
      * @return 查询结果
      */
-    PageData<BannerVO> pageBanner(BannerQueryDTO bannerQueryDTO);
+    PageData<BannerVO> getBannerList(BannerQueryDTO bannerQueryDTO);
 
     /**
      * 获取Banner详细信息
@@ -32,23 +32,14 @@ public interface EduBannerService extends IService<EduBanner> {
      * @param id banner Id
      * @return 详细信息
      */
-    BannerVO getBanner(String id);
+    BannerVO getBannerById(String id);
 
     /**
      * 添加Banner
      *
      * @param bannerDTO bannerDTO
-     * @return 添加结果
      */
-    JsonResult<Void> saveBanner(BannerDTO bannerDTO);
-
-    /**
-     * 修改Banner
-     *
-     * @param bannerDTO bannerDTO
-     * @return 修改结果
-     */
-    JsonResult<Void> updateBanner(BannerDTO bannerDTO);
+    void saveOrUpdateBanner(BannerDTO bannerDTO);
 
     /**
      * 删除Banner
@@ -56,5 +47,5 @@ public interface EduBannerService extends IService<EduBanner> {
      * @param id id
      * @return 删除结果
      */
-    JsonResult<Void> removeBanner(String id);
+    void removeBanner(String id);
 }

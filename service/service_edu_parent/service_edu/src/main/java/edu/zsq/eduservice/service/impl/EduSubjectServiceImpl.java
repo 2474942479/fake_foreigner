@@ -61,7 +61,7 @@ public class EduSubjectServiceImpl extends ServiceImpl<EduSubjectMapper, EduSubj
                 .map(this::convert2SubjectTree)
                 .collect(Collectors.toList());
 
-        return new TreeShapeUtil().build(treeNodes, "0");
+        return TreeShapeUtil.build(treeNodes, "0");
     }
 
 

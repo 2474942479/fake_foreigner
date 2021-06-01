@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class EduBannerServiceImpl extends ServiceImpl<EduBannerMapper, EduBanner> implements EduBannerService {
 
     @Override
-    public PageData<BannerVO> pageBanner(BannerQueryDTO bannerQueryDTO) {
+    public PageData<BannerVO> getBannerList(BannerQueryDTO bannerQueryDTO) {
         Page<EduBanner> eduBannerPage = new Page<>(bannerQueryDTO.getCurrent(), bannerQueryDTO.getSize());
         lambdaQuery().page(eduBannerPage);
 
@@ -45,36 +45,23 @@ public class EduBannerServiceImpl extends ServiceImpl<EduBannerMapper, EduBanner
     }
 
     @Override
-    public BannerVO getBanner(String id) {
+    public BannerVO getBannerById(String id) {
         EduBanner one = lambdaQuery().eq(EduBanner::getId, id).last(Constants.LIMIT_ONE).one();
         return convertEduBanner(one);
     }
 
     @Override
-    public JsonResult<Void> saveBanner(BannerDTO bannerDTO) {
-        if (!save(convertBannerDTO(bannerDTO))) {
+    public void saveOrUpdateBanner(BannerDTO bannerDTO) {
+        if (!saveOrUpdate(convertBannerDTO(bannerDTO))) {
             throw ExFactory.throwSystem("系统异常，添加失败");
         }
-
-        return JsonResult.OK;
     }
 
     @Override
-    public JsonResult<Void> updateBanner(BannerDTO bannerDTO) {
-        if (!lambdaUpdate().eq(EduBanner::getId, bannerDTO.getId()).update()) {
-            throw ExFactory.throwSystem("系统异常，修改失败");
-        }
-
-        return JsonResult.OK;
-    }
-
-    @Override
-    public JsonResult<Void> removeBanner(String id) {
+    public void removeBanner(String id) {
         if (!removeById(id)) {
             throw ExFactory.throwSystem("系统异常，修改失败");
         }
-
-        return JsonResult.OK;
     }
 
     private BannerVO convertEduBanner(EduBanner eduBanner) {

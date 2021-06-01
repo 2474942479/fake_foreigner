@@ -48,7 +48,7 @@ public class UserController {
 
 
     @ApiOperation(value = "添加或修改管理用户")
-    @PostMapping("saveOrUpdateUserInfo")
+    @PostMapping("/saveOrUpdateUserInfo")
     public JsonResult<Void> saveOrUpdateUserInfo(@RequestBody UserDTO userDTO) {
         userService.saveOrUpdateUserInfo(userDTO);
         return JsonResult.success();

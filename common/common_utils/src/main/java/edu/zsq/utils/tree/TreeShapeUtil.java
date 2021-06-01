@@ -14,7 +14,7 @@ public class TreeShapeUtil {
      * @param treeNodes 全部节点
      * @return 菜单树
      */
-    public <T extends TreeDTO> List<T> build(List<T> treeNodes, Object root) {
+    public static <T extends TreeDTO> List<T> build(List<T> treeNodes, Object root) {
         List<T> trees = new ArrayList<>();
         for (T treeNode : treeNodes) {
             if (root.equals(treeNode.getParentId())) {
@@ -31,7 +31,7 @@ public class TreeShapeUtil {
      * @param treeNodes 全部节点
      * @return 子节点
      */
-    public <T extends TreeDTO> T findChildren(T treeNode, List<T> treeNodes) {
+    public static <T extends TreeDTO> T findChildren(T treeNode, List<T> treeNodes) {
         for (T it : treeNodes) {
             if (treeNode.getId().equals(it.getParentId())) {
                 it.setLevel(treeNode.getLevel() + 1);
