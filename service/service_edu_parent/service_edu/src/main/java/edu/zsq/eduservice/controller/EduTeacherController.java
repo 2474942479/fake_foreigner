@@ -55,11 +55,11 @@ public class EduTeacherController {
      * @param teacherDTO 教师信息
      * @return 添加结果
      */
-    @PostMapping("/addTeacher")
+    @PostMapping("/saveOrUpdateTeacher")
     @ApiOperation(value = "增加讲师", notes = "根据获取的EduTeacher对象新增讲师")
     @ApiImplicitParam(name = "teacherDTO", value = "讲师详细信息", required = true, dataType = "TeacherDTO", paramType = "body")
-    public JsonResult<Void> addTeacher(@RequestBody TeacherDTO teacherDTO) {
-        teacherService.saveTeacher(teacherDTO);
+    public JsonResult<Void> saveOrUpdateTeacher(@RequestBody TeacherDTO teacherDTO) {
+        teacherService.saveOrUpdateTeacher(teacherDTO);
         return JsonResult.OK;
     }
 
@@ -89,20 +89,5 @@ public class EduTeacherController {
     public JsonResult<TeacherVO> getTeacherInfo(@PathVariable String id) {
         return JsonResult.success(teacherService.getTeacherInfo(id));
     }
-
-
-    /**
-     * 根据id修改讲师信息
-     *
-     * @param teacherDTO 教师信息
-     * @return 修改结果
-     */
-    @PutMapping("/updateTeacher")
-    @ApiOperation(value = "修改讲师", notes = "根据获取的EduTeacher对象修改讲师")
-    public JsonResult<Void> updateTeacher(@RequestBody TeacherDTO teacherDTO) {
-        teacherService.updateTeacher(teacherDTO);
-        return JsonResult.OK;
-    }
-
 }
 

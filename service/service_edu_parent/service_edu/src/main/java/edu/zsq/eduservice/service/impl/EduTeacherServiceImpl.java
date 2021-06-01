@@ -53,8 +53,8 @@ public class EduTeacherServiceImpl extends ServiceImpl<EduTeacherMapper, EduTeac
     }
 
     @Override
-    public void saveTeacher(TeacherDTO teacherDTO) {
-        if (!save(convertTeacherDTO(teacherDTO))) {
+    public void saveOrUpdateTeacher(TeacherDTO teacherDTO) {
+        if (!saveOrUpdate(convertTeacherDTO(teacherDTO))) {
             throw ExFactory.throwSystem("服务器错误, 教师添加失败！");
         }
     }
@@ -69,13 +69,6 @@ public class EduTeacherServiceImpl extends ServiceImpl<EduTeacherMapper, EduTeac
     @Override
     public TeacherVO getTeacherInfo(String id) {
         return convertEduTeacher(getById(id));
-    }
-
-    @Override
-    public void updateTeacher(TeacherDTO teacherDTO) {
-        if (!updateById(convertTeacherDTO(teacherDTO))) {
-            throw ExFactory.throwSystem("服务器错误, 教师修改失败！");
-        }
     }
 
     private EduTeacher convertTeacherDTO(TeacherDTO teacherDTO) {

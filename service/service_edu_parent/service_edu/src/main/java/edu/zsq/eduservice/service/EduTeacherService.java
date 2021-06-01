@@ -30,7 +30,7 @@ public interface EduTeacherService extends IService<EduTeacher> {
      *
      * @param teacherDTO 教师信息
      */
-    void saveTeacher(TeacherDTO teacherDTO);
+    void saveOrUpdateTeacher(TeacherDTO teacherDTO);
 
     /**
      * 删除教师
@@ -46,11 +46,4 @@ public interface EduTeacherService extends IService<EduTeacher> {
      * @return 教师信息
      */
     TeacherVO getTeacherInfo(String id);
-
-    /**
-     * 根据教师id修改教师信息
-     *
-     * @param teacherDTO 教师信息
-     */
-    void updateTeacher(TeacherDTO teacherDTO);
 }

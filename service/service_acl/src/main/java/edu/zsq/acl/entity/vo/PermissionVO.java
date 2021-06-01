@@ -1,23 +1,18 @@
 package edu.zsq.acl.entity.vo;
 
+import edu.zsq.utils.tree.TreeDTO;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 /**
  * @author 张
  */
-@Builder
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class PermissionVO {
-
-    @ApiModelProperty(value = "编号")
-    private String id;
-
-    @ApiModelProperty(value = "所属上级")
-    private String pid;
+public class PermissionVO extends TreeDTO {
 
     @ApiModelProperty(value = "名称")
     private String name;
@@ -39,12 +34,6 @@ public class PermissionVO {
 
     @ApiModelProperty(value = "状态(0:禁止,1:正常)")
     private Integer status;
-
-    @ApiModelProperty(value = "层级")
-    private Integer level;
-
-    @ApiModelProperty(value = "下级")
-    private List<PermissionVO> children;
 
     @ApiModelProperty(value = "是否选中")
     private Boolean selected;
