@@ -30,19 +30,28 @@ public class PermissionController {
     @Resource
     private PermissionService permissionService;
 
-    /**
-     * 获取所有的菜单
-     */
     @ApiOperation("获取全部权限")
     @GetMapping("/getAllPermission")
     public JsonResult<List<PermissionVO>> getAllPermission() {
         return JsonResult.success(permissionService.getPermissionList());
     }
 
+    @ApiOperation("获取全部权限菜单, 不包含按钮")
+    @GetMapping("/getAllPermissionMenu")
+    public JsonResult<List<PermissionVO>> getAllPermissionMenu() {
+        return JsonResult.success(permissionService.getAllPermissionMenu());
+    }
+
+    @ApiOperation(value = "根据id获取权限信息")
+    @GetMapping("/getPermissionById/{id]")
+    public JsonResult<PermissionVO> getPermissionById(@PathVariable String id) {
+        return JsonResult.success(permissionService.getPermissionById(id));
+    }
+
     @ApiOperation(value = "根据角色id获取当前角色权限树")
-    @PostMapping("/savePermission")
-    public JsonResult<Void> savePermission(@RequestBody PermissionDTO permissionDTO) {
-        permissionService.savePermission(permissionDTO);
+    @PostMapping("/saveOrUpdatePermission")
+    public JsonResult<Void> saveOrUpdatePermission(@RequestBody PermissionDTO permissionDTO) {
+        permissionService.saveOrUpdatePermission(permissionDTO);
         return JsonResult.OK;
     }
 
@@ -50,13 +59,6 @@ public class PermissionController {
     @DeleteMapping("/deleteAllById/{id}")
     public JsonResult<Void> deleteAllById(@PathVariable String id) {
         permissionService.deleteAllById(id);
-        return JsonResult.OK;
-    }
-
-    @ApiOperation(value = "修改权限信息")
-    @PutMapping("/updatePermission")
-    public JsonResult<Void> updatePermission(@RequestBody PermissionDTO permissionDTO) {
-        permissionService.updatePermission(permissionDTO);
         return JsonResult.OK;
     }
 

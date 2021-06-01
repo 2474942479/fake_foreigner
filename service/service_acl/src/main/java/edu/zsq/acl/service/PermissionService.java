@@ -7,6 +7,7 @@ import edu.zsq.acl.entity.dto.PermissionDTO;
 import edu.zsq.acl.entity.dto.RolePermissionDTO;
 import edu.zsq.acl.entity.vo.PermissionTree;
 import edu.zsq.acl.entity.vo.PermissionVO;
+import edu.zsq.acl.entity.vo.RouterVO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,18 +30,27 @@ public interface PermissionService extends IService<Permission> {
     List<PermissionVO> getPermissionList();
 
     /**
+     * 获取全部菜单信息、不包含按钮
+     *
+     * @return 菜单列表
+     */
+    List<PermissionVO> getAllPermissionMenu();
+
+
+    /**
+     * 根据id查询权限详情信息
+     *
+     * @param id id
+     * @return 权限信息
+     */
+    PermissionVO getPermissionById(String id);
+
+    /**
      * 添加权限菜单
      *
      * @param permissionDTO 菜单信息
      */
-    void savePermission(PermissionDTO permissionDTO);
-
-    /**
-     * 修改权限菜单
-     *
-     * @param permissionDTO 权限信息
-     */
-    void updatePermission(PermissionDTO permissionDTO);
+    void saveOrUpdatePermission(PermissionDTO permissionDTO);
 
     /**
      * 递归删除该id下的所有权限
@@ -58,24 +68,17 @@ public interface PermissionService extends IService<Permission> {
     List<String> selectPermissionValueByUserId(String id);
 
     /**
-     * 获取管理员权限
-     *
-     * @return 所有权限
-     */
-    List<JSONObject> selectAdminPermission();
-
-    /**
      * 根据用户id获取用户权限
      *
      * @param id 用户id
      * @return 用户权限
      */
-    List<JSONObject> selectPermissionByUserId(String id);
+    List<RouterVO> getMenuByUserId(String id);
 
     /**
      * 给角色分配权限
      *
-     * @param rolePermissionDTO  角色权限DTO
+     * @param rolePermissionDTO 角色权限DTO
      */
     void saveRolePermission(RolePermissionDTO rolePermissionDTO);
 

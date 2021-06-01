@@ -1,6 +1,6 @@
 package edu.zsq.acl.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import edu.zsq.acl.entity.vo.RouterVO;
 import edu.zsq.acl.entity.vo.UserInfoVO;
 import edu.zsq.acl.service.IndexService;
 import edu.zsq.utils.result.JsonResult;
@@ -27,25 +27,26 @@ public class IndexController {
      * 根据token获取用户信息
      */
     @GetMapping("/info")
-    public JsonResult<UserInfoVO> info(){
+    public JsonResult<UserInfoVO> info() {
         //获取当前登录用户用户名
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return JsonResult.success(indexService.getUserInfo(username));
     }
 
     /**
-     *根据username 获取菜单
+     * 根据username 获取菜单
+     *
      * @return 菜单列表
      */
     @GetMapping("/menu")
-    public JsonResult<List<JSONObject>> getMenu(){
+    public JsonResult<List<RouterVO>> getMenu() {
         //获取当前登录用户用户名
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return JsonResult.success(indexService.getMenu(username));
     }
 
     @PostMapping("/logout")
-    public JsonResult<Void> logout(){
+    public JsonResult<Void> logout() {
         return JsonResult.success();
     }
 

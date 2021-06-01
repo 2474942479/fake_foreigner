@@ -17,29 +17,30 @@
         <result property="gmtModified" column="gmt_modified"/>
     </resultMap>
 
-    <!-- 用于select查询公用抽取的列 -->
-    <sql id="columns">
-        p.id,p.pid,p.name,p.type,p.permission_value,path,p.component,p.icon,p.status,p.is_deleted,p.gmt_create,p.gmt_modified
-    </sql>
-
     <select id="selectPermissionByUserId" resultMap="permissionMap">
-        select
-        <include refid="columns" />
+        select p.id,
+               p.pid,
+               p.name,
+               p.type,
+               p.permission_value,
+               p.path,
+               p.component,
+               p.icon,
+               p.status
         from acl_user_role ur
-        inner join acl_role_permission rp on rp.role_id = ur.role_id
-        inner join acl_permission p on p.id = rp.permission_id
+                 inner join acl_role_permission rp on rp.role_id = ur.role_id
+                 inner join acl_permission p on p.id = rp.permission_id
         where ur.user_id = #{userId}
-        and ur.is_deleted = 0
-        and rp.is_deleted = 0
-        and p.is_deleted = 0
+          and ur.is_deleted = 0
+          and rp.is_deleted = 0
+          and p.is_deleted = 0
     </select>
 
     <select id="selectPermissionValueByUserId" resultType="String">
-    	select
-        p.permission_value
+        select p.permission_value
         from acl_user_role ur
-        inner join acl_role_permission rp on rp.role_id = ur.role_id
-        inner join acl_permission p on p.id = rp.permission_id
+                 inner join acl_role_permission rp on rp.role_id = ur.role_id
+                 inner join acl_permission p on p.id = rp.permission_id
         where ur.user_id = #{userId}
         and p.type = 2
         and ur.is_deleted = 0
@@ -47,11 +48,4 @@
         and p.is_deleted = 0
     </select>
 
-    <select id="selectAllPermissionValue" resultType="String">
-        select
-        permission_value
-        from acl_permission
-        where type = 2
-        and is_deleted = 0
-    </select>
 </mapper>

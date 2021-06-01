@@ -7,14 +7,15 @@ import edu.zsq.acl.entity.RolePermission;
 import edu.zsq.acl.entity.User;
 import edu.zsq.acl.entity.dto.PermissionDTO;
 import edu.zsq.acl.entity.dto.RolePermissionDTO;
+import edu.zsq.acl.entity.vo.MetaVO;
 import edu.zsq.acl.entity.vo.PermissionVO;
+import edu.zsq.acl.entity.vo.RouterVO;
 import edu.zsq.acl.mapper.PermissionMapper;
 import edu.zsq.acl.service.PermissionService;
 import edu.zsq.acl.service.RolePermissionService;
 import edu.zsq.acl.service.UserService;
-import edu.zsq.acl.utils.MenuUtil;
-import edu.zsq.acl.utils.PermissionUtil;
 import edu.zsq.utils.exception.core.ExFactory;
+import edu.zsq.utils.tree.TreeShapeUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -39,10 +41,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Resource
     private RolePermissionService rolePermissionService;
 
-    @Resource
-    private UserService userService;
-
-
     /**
      * 查询所有的菜单
      *
@@ -51,38 +49,43 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public List<PermissionVO> getPermissionList() {
 
-        List<Permission> list = lambdaQuery().list();
-//        复制到VO类中
-        List<PermissionVO> collect = list.stream()
+        List<PermissionVO> treeNodes = lambdaQuery()
+                .list()
+                .parallelStream()
                 .map(this::convert2PermissionVO)
                 .collect(Collectors.toList());
-        return convert2PermissionTree(collect);
+        return TreeShapeUtil.build(treeNodes, "0");
     }
 
     @Override
-    public void savePermission(PermissionDTO permissionDTO) {
-        if (!save(convert2Permission(permissionDTO))) {
+    public List<PermissionVO> getAllPermissionMenu() {
+
+        List<PermissionVO> treeNodes = lambdaQuery()
+                .le(Permission::getType, 1)
+                .list()
+                .parallelStream()
+                .map(this::convert2PermissionVO)
+                .collect(Collectors.toList());
+
+        return TreeShapeUtil.build(treeNodes, "0");
+    }
+
+    @Override
+    public PermissionVO getPermissionById(String id) {
+        Permission permission = getById(id);
+        if (permission == null) {
+            throw ExFactory.throwSystem("系统异常, 获取菜单信息失败");
+        }
+        return convert2PermissionVO(permission);
+    }
+
+    @Override
+    public void saveOrUpdatePermission(PermissionDTO permissionDTO) {
+        if (!saveOrUpdate(convert2Permission(permissionDTO))) {
             throw ExFactory.throwSystem("系统异常, 菜单添加失败");
         }
     }
 
-    @Override
-    public void updatePermission(PermissionDTO permissionDTO) {
-        boolean update = lambdaUpdate()
-                .eq(Permission::getId, permissionDTO.getId())
-                .update(convert2Permission(permissionDTO));
-
-        if (!update) {
-            throw ExFactory.throwSystem("系统异常, 菜单修改失败");
-        }
-    }
-
-
-    /**
-     * 通过id 递归获取到该id下的所有子id 并添加到permissionIds中
-     *
-     * @param id id
-     */
     @Override
     public void deleteAllById(String id) {
         List<String> permissionIds = new ArrayList<>();
@@ -102,30 +105,46 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
      */
     @Override
     public List<String> selectPermissionValueByUserId(String id) {
-        List<String> selectPermissionValueList;
-        User user = userService.getById(id);
-        if (null != user && "admin".equals(user.getUsername())) {
-            //如果是系统管理员，获取所有权限
-            selectPermissionValueList = baseMapper.selectAllPermissionValue();
-        } else {
-            selectPermissionValueList = baseMapper.selectPermissionValueByUserId(id);
-        }
-        return selectPermissionValueList;
+        return baseMapper.selectPermissionValueByUserId(id);
     }
 
     @Override
-    public List<JSONObject> selectAdminPermission() {
-        List<Permission> selectPermissionList = lambdaQuery().list();
-        List<Permission> permissionList = PermissionUtil.build(selectPermissionList);
-        return MenuUtil.bulid(permissionList);
-    }
+    public List<RouterVO> getMenuByUserId(String userId) {
 
-    @Override
-    public List<JSONObject> selectPermissionByUserId(String userId) {
-        return MenuUtil.bulid(PermissionUtil.build(baseMapper.selectPermissionByUserId(userId)
+        List<RouterVO> treeNodes = baseMapper.selectPermissionByUserId(userId)
                 .parallelStream()
                 .distinct()
-                .collect(Collectors.toList())));
+                .map(this::convert2RouterVO)
+                .collect(Collectors.toList());
+
+        return TreeShapeUtil.build(treeNodes, "0");
+    }
+
+    private RouterVO convert2RouterVO(Permission permission) {
+
+        RouterVO routerVO = new RouterVO();
+        routerVO.setId(permission.getId());
+        routerVO.setParentId(permission.getPid());
+        routerVO.setPath(permission.getPath());
+        routerVO.setComponent(permission.getComponent());
+        routerVO.setName(permission.getId());
+        routerVO.setHidden(permission.getStatus() == 0);
+        MetaVO meta = new MetaVO();
+        meta.setIcon(Optional.ofNullable(permission.getIcon()).orElse(""));
+        //TODO 表字段名称 name 修改为title
+        meta.setTitle(permission.getName());
+        routerVO.setMeta(meta);
+
+        if (permission.getType() == 0) {
+            routerVO.setAlwaysShow(true);
+            routerVO.setRedirect("noRedirect");
+        }
+
+        if (permission.getType() == 2) {
+            routerVO.setHidden(true);
+        }
+
+        return routerVO;
     }
 
 
@@ -185,7 +204,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         // 设置是否拥有该权限
         allPermissionList.forEach(permission -> permission.setSelect(permissionIds.contains(permission.getId())));
         List<PermissionVO> treeNodes = allPermissionList.stream().map(this::convert2PermissionVO).collect(Collectors.toList());
-        return convert2PermissionTree(treeNodes);
+        return TreeShapeUtil.build(treeNodes, "0");
     }
 
     public void getPermissionIds(String id, List<String> permissionIds) {
@@ -227,58 +246,19 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     private PermissionVO convert2PermissionVO(Permission permission) {
-        return PermissionVO.builder()
-                .id(permission.getId())
-                .pid(permission.getPid())
-                .name(permission.getName())
-                .path(permission.getPath())
-                .permissionValue(permission.getPermissionValue())
-                .component(permission.getComponent())
-                .icon(permission.getIcon())
-                .type(permission.getType())
-                .status(permission.getStatus())
-                .level(permission.getLevel())
-                .selected(permission.isSelect())
-                .build();
-    }
 
-
-    /**
-     * 构建菜单树
-     *
-     * @param treeNodes 树的所有节点
-     * @return 树
-     */
-    private static List<PermissionVO> convert2PermissionTree(List<PermissionVO> treeNodes) {
-        List<PermissionVO> tree = new ArrayList<>();
-
-        treeNodes.forEach(treeNode -> {
-            // 选择根节点
-            if ("0".equals(treeNode.getPid())) {
-                treeNode.setLevel(1);
-                tree.add(findChildren(treeNode, treeNodes));
-            }
-        });
-        return tree;
-    }
-
-    /**
-     * 递归查找子节点
-     *
-     * @param treeNode  根节点
-     * @param treeNodes 子节点
-     * @return 子节点
-     */
-    private static PermissionVO findChildren(PermissionVO treeNode, List<PermissionVO> treeNodes) {
-        treeNode.setChildren(new ArrayList<>());
-
-        treeNodes.forEach(node -> {
-            if (treeNode.getId().equalsIgnoreCase(node.getPid())) {
-                node.setLevel(treeNode.getLevel() + 1);
-                treeNode.getChildren().add(findChildren(node, treeNodes));
-            }
-        });
-
-        return treeNode;
+        PermissionVO permissionVO = new PermissionVO();
+        permissionVO.setId(permission.getId());
+        permissionVO.setParentId(permission.getPid());
+        permissionVO.setName(permission.getName());
+        permissionVO.setPath(permission.getPath());
+        permissionVO.setPermissionValue(permission.getPermissionValue());
+        permissionVO.setComponent(permission.getComponent());
+        permissionVO.setIcon(permission.getIcon());
+        permissionVO.setType(permission.getType());
+        permissionVO.setStatus(permission.getStatus());
+        permissionVO.setLevel(permission.getLevel());
+        permissionVO.setSelected(permission.isSelect());
+        return permissionVO;
     }
 }

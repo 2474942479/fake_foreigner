@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import edu.zsq.acl.entity.Role;
 import edu.zsq.acl.entity.User;
 import edu.zsq.acl.entity.vo.RoleVO;
+import edu.zsq.acl.entity.vo.RouterVO;
 import edu.zsq.acl.entity.vo.UserInfoVO;
 import edu.zsq.acl.service.IndexService;
 import edu.zsq.acl.service.PermissionService;
@@ -59,10 +60,6 @@ public class IndexServiceImpl implements IndexService {
         //根据用户id获取角色
         List<RoleVO> roleList = roleService.getAssignedRoleInfo(user.getId());
         List<String> roleNameList = roleList.stream().map(RoleVO::getRoleName).collect(Collectors.toList());
-        String admin = "admin";
-        if (admin.equalsIgnoreCase(username)) {
-            roleNameList.add("超级管理员");
-        }
 
         if (roleNameList.size() == 0) {
             //前端框架必须返回一个角色，否则报错，如果没有角色，返回一个空角色
@@ -88,13 +85,10 @@ public class IndexServiceImpl implements IndexService {
      * @return 菜单
      */
     @Override
-    public List<JSONObject> getMenu(String username) {
-        if (ADMIN.equals(username)) {
-            return permissionService.selectAdminPermission();
-        }
+    public List<RouterVO> getMenu(String username) {
 
         User user = userService.selectByUsername(username);
         //根据用户id获取用户菜单权限
-        return permissionService.selectPermissionByUserId(user.getId());
+        return permissionService.getMenuByUserId(user.getId());
     }
 }

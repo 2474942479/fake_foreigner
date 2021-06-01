@@ -15,13 +15,6 @@ import java.util.List;
  */
 public interface PermissionMapper extends BaseMapper<Permission> {
 
-
-    /**
-     * 获取所有权限
-     * @return 所有权限值
-     */
-    List<String> selectAllPermissionValue();
-
     /**
      * 根据id获取权限列表
      * @param id 用户id
