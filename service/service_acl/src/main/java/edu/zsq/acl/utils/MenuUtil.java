@@ -6,17 +6,13 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author 张
  */
 public class MenuUtil {
 
-    /**
-     * 构建菜单
-     * @param treeNodes
-     * @return
-     */
     public static List<JSONObject> bulid(List<Permission> treeNodes) {
         List<JSONObject> meuns = new ArrayList<>();
         if(treeNodes.size() == 1) {
@@ -47,6 +43,7 @@ public class MenuUtil {
 
                     JSONObject twoMeta = new JSONObject();
                     twoMeta.put("title", two.getName());
+                    twoMeta.put("icon", Optional.ofNullable(two.getIcon()).orElse(""));
                     twoMeun.put("meta", twoMeta);
 
                     children.add(twoMeun);
@@ -64,6 +61,7 @@ public class MenuUtil {
 
                         JSONObject threeMeta = new JSONObject();
                         threeMeta.put("title", three.getName());
+                        threeMeta.put("icon", Optional.ofNullable(three.getIcon()).orElse(""));
                         threeMeun.put("meta", threeMeta);
 
                         children.add(threeMeun);
