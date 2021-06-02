@@ -1,8 +1,13 @@
 package edu.zsq.eduservice.entity.vo;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * @author zhangsongqi
@@ -26,5 +31,12 @@ public class BannerVO {
 
     @ApiModelProperty(value = "排序")
     private Integer sort;
+
+    @ApiModelProperty("描述")
+    private String description;
+
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime gmtCreate;
 
 }

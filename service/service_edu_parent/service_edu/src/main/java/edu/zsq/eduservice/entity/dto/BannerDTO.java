@@ -24,4 +24,8 @@ public class BannerDTO {
 
     @ApiModelProperty(value = "排序")
     private Integer sort;
+
+    @ApiModelProperty("描述")
+    private String description;
+
 }

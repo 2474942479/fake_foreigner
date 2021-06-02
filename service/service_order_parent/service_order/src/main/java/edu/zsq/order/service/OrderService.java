@@ -3,7 +3,9 @@ package edu.zsq.order.service;
 import edu.zsq.order.entity.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.order.entity.dto.OrderDTO;
+import edu.zsq.order.entity.dto.OrderQueryDTO;
 import edu.zsq.service_order_api.entity.OrderVO;
+import edu.zsq.utils.page.PageData;
 
 import java.util.List;
 
@@ -39,4 +41,20 @@ public interface OrderService extends IService<Order> {
      * @return 订单号
      */
     String createOrder(OrderDTO orderDTO);
+
+    /**
+     * 获取单个订单信息
+     *
+     * @param orderNumber 订单号
+     * @return 订单信息
+     */
+    OrderVO getOrderById(String orderNumber);
+
+    /**
+     * 分页获取订单列表
+     *
+     * @param orderQueryDTO 查询条件
+     * @return 订单列表
+     */
+    PageData<OrderVO> getOrderList(OrderQueryDTO orderQueryDTO);
 }

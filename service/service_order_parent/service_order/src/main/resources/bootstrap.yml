@@ -35,6 +35,11 @@ spring:
           data-id: aliyun.yml # 配置文件名-Data Id
           group: DEFAULT_GROUP   # 默认为DEFAULT_GROUP
           refresh: true   # 是否动态刷新，默认为false
+        shared-configs[4]:
+          data-id: wx.yml # 配置文件名-Data Id
+          group: DEFAULT_GROUP   # 默认为DEFAULT_GROUP
+          refresh: true   # 是否动态刷新，默认为false
+
 
 #        ext-config:
 #          - data-id: redis.yml

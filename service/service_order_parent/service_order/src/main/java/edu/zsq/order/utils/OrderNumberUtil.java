@@ -1,12 +1,14 @@
 package edu.zsq.order.utils;
 
-import com.google.common.collect.Lists;
 import edu.zsq.order.common.enums.OrderChannelEnum;
 import edu.zsq.order.common.enums.OrderTypeEnum;
 import edu.zsq.order.common.enums.PaymentSourceEnum;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 

@@ -29,7 +29,7 @@ public class EduBannerController {
 
 
     @ApiOperation(value = "获取Banner分页列表")
-    @GetMapping("/getBannerList")
+    @PostMapping("/getBannerList")
     public JsonResult<PageData<BannerVO>> getBannerList(@RequestBody BannerQueryDTO bannerQueryDTO) {
         return JsonResult.success(bannerService.getBannerList(bannerQueryDTO));
     }

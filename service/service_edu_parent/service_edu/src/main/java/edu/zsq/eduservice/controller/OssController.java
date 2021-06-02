@@ -29,8 +29,6 @@ public class OssController {
         return JsonResult.success(ossService.upload2Oss(file));
     }
 
-    @GetMapping("/")
-
     @DeleteMapping("/removeBatchOssFile")
     public JsonResult<Void> removeBatchOssFile(@RequestBody List<String> fileUrls) {
         ossService.removeBatchOssFile(fileUrls);

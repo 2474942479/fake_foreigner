@@ -4,14 +4,18 @@ package edu.zsq.order.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import edu.zsq.order.entity.Order;
 import edu.zsq.order.entity.dto.OrderDTO;
+import edu.zsq.order.entity.dto.OrderQueryDTO;
 import edu.zsq.order.service.OrderService;
 import edu.zsq.order.utils.OrderNumberUtil;
+import edu.zsq.service_order_api.entity.OrderVO;
 import edu.zsq.utils.exception.servicexception.MyException;
+import edu.zsq.utils.page.PageData;
 import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -35,12 +39,16 @@ public class OrderController {
         return JsonResult.success(orderService.createOrder(orderDTO));
     }
 
+    @PostMapping("/getOrderList")
+    @ApiOperation(value = "根据订单id查询订单")
+    public JsonResult<PageData<OrderVO>> getOrderList(@RequestBody OrderQueryDTO orderQueryDTO){
+        return JsonResult.success(orderService.getOrderList(orderQueryDTO));
+    }
+
     @GetMapping("/getOrderInfo/{orderNumber}")
     @ApiOperation(value = "根据订单id查询订单")
-    public JsonResult getOrderInfo(@PathVariable String orderNumber){
-        QueryWrapper<Order> wrapper = new QueryWrapper<>();
-        wrapper.eq("order_number",orderNumber);
-        return JsonResult.success(orderService.getOne(wrapper)).message("订单创建成功，请确认！");
+    public JsonResult<OrderVO> getOrderInfo(@PathVariable String orderNumber){
+        return JsonResult.success(orderService.getOrderById(orderNumber));
     }
 
     @GetMapping("/isBuyCourse/{userId}/{courseId}")

@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
+@TableName("edu_banner")
 @ApiModel(value = "EduBanner对象", description = "首页banner表")
 public class EduBanner implements Serializable {
 
@@ -39,6 +40,9 @@ public class EduBanner implements Serializable {
 
     @ApiModelProperty(value = "链接地址")
     private String linkUrl;
+
+    @ApiModelProperty(value = "描述")
+    private String description;
 
     @ApiModelProperty(value = "排序")
     private Integer sort;

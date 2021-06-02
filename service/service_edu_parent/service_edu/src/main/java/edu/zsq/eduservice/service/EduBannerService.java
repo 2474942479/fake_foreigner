@@ -45,7 +45,6 @@ public interface EduBannerService extends IService<EduBanner> {
      * 删除Banner
      *
      * @param id id
-     * @return 删除结果
      */
     void removeBanner(String id);
 }

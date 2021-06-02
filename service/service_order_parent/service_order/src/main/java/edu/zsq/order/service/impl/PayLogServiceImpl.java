@@ -10,8 +10,8 @@ import edu.zsq.order.mapper.PayLogMapper;
 import edu.zsq.order.service.OrderService;
 import edu.zsq.order.service.PayLogService;
 import edu.zsq.order.utils.HttpClientUtil;
-import edu.zsq.order.utils.ReadPropertiesUtils;
 import edu.zsq.utils.exception.servicexception.MyException;
+import edu.zsq.utils.properties.WxPayProperties;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -50,8 +50,8 @@ public class PayLogServiceImpl extends ServiceImpl<PayLogMapper, PayLog> impleme
 
 //           2  根据map设置生成二维码
             Map map = new HashMap(9);
-            map.put("appid", ReadPropertiesUtils.ACCESS_APP_ID);
-            map.put("mch_id", ReadPropertiesUtils.ACCESS_PARTNER);
+            map.put("appid", WxPayProperties.WX_PAY_APP_ID);
+            map.put("mch_id", WxPayProperties.WX_PAY_PARTNER);
             map.put("nonce_str", WXPayUtil.generateNonceStr());
 //            主体：课程名称
             map.put("body", orderInfo.getCourseTitle());
@@ -66,9 +66,8 @@ public class PayLogServiceImpl extends ServiceImpl<PayLogMapper, PayLog> impleme
 
             //3、HTTPClient来根据URL访问第三方接口并且传递参数】
             HttpClientUtil client = new HttpClientUtil("https://api.mch.weixin.qq.com/pay/unifiedorder");
-
             //client设置参数    转换xml格式并用商户key加密
-            client.setXmlParam(WXPayUtil.generateSignedXml(map, ReadPropertiesUtils.ACCESS_PARTNER_KEY));
+            client.setXmlParam(WXPayUtil.generateSignedXml(map, WxPayProperties.WX_PAY_PARTNERKEY));
 //            设置支持https
             client.setHttps(true);
             client.post();
@@ -107,14 +106,14 @@ public class PayLogServiceImpl extends ServiceImpl<PayLogMapper, PayLog> impleme
         try {
             //1、封装参数
             Map map = new HashMap<>(4);
-            map.put("appid", ReadPropertiesUtils.ACCESS_APP_ID);
-            map.put("mch_id", ReadPropertiesUtils.ACCESS_PARTNER);
+            map.put("appid", WxPayProperties.WX_PAY_APP_ID);
+            map.put("mch_id", WxPayProperties.WX_PAY_PARTNER);
             map.put("nonce_str", WXPayUtil.generateNonceStr());
             map.put("out_trade_no", orderNumber);
 
             //2、设置请求
             HttpClientUtil client = new HttpClientUtil("https://api.mch.weixin.qq.com/pay/orderquery");
-            client.setXmlParam(WXPayUtil.generateSignedXml(map, ReadPropertiesUtils.ACCESS_PARTNER_KEY));
+            client.setXmlParam(WXPayUtil.generateSignedXml(map, WxPayProperties.WX_PAY_PARTNERKEY));
             client.setHttps(true);
             client.post();
             //3、返回第三方的数据
