@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -23,9 +24,8 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value = "EduTeacher对象", description = "讲师")
-public class EduTeacher implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@NoArgsConstructor
+public class EduTeacher{
 
     @ApiModelProperty(value = "讲师ID")
     @TableId(value = "id", type = IdType.ID_WORKER_STR)

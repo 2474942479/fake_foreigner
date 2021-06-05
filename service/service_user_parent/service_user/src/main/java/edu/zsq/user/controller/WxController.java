@@ -1,6 +1,7 @@
 package edu.zsq.user.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import edu.zsq.user.entity.User;
 import edu.zsq.user.service.UserService;
@@ -30,7 +31,6 @@ public class WxController {
 
     /**
      * 获取微信二维码
-     * @return
      */
     @GetMapping("/login")
     public String getWxCode() {
@@ -64,17 +64,11 @@ public class WxController {
 
     /**
      * 根据返回的临时票据发送请求
-     * @param code
-     * @param state
-     * @return
      */
     @GetMapping("/callback")
     public String callback(String code, String state) {
 
         //得到授权临时票据code
-        System.out.println("code = " + code);
-        System.out.println("state = " + state);
-
         //向认证服务器发送请求换取access_token
         String baseAccessTokenUrl = "https://api.weixin.qq.com/sns/oauth2/access_token" +
                 "?appid=%s" +
@@ -90,34 +84,32 @@ public class WxController {
         String result = HttpClientUtils.httpGet(accessTokenUrl);
         System.out.println("accessToken=============" + result);
         Gson gson = new Gson();
-        Map map = gson.fromJson(result, HashMap.class);
-        String access_token = (String) map.get("access_token");
-        String openid = (String)map.get("openid");
+        Map map = JSON.parseObject(result, Map.class);
+        String accessToken = (String) map.get("access_token");
+        String openid = (String) map.get("openid");
 
 
         //查询数据库当前用用户是否曾经使用过微信登录
         User user = userService.getUserInfoByOpenid(openid);
-        if(user == null){
-            System.out.println("新用户注册");
-
+        if (user == null) {
             //访问微信的资源服务器，获取用户信息
             String baseUserInfoUrl = "https://api.weixin.qq.com/sns/userinfo" +
                     "?access_token=%s" +
                     "&openid=%s";
-            String userInfoUrl = String.format(baseUserInfoUrl, access_token, openid);
-            String resultUserInfo = null;
+            String userInfoUrl = String.format(baseUserInfoUrl, accessToken, openid);
+            String resultUserInfo;
+
             try {
                 resultUserInfo = HttpClientUtils.httpGet(userInfoUrl);
-                System.out.println("resultUserInfo==========" + resultUserInfo);
             } catch (Exception e) {
                 throw new MyException(20001, "获取用户信息失败");
             }
 
             //解析json
-            HashMap<String, Object> mapUserInfo = gson.fromJson(resultUserInfo, HashMap.class);
+            HashMap mapUserInfo = JSON.parseObject(resultUserInfo, HashMap.class);
             System.out.println(mapUserInfo);
-            String nickname = (String)mapUserInfo.get("nickname");
-            String headimgurl = (String)mapUserInfo.get("headimgurl");
+            String nickname = (String) mapUserInfo.get("nickname");
+            String headImgUrl = (String) mapUserInfo.get("headimgurl");
             Double doubleSex = (Double) mapUserInfo.get("sex");
             int sex = doubleSex.intValue();
 
@@ -126,14 +118,13 @@ public class WxController {
             user.setNickname(nickname);
             user.setOpenid(openid);
             user.setSex(sex);
-            user.setAvatar(headimgurl);
+            user.setAvatar(headImgUrl);
             userService.save(user);
         }
 
         //TODO 登录
         String jwtToken = JwtUtils.getJwtToken(user.getId(), user.getNickname());
-//        System.out.println(jwtToken);
-        return "redirect:http://localhost:3000?token="+jwtToken;
+        return "redirect:http://localhost:3000?token=" + jwtToken;
 
     }
 

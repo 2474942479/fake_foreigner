@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.eduservice.entity.EduChapter;
 import edu.zsq.eduservice.entity.dto.ChapterDTO;
 import edu.zsq.eduservice.entity.vo.chapter.ChapterInfoVO;
-import edu.zsq.eduservice.entity.vo.chapter.ChapterVO;
+import edu.zsq.service_edu_api.entity.vo.ChapterVO;
 
 import java.util.List;
 

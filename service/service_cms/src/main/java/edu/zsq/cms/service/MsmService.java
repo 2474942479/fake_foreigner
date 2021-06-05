@@ -1,4 +1,4 @@
-package edu.zsq.msm.service;
+package edu.zsq.cms.service;
 
 import java.util.Map;
 

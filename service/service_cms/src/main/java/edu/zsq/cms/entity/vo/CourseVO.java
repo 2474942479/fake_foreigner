@@ -12,12 +12,15 @@ import java.math.BigDecimal;
  */
 @ApiModel(value = "课程信息", description = "网站课程详情页需要的相关字段")
 @Data
-public class CourseDTO implements Serializable {
+public class CourseVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "课程ID")
     private String id;
+
+    @ApiModelProperty(value = "课程ID")
+    private String subjectIds;
 
     @ApiModelProperty(value = "课程标题")
     private String title;
@@ -54,17 +57,4 @@ public class CourseDTO implements Serializable {
 
     @ApiModelProperty(value = "讲师头像")
     private String avatar;
-
-    @ApiModelProperty(value = "课程一级分类ID")
-    private String subjectOneId;
-
-    @ApiModelProperty(value = "一级分类名称")
-    private String subjectOneTitle;
-
-    @ApiModelProperty(value = "课程二级分类ID")
-    private String subjectTwoId;
-
-    @ApiModelProperty(value = "二级分类名称")
-    private String subjectTwoTitle;
-
 }

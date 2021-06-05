@@ -4,7 +4,7 @@ import edu.zsq.eduservice.entity.EduVideo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.eduservice.entity.dto.VideoDTO;
 import edu.zsq.eduservice.entity.vo.VideoInfoVO;
-import edu.zsq.eduservice.entity.vo.chapter.VideoVO;
+import edu.zsq.service_edu_api.entity.vo.VideoVO;
 
 import java.util.List;
 

@@ -1,6 +1,8 @@
 package edu.zsq.utils.jwt;
 
+import edu.zsq.utils.exception.ErrorCode;
 import edu.zsq.utils.exception.core.ExFactory;
+import edu.zsq.utils.exception.core.IErrorEnum;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -82,7 +84,7 @@ public class JwtUtils {
     public static String getMemberIdByJwtToken(HttpServletRequest request) {
         String jwtToken = request.getHeader("token");
         if (StringUtils.isEmpty(jwtToken)) {
-            throw ExFactory.throwBusiness("token 已失效");
+            throw ExFactory.throwWith(ErrorCode.UNAUTHORIZED, "请先登录");
         }
         // 解析Jwt
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(APP_SECRET).parseClaimsJws(jwtToken);

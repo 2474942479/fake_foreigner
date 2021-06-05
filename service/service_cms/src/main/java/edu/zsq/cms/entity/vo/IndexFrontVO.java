@@ -15,7 +15,6 @@ import java.util.List;
  */
 
 @Data
-@Builder
 public class IndexFrontVO {
 
     @ApiModelProperty(value = "广告图")

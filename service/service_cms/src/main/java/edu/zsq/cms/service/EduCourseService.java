@@ -1,16 +1,13 @@
 package edu.zsq.cms.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.cms.entity.EduCourse;
 import edu.zsq.cms.entity.dto.CourseQueryDTO;
 import edu.zsq.cms.entity.vo.CourseAllInfoVO;
-import edu.zsq.cms.entity.vo.CourseDTO;
 import edu.zsq.cms.entity.vo.CourseListVO;
 import edu.zsq.utils.page.PageData;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -45,5 +42,5 @@ public interface EduCourseService extends IService<EduCourse> {
      * @param courseId 课程id
      * @return 所有信息
      */
-    CourseAllInfoVO getCourseAllInfo(String userId, String courseId);
+    CourseAllInfoVO getCourseInfo(String userId, String courseId);
 }

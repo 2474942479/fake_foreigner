@@ -2,6 +2,7 @@ package edu.zsq.cms.controller;
 
 
 import edu.zsq.cms.entity.dto.CommentDTO;
+import edu.zsq.cms.entity.dto.CommentQueryDTO;
 import edu.zsq.cms.entity.vo.CommentVO;
 import edu.zsq.cms.service.EduCommentService;
 import edu.zsq.utils.page.PageData;
@@ -29,13 +30,13 @@ public class EduCommentController {
     /**
      * 根据课程id分页查询评论列表
      *
-     * @param courseId 课程id
+     * @param commentQueryDTO 分页条件
      * @return 评论列表
      */
     @ApiOperation(value = "评论分页列表")
-    @GetMapping("/{courseId}")
-    public JsonResult<PageData<CommentVO>> getCommentList(@PathVariable String courseId) {
-        return JsonResult.success(commentService.getCommentList(courseId));
+    @PostMapping("/getCommentList")
+    public JsonResult<PageData<CommentVO>> getCommentList(@RequestBody CommentQueryDTO commentQueryDTO) {
+        return JsonResult.success(commentService.getCommentList(commentQueryDTO));
     }
 
     /**
@@ -47,7 +48,9 @@ public class EduCommentController {
     @ApiOperation(value = "添加评论")
     @PostMapping("/saveCommentInfo")
     public JsonResult<Void> saveComment(@RequestBody CommentDTO commentDTO) {
-        return commentService.saveComment(commentDTO);
+        commentService.saveComment(commentDTO);
+        return JsonResult.success();
+
     }
 
 }

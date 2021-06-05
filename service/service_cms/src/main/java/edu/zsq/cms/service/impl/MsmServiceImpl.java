@@ -1,4 +1,4 @@
-package edu.zsq.msm.service.impl;
+package edu.zsq.cms.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.CommonRequest;
@@ -8,7 +8,7 @@ import com.aliyuncs.IAcsClient;
 import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
-import edu.zsq.msm.service.MsmService;
+import edu.zsq.cms.service.MsmService;
 import edu.zsq.utils.properties.OssProperties;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;

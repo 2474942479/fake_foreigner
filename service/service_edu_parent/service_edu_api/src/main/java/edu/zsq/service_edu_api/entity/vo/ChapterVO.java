@@ -1,4 +1,4 @@
-package edu.zsq.eduservice.entity.vo.chapter;
+package edu.zsq.service_edu_api.entity.vo;
 
 import lombok.Builder;
 import lombok.Data;

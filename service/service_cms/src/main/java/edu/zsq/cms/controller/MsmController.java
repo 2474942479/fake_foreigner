@@ -1,11 +1,15 @@
-package edu.zsq.msm.controller;
+package edu.zsq.cms.controller;
 
-import edu.zsq.msm.service.MsmService;
-import edu.zsq.msm.utils.RandomUtil;
+import cn.hutool.core.util.RandomUtil;
+import edu.zsq.cms.service.MsmService;
+import edu.zsq.cms.util.MsmRandomUtil;
 import edu.zsq.utils.result.JsonResult;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -14,10 +18,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author 张
- * 发送短信服务
  */
 @RestController
-@RequestMapping("/eduMsm/msm")
+@RequestMapping("/eduCms/msm")
 public class MsmController {
 
     /**
@@ -31,17 +34,12 @@ public class MsmController {
     private MsmService msmService;
 
 
-    /**
-     * 根据手机号发送短信
-     *
-     * @param mobile
-     * @return
-     */
     @GetMapping("/send/{mobile}")
+    @ApiOperation(value = "根据手机号发送短信")
     public JsonResult<Void> send(@PathVariable String mobile) {
 
 //      生成随机数,并传递给阿里云进行发送
-        String code = RandomUtil.getFourBitRandom();
+        String code = MsmRandomUtil.getFourBitRandom();
 
         Map<String, String> params = new HashMap<>(1);
         params.put("code", code);

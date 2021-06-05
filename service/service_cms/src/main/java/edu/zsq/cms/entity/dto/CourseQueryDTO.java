@@ -6,8 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
-
 /**
  * @author 张
  */
@@ -21,10 +19,7 @@ public class CourseQueryDTO extends PageData<EduCourse> {
     @ApiModelProperty(value = "讲师id")
     private String teacherId;
 
-    @ApiModelProperty(value = "一级类别id")
-    private String subjectParentId;
-
-    @ApiModelProperty(value = "二级类别id")
+    @ApiModelProperty(value = "课程类别id")
     private String subjectId;
 
     @ApiModelProperty(value = "销量排序")

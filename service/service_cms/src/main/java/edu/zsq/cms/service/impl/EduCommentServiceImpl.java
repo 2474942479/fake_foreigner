@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.cms.entity.EduComment;
 import edu.zsq.cms.entity.dto.CommentDTO;
+import edu.zsq.cms.entity.dto.CommentQueryDTO;
 import edu.zsq.cms.entity.vo.CommentVO;
 import edu.zsq.cms.mapper.EduCommentMapper;
 import edu.zsq.cms.service.EduCommentService;
+import edu.zsq.utils.exception.ErrorCode;
 import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.page.PageData;
 import edu.zsq.utils.result.JsonResult;
@@ -31,50 +33,53 @@ public class EduCommentServiceImpl extends ServiceImpl<EduCommentMapper, EduComm
     /**
      * 根据课程id查询评论列表
      *
-     * @param courseId 课程id
+     * @param commentQueryDTO 查询条件
      * @return 评论列表
      */
     @Override
-    public PageData<CommentVO> getCommentList(String courseId) {
+    public PageData<CommentVO> getCommentList(CommentQueryDTO commentQueryDTO) {
 
-        Page<EduComment> page = new Page<>();
+        Page<EduComment> page = new Page<>(commentQueryDTO.getCurrent(), commentQueryDTO.getSize());
         lambdaQuery()
-                .eq(EduComment::getCourseId, courseId)
+                .eq(EduComment::getCourseId, commentQueryDTO.getCourseId())
                 .orderByDesc(EduComment::getGmtModified)
                 .page(page);
 
         if (page.getRecords().isEmpty()) {
-            return PageData.of(Collections.emptyList(), page.getCurrent(), page.getSize(), page.getTotal());
+            return PageData.empty();
         }
 
-        List<CommentVO> comments = page.getRecords().stream().map(this::convertEduComment).collect(Collectors.toList());
+        List<CommentVO> comments = page.getRecords()
+                .stream()
+                .map(this::convertEduComment)
+                .collect(Collectors.toList());
 
         return PageData.of(comments, page.getCurrent(), page.getSize(), page.getTotal());
     }
 
     @Override
-    public JsonResult<Void> saveComment(CommentDTO commentDTO) {
+    public void saveComment(CommentDTO commentDTO) {
 
-        if (StringUtils.isEmpty(commentDTO.getUserId())){
-            throw ExFactory.throwBusiness("请先登录");
+        if (StringUtils.isBlank(commentDTO.getUserId())) {
+            throw ExFactory.throwWith(ErrorCode.UNAUTHORIZED, "请先登录");
         }
-        if (StringUtils.isEmpty(commentDTO.getContent())){
+        if (StringUtils.isBlank(commentDTO.getContent())) {
             throw ExFactory.throwBusiness("请输入评论内容");
         }
 
-        if (save(this.convertCommentDTO(commentDTO))) {
+        if (!save(convertCommentDTO(commentDTO))) {
             throw ExFactory.throwSystem("系统异常，发表评论失败");
         }
-
-        return JsonResult.OK;
     }
 
-    private EduComment convertCommentDTO(CommentDTO commentDTO){
+    private EduComment convertCommentDTO(CommentDTO commentDTO) {
         EduComment eduComment = new EduComment();
-        commentDTO.setUserId(commentDTO.getUserId());
-        commentDTO.setContent(commentDTO.getContent());
-        commentDTO.setTeacherId(commentDTO.getTeacherId());
-        commentDTO.setCourseId(commentDTO.getCourseId());
+        eduComment.setUserId(commentDTO.getUserId());
+        eduComment.setContent(commentDTO.getContent());
+        eduComment.setTeacherId(commentDTO.getTeacherId());
+        eduComment.setCourseId(commentDTO.getCourseId());
+        eduComment.setAvatar(commentDTO.getAvatar());
+        eduComment.setNickname(commentDTO.getNickname());
 
         return eduComment;
     }
@@ -88,6 +93,7 @@ public class EduCommentServiceImpl extends ServiceImpl<EduCommentMapper, EduComm
                 .nickname(eduComment.getNickname())
                 .userId(eduComment.getUserId())
                 .courseId(eduComment.getCourseId())
+                .gmtCreate(eduComment.getGmtCreate())
                 .build();
     }
 }

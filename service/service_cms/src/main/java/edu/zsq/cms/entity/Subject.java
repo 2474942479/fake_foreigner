@@ -6,50 +6,34 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * <p>
- * 首页banner表
- * </p>
- *
- * @author zsq
- * @since 2020-08-24
+ * @author 张
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value = "EduBanner对象", description = "首页banner表")
-@NoArgsConstructor
-public class EduBanner{
+@ApiModel(value = "课程分类", description = "课程分类表")
+@TableName("edu_subject")
+public class Subject {
 
+    private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "ID")
+    @ApiModelProperty(value = "课程类别ID")
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
-    @ApiModelProperty(value = "标题")
+    @ApiModelProperty(value = "类别名称")
     private String title;
 
-    @ApiModelProperty(value = "图片地址")
-    private String imageUrl;
+    @ApiModelProperty(value = "父ID")
+    private String parentId;
 
-    @ApiModelProperty(value = "链接地址")
-    private String linkUrl;
-
-    @ApiModelProperty(value = "描述")
-    private String description;
-
-    @ApiModelProperty(value = "排序")
+    @ApiModelProperty(value = "排序字段")
     private Integer sort;
-
-    @TableLogic
-    @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
-    private Boolean isDeleted;
 
     @ApiModelProperty(value = "创建时间")
     @TableField(fill = FieldFill.INSERT)
@@ -60,6 +44,4 @@ public class EduBanner{
     @TableField(fill = FieldFill.INSERT_UPDATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime gmtModified;
-
-
 }

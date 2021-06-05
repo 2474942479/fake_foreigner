@@ -45,9 +45,9 @@ public class EduCourseController {
      * @param courseId 课程id
      * @return 课程详情页面所有信息
      */
-    @GetMapping("/getCourseAllInfo/{courseId}")
-    public JsonResult<CourseAllInfoVO> getCourseAllInfo(@PathVariable String courseId, HttpServletRequest request) {
-        return JsonResult.success(courseService.getCourseAllInfo(JwtUtils.getMemberIdByJwtToken(request), courseId));
+    @GetMapping("/getCourseInfo/{courseId}")
+    public JsonResult<CourseAllInfoVO> getCourseInfo(@PathVariable String courseId, HttpServletRequest request) {
+        return JsonResult.success(courseService.getCourseInfo(JwtUtils.getMemberIdByJwtToken(request), courseId));
     }
 
 }

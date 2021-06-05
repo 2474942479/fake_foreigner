@@ -1,4 +1,4 @@
-package edu.zsq.msm.utils;
+package edu.zsq.cms.util;
 
 
 import java.text.DecimalFormat;
@@ -9,7 +9,7 @@ import java.util.*;
  *
  * @author 张
  */
-public class RandomUtil {
+public class MsmRandomUtil {
 
     private static final Random random = new Random();
 

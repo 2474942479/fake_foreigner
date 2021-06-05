@@ -3,8 +3,8 @@ package edu.zsq.eduservice.controller;
 
 import edu.zsq.eduservice.entity.dto.ChapterDTO;
 import edu.zsq.eduservice.entity.vo.chapter.ChapterInfoVO;
-import edu.zsq.eduservice.entity.vo.chapter.ChapterVO;
 import edu.zsq.eduservice.service.EduChapterService;
+import edu.zsq.service_edu_api.entity.vo.ChapterVO;
 import edu.zsq.utils.result.JsonResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,18 +57,6 @@ public class EduChapterController {
     public JsonResult<Void> deleteChapter(@PathVariable String id) {
         chapterService.deleteChapter(id);
         return JsonResult.OK;
-    }
-
-
-    /**
-     * 根据课程id获取课程大纲列表
-     *
-     * @param courseId 课程id
-     * @return 课程大纲列表
-     */
-    @GetMapping("/getAllChapterVO/{courseId}")
-    public JsonResult<List<ChapterVO>> getAllChapterVO(@PathVariable String courseId) {
-        return JsonResult.success(chapterService.getAllChapterVO(courseId));
     }
 
 }

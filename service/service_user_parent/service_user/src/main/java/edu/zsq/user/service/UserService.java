@@ -20,16 +20,16 @@ public interface UserService extends IService<User> {
 
     /**
      * 登录
-     * @param LoginDTO 登陆信息
+     * @param loginDTO 登陆信息
      * @return 登陆结果
      */
-    JsonResult<String> login(LoginDTO LoginDTO);
+    JsonResult<String> login(LoginDTO loginDTO);
 
     /**
      * 注册
      * @param registerDTO 注册信息
      */
-    JsonResult<Void> register(RegisterDTO registerDTO);
+    void register(RegisterDTO registerDTO);
 
     /**
      * 根据openid获取用户信息

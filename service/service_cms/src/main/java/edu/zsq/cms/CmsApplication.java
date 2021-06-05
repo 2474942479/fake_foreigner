@@ -14,7 +14,10 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan("edu.zsq")
 @MapperScan("edu.zsq.cms.mapper")
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients(value = {
+        "edu.zsq.service_edu_api.service",
+        "edu.zsq.service_order_api.service"
+})
 public class CmsApplication {
 
     public static void main(String[] args) {

@@ -7,6 +7,7 @@ import edu.zsq.user.entity.dto.RegisterDTO;
 import edu.zsq.user.mapper.UserMapper;
 import edu.zsq.user.service.UserService;
 import edu.zsq.utils.exception.ErrorCode;
+import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.jwt.JwtUtils;
 import edu.zsq.utils.result.JsonResult;
 import edu.zsq.servicebase.common.Constants;
@@ -76,7 +77,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public JsonResult<Void> register(RegisterDTO registerDTO) {
+    public void register(RegisterDTO registerDTO) {
 
         //获取注册信息，进行校验
         String nickname = registerDTO.getNickname();
@@ -87,14 +88,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //校验参数
         if (StringUtils.isEmpty(nickname) || StringUtils.isEmpty(mobile) ||
                 StringUtils.isEmpty(password) || StringUtils.isEmpty(code)) {
-            return JsonResult.failure(ErrorCode.PARAM_ERROR, "注册信息未填完整");
+            throw ExFactory.throwWith(ErrorCode.PARAM_ERROR, "注册信息未填完整");
         }
 
         //校验验证码
         //从redis获取发送的验证码
         String mobileCode = redisTemplate.opsForValue().get(mobile);
         if (!code.equals(mobileCode)) {
-            return JsonResult.failure("验证码错误或已过期");
+            throw ExFactory.throwBusiness("验证码错误或已过期");
         }
 
         //查询数据库中是否存在相同的手机号码
@@ -104,7 +105,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .count();
 
         if (count > 0) {
-            return JsonResult.failure("该手机号已注册");
+            throw ExFactory.throwBusiness("该手机号已注册");
         }
 
         //添加注册信息到数据库
@@ -114,9 +115,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .setPassword(DigestUtils.md5DigestAsHex(password.getBytes()))
                 .setIsDeleted(Boolean.FALSE)
                 .setAvatar(DEFAULT_AVATAR);
-        baseMapper.insert(user);
-
-        return JsonResult.OK;
+        if (!save(user)) {
+            throw ExFactory.throwBusiness("注册失败！");
+        }
     }
 
     @Override

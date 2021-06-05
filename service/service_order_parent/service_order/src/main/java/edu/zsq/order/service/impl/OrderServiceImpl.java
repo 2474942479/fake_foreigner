@@ -13,11 +13,10 @@ import edu.zsq.order.service.OrderService;
 import edu.zsq.order.utils.OrderNumberUtil;
 import edu.zsq.service_order_api.entity.OrderVO;
 import edu.zsq.servicebase.common.Constants;
+import edu.zsq.utils.exception.ErrorCode;
 import edu.zsq.utils.exception.core.ExFactory;
-import edu.zsq.utils.page.PageDTO;
 import edu.zsq.utils.page.PageData;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,7 +54,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public boolean isBuyCourse(String userId, String courseId) {
 
         if (StringUtils.isEmpty(userId)) {
-            throw ExFactory.throwBusiness("您尚未登录，请先登录");
+            throw ExFactory.throwWith(ErrorCode.UNAUTHORIZED, "请先登录");
         }
 
         return lambdaQuery()

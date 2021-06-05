@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class EduTeacherServiceImpl extends ServiceImpl<EduTeacherMapper, EduTeacher> implements EduTeacherService {
 
     @Override
-    public PageData<TeacherInfoVO> getTeacherFront(TeacherQueryDTO teacherQueryDTO) {
+    public PageData<TeacherInfoVO> getTeacherList(TeacherQueryDTO teacherQueryDTO) {
 
         Page<EduTeacher> page = new Page<>(teacherQueryDTO.getCurrent(), teacherQueryDTO.getSize());
         lambdaQuery().orderByDesc(EduTeacher::getSort).page(page);

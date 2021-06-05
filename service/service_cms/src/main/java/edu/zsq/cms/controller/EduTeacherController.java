@@ -21,7 +21,7 @@ import javax.annotation.Resource;
  * @since 2021-04-18
  */
 @RestController
-@RequestMapping("/eduCms/teacherFront")
+@RequestMapping("/eduCms/teacher")
 public class EduTeacherController {
 
     @Resource
@@ -35,9 +35,9 @@ public class EduTeacherController {
      * @param teacherQueryDTO 查询条件
      * @return 讲师信息列表
      */
-    @PostMapping("/getTeacherFront")
-    public JsonResult<PageData<TeacherInfoVO>> getTeacherFront(@RequestBody TeacherQueryDTO teacherQueryDTO) {
-        return JsonResult.success(teacherService.getTeacherFront(teacherQueryDTO));
+    @PostMapping("/getTeacherList")
+    public JsonResult<PageData<TeacherInfoVO>> getTeacherList(@RequestBody TeacherQueryDTO teacherQueryDTO) {
+        return JsonResult.success(teacherService.getTeacherList(teacherQueryDTO));
     }
 
 
@@ -47,8 +47,8 @@ public class EduTeacherController {
      * @param id 讲师id
      * @return 讲师信息以及所讲课程
      */
-    @GetMapping("/getTeacherAllById/{id}")
-    public JsonResult<TeacherAndCoursesVO> getTeacherAllById(@PathVariable String id) {
+    @GetMapping("/getTeacherInfoById/{id}")
+    public JsonResult<TeacherAndCoursesVO> getTeacherInfoById(@PathVariable String id) {
 
         TeacherAndCoursesVO teacherAndCoursesVO = TeacherAndCoursesVO.builder()
                 .teacherInfo(teacherService.getById(id))

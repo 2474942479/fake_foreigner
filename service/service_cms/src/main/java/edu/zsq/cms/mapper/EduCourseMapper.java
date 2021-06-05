@@ -2,7 +2,7 @@ package edu.zsq.cms.mapper;
 
 import edu.zsq.cms.entity.EduCourse;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import edu.zsq.cms.entity.vo.CourseDTO;
+import edu.zsq.cms.entity.vo.CourseVO;
 
 /**
  * <p>
@@ -19,5 +19,5 @@ public interface EduCourseMapper extends BaseMapper<EduCourse> {
      * @param courseId 课程id
      * @return 课程详细信息
      */
-    CourseDTO getCourseBaseInfo(String courseId);
+    CourseVO getCourseBaseInfo(String courseId);
 }

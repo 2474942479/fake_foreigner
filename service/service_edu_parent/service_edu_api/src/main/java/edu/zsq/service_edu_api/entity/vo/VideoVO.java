@@ -1,4 +1,4 @@
-package edu.zsq.eduservice.entity.vo.chapter;
+package edu.zsq.service_edu_api.entity.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;

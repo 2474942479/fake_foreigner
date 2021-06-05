@@ -21,5 +21,5 @@ public interface EduTeacherService extends IService<EduTeacher> {
      * @param teacherQueryDTO 查询条件
      * @return 分页结果
      */
-    PageData<TeacherInfoVO> getTeacherFront(TeacherQueryDTO teacherQueryDTO);
+    PageData<TeacherInfoVO> getTeacherList(TeacherQueryDTO teacherQueryDTO);
 }

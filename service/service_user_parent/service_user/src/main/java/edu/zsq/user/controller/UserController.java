@@ -38,7 +38,8 @@ public class UserController {
     @ApiOperation(value = "注册")
     @PostMapping("/register")
     public JsonResult<Void> register(@RequestBody RegisterDTO registerDTO) {
-        return userService.register(registerDTO);
+        userService.register(registerDTO);
+        return JsonResult.success();
     }
 
     @ApiOperation(value = "根据token获取用户信息")
