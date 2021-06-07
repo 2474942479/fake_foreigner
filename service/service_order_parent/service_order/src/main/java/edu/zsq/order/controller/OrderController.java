@@ -1,8 +1,6 @@
 package edu.zsq.order.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import edu.zsq.order.entity.Order;
 import edu.zsq.order.entity.dto.OrderDTO;
 import edu.zsq.order.entity.dto.OrderQueryDTO;
 import edu.zsq.order.service.OrderService;
@@ -50,15 +48,9 @@ public class OrderController {
 
     @DeleteMapping("/removeOrder/{orderNumber}")
     @ApiOperation(value = "取消订单")
-    public JsonResult removeOrder(@PathVariable String orderNumber) {
-        QueryWrapper<Order> wrapper = new QueryWrapper<>();
-        wrapper.eq("order_number", orderNumber);
-        boolean remove = orderService.remove(wrapper);
-        if (remove) {
-            return JsonResult.success().message("已取消订单");
-        } else {
-            return JsonResult.failure("取消订单失败");
-        }
+    public JsonResult<Void> removeOrder(@PathVariable String orderNumber) {
+        orderService.removeOrder(orderNumber);
+        return JsonResult.success();
     }
 
 

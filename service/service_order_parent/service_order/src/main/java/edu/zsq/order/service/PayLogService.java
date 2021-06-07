@@ -2,6 +2,7 @@ package edu.zsq.order.service;
 
 import edu.zsq.order.entity.PayLog;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.zsq.order.entity.dto.vo.WxCodeVO;
 
 import java.util.Map;
 
@@ -17,21 +18,16 @@ public interface PayLogService extends IService<PayLog> {
 
     /**
      * 生成二维码
+     *
      * @param orderNumber 订单编号
-     * @return
+     * @return 二维码
      */
-    Map createNative(String orderNumber);
+    WxCodeVO createWxCode(String orderNumber);
 
     /**
      * 调用wx接口查询扫码支付后返回的信息
-     * @param orderNumber
-     * @return
+     *
+     * @param orderNumber 订单号
      */
-    Map<String, String> getPayStatus(String orderNumber);
-
-    /**
-     * 向支付日志表中添加信息并修改订单列表的支付状态
-     * @param map
-     */
-    void insertPayLogAndUpdateStatus(Map<String, String> map);
+    void getPayStatus(String orderNumber);
 }

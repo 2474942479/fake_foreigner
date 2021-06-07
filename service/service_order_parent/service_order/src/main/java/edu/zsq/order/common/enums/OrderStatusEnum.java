@@ -1,5 +1,7 @@
 package edu.zsq.order.common.enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
 /**
@@ -19,9 +21,10 @@ public enum OrderStatusEnum {
     CANCEL(5, "已超时关闭"),
     MANAGER_CANCEL(-1, "取消订单");
 
-
+    @Getter
     private final int status;
 
+    @Getter
     private final String desc;
 
     OrderStatusEnum(Integer status, String desc) {
@@ -29,20 +32,11 @@ public enum OrderStatusEnum {
         this.desc = desc;
     }
 
-    public static String ofName(int status) {
+    public static OrderStatusEnum find(int status) {
         return Arrays.stream(OrderStatusEnum.values())
                 .filter(orderStatusEnum -> orderStatusEnum.getStatus() == status)
                 .findFirst()
-                .map(OrderStatusEnum::getDesc)
                 .orElse(null);
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public String getDesc() {
-        return desc;
     }
 
 }

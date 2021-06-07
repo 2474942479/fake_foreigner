@@ -107,6 +107,11 @@ public class VodServiceImpl implements VodService {
 
     @Override
     public String getPlayAuth(String videoId) {
+
+        if (StringUtils.isBlank(videoId) || videoId.equals("undefined")) {
+            throw ExFactory.throwBusiness("视频id不能为空");
+        }
+
         try {
             // 初始化对象
             DefaultAcsClient client = InitVodClient.initVodClient();

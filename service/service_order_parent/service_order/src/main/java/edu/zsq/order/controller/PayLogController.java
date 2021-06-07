@@ -1,10 +1,12 @@
 package edu.zsq.order.controller;
 
 
+import edu.zsq.order.entity.dto.vo.WxCodeVO;
 import edu.zsq.order.service.PayLogService;
 import edu.zsq.utils.exception.ErrorCode;
 import edu.zsq.utils.exception.servicexception.MyException;
 import edu.zsq.utils.result.JsonResult;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -26,35 +28,18 @@ public class PayLogController {
     @Resource
     private PayLogService payLogService;
 
-    /**
-     * 生成二维码
-     * @return
-     */
-    @GetMapping("/createNative/{orderNumber}")
-    public JsonResult createNative(@PathVariable String orderNumber) {
-        Map map = payLogService.createNative(orderNumber);
-        return JsonResult.success().data(map);
+    @GetMapping("/createWxCode/{orderNumber}")
+    @ApiOperation(value = "生成二维码")
+    public JsonResult<WxCodeVO> createWxCode(@PathVariable String orderNumber) {
+        return JsonResult.success(payLogService.createWxCode(orderNumber));
     }
 
-
-    /**
-     * 查询订单状态  支付成功便添加到支付日志表中
-     * @param orderNumber   根据订单号查询
-     * @return
-     */
     @GetMapping("/getPayStatus/{orderNumber}")
-    public JsonResult getPayStatus(@PathVariable String orderNumber){
-//        调用wx接口查询扫码支付后返回的信息
-        Map<String,String> map = payLogService.getPayStatus(orderNumber);
-        if (map == null){
-            throw new MyException(20001,"支付出错了！请重试");
-        }
-        if ("SUCCESS".equals(map.get("trade_state"))){
-//            向支付日志表中添加信息并修改订单列表的支付状态
-            payLogService.insertPayLogAndUpdateStatus(map);
-            return JsonResult.success().message("支付成功！");
-        }
-        return JsonResult.failure(ErrorCode.PAYING);
+    @ApiOperation(value = "查询订单状态  支付成功便更新订单状态并添加到支付日志表中")
+    public JsonResult<Void> getPayStatus(@PathVariable String orderNumber){
+        payLogService.getPayStatus(orderNumber);
+        return JsonResult.success();
+
     }
 
 }

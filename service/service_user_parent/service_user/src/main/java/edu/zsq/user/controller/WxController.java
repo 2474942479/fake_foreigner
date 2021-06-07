@@ -3,9 +3,11 @@ package edu.zsq.user.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
+import edu.zsq.servicebase.common.Constants;
 import edu.zsq.user.entity.User;
 import edu.zsq.user.service.UserService;
 import edu.zsq.user.uitls.HttpClientUtils;
+import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.exception.servicexception.MyException;
 import edu.zsq.utils.jwt.JwtUtils;
 import edu.zsq.utils.properties.WxProperties;
@@ -18,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author 张
@@ -82,8 +85,6 @@ public class WxController {
                 WxProperties.WX_OPEN_APP_SECRET,
                 code);
         String result = HttpClientUtils.httpGet(accessTokenUrl);
-        System.out.println("accessToken=============" + result);
-        Gson gson = new Gson();
         Map map = JSON.parseObject(result, Map.class);
         String accessToken = (String) map.get("access_token");
         String openid = (String) map.get("openid");
@@ -102,16 +103,14 @@ public class WxController {
             try {
                 resultUserInfo = HttpClientUtils.httpGet(userInfoUrl);
             } catch (Exception e) {
-                throw new MyException(20001, "获取用户信息失败");
+                throw ExFactory.throwBusiness("获取用户信息失败");
             }
 
             //解析json
             HashMap mapUserInfo = JSON.parseObject(resultUserInfo, HashMap.class);
-            System.out.println(mapUserInfo);
             String nickname = (String) mapUserInfo.get("nickname");
-            String headImgUrl = (String) mapUserInfo.get("headimgurl");
-            Double doubleSex = (Double) mapUserInfo.get("sex");
-            int sex = doubleSex.intValue();
+            String headImgUrl = (String) Optional.ofNullable(mapUserInfo.get("headimgurl")).orElse(Constants.DEFAULT_AVATAR);
+            Integer sex =(Integer) Optional.ofNullable(mapUserInfo.get("sex")).orElse(0);
 
             //向数据库中插入一条记录
             user = new User();
@@ -122,7 +121,6 @@ public class WxController {
             userService.save(user);
         }
 
-        //TODO 登录
         String jwtToken = JwtUtils.getJwtToken(user.getId(), user.getNickname());
         return "redirect:http://localhost:3000?token=" + jwtToken;
 

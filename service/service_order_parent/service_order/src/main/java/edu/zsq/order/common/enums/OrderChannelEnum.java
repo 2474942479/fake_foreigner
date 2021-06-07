@@ -2,6 +2,8 @@ package edu.zsq.order.common.enums;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 /**
  * @author 张
  */
@@ -26,6 +28,11 @@ public enum OrderChannelEnum {
     @Getter
     private final String description;
 
-
+    public static OrderChannelEnum find(int type) {
+        return Arrays.stream(OrderChannelEnum.values())
+                .filter(orderChannelEnum -> orderChannelEnum.getType() == type)
+                .findFirst()
+                .orElse(null);
+    }
 
 }

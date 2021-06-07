@@ -2,6 +2,8 @@ package edu.zsq.order.common.enums;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+
 /**
  * @author 张
  */
@@ -26,4 +28,11 @@ public enum PaymentSourceEnum {
 
     @Getter
     private final String description;
+
+    public static PaymentSourceEnum find(int type) {
+        return Arrays.stream(PaymentSourceEnum.values())
+                .filter(paymentSourceEnum -> paymentSourceEnum.getType() == type)
+                .findFirst()
+                .orElse(null);
+    }
 }

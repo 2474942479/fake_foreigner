@@ -34,11 +34,10 @@ public enum OrderTypeEnum {
         this.name = name;
     }
 
-    public static String ofName(int status) {
-        return Arrays.stream(OrderStatusEnum.values())
-                .filter(orderStatusEnum -> orderStatusEnum.getStatus() == status)
+    public static OrderTypeEnum find(int type) {
+        return Arrays.stream(OrderTypeEnum.values())
+                .filter(orderTypeEnum -> orderTypeEnum.getType() == type)
                 .findFirst()
-                .map(OrderStatusEnum::getDesc)
                 .orElse(null);
     }
 

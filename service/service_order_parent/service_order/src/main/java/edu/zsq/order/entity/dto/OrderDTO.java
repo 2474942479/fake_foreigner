@@ -1,8 +1,5 @@
 package edu.zsq.order.entity.dto;
 
-import edu.zsq.order.common.enums.OrderChannelEnum;
-import edu.zsq.order.common.enums.OrderTypeEnum;
-import edu.zsq.order.common.enums.PaymentSourceEnum;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,13 +12,13 @@ import java.math.BigDecimal;
 public class OrderDTO {
 
     @ApiModelProperty(value = "订单渠道")
-    private OrderChannelEnum orderChannelEnum;
+    private Integer orderChannel;
 
     @ApiModelProperty(value = "支付来源")
-    private PaymentSourceEnum paymentSourceEnum;
+    private Integer paymentSource;
 
     @ApiModelProperty(value = "订单类型")
-    private OrderTypeEnum orderTypeEnum;
+    private Integer orderType;
 
     @ApiModelProperty(value = "订单号")
     private String orderNumber;
@@ -34,6 +31,9 @@ public class OrderDTO {
 
     @ApiModelProperty(value = "课程封面")
     private String courseCover;
+
+    @ApiModelProperty(value = "讲师ID")
+    private String teacherId;
 
     @ApiModelProperty(value = "讲师名称")
     private String teacherName;

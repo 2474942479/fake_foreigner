@@ -1,7 +1,7 @@
 package edu.zsq.order.service;
 
-import edu.zsq.order.entity.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
+import edu.zsq.order.entity.Order;
 import edu.zsq.order.entity.dto.OrderDTO;
 import edu.zsq.order.entity.dto.OrderQueryDTO;
 import edu.zsq.service_order_api.entity.OrderVO;
@@ -28,8 +28,9 @@ public interface OrderService extends IService<Order> {
 
     /**
      * 判断用户是否购买课程
-     * @param userId 用户id
-     * @param courseId  课程id
+     *
+     * @param userId   用户id
+     * @param courseId 课程id
      * @return 是否购买
      */
 
@@ -37,6 +38,7 @@ public interface OrderService extends IService<Order> {
 
     /**
      * 生成订单
+     *
      * @param orderDTO 订单信息
      * @return 订单号
      */
@@ -57,4 +59,11 @@ public interface OrderService extends IService<Order> {
      * @return 订单列表
      */
     PageData<OrderVO> getOrderList(OrderQueryDTO orderQueryDTO);
+
+    /**
+     * 删除订单
+     *
+     * @param orderNumber 订单号
+     */
+    void removeOrder(String orderNumber);
 }

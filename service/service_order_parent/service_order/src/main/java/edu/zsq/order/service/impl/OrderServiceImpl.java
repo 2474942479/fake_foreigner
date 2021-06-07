@@ -4,11 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.zsq.order.common.enums.OrderChannelEnum;
 import edu.zsq.order.common.enums.OrderStatusEnum;
+import edu.zsq.order.common.enums.OrderTypeEnum;
+import edu.zsq.order.common.enums.PaymentSourceEnum;
+import edu.zsq.order.entity.Course;
 import edu.zsq.order.entity.Order;
 import edu.zsq.order.entity.dto.OrderDTO;
 import edu.zsq.order.entity.dto.OrderQueryDTO;
 import edu.zsq.order.mapper.OrderMapper;
+import edu.zsq.order.service.CourseService;
 import edu.zsq.order.service.OrderService;
 import edu.zsq.order.utils.OrderNumberUtil;
 import edu.zsq.service_order_api.entity.OrderVO;
@@ -19,6 +24,7 @@ import edu.zsq.utils.page.PageData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +38,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
+
+    @Resource
+    private CourseService courseService;
 
     @Override
     public List<OrderVO> getAllOrder() {
@@ -73,8 +82,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             throw ExFactory.throwBusiness("您未登录，三秒后跳转登录页面");
         }
 
-        String orderNumber = OrderNumberUtil.getOrderNumber(orderDTO.getOrderChannelEnum(), orderDTO.getPaymentSourceEnum(), orderDTO.getOrderTypeEnum(), orderDTO.getUserId());
+        String orderNumber = OrderNumberUtil.getOrderNumber(
+                OrderChannelEnum.find(orderDTO.getOrderChannel()),
+                OrderTypeEnum.find(orderDTO.getOrderType()),
+                orderDTO.getUserId());
+
         orderDTO.setOrderNumber(orderNumber);
+        orderDTO.setPaymentSource(PaymentSourceEnum.WX.getType());
+
+        Course course = courseService.getById(orderDTO.getCourseId());
+        if (course == null) {
+            throw ExFactory.throwBusiness("找不到该课程");
+        }
+
+        if (course.getPrice().compareTo(orderDTO.getCourseMoney()) != 0 && course.getReductionMoney().compareTo(orderDTO.getReductionMoney()) != 0) {
+            throw ExFactory.throwBusiness("课程价格错误");
+        }
 
         if (!saveOrUpdate(convert2Order(orderDTO))) {
             throw ExFactory.throwSystem("系统异常, 订单创建失败");
@@ -89,6 +112,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .eq(Order::getOrderNumber, orderNumber)
                 .last(Constants.LIMIT_ONE)
                 .one();
+        if (order == null) {
+            throw ExFactory.throwBusiness("订单已不存在!");
+        }
         return convert2OrderVO(order);
     }
 
@@ -110,18 +136,30 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         return PageData.of(records, page.getCurrent(), page.getSize(), page.getTotal());
     }
 
+    @Override
+    public void removeOrder(String orderNumber) {
+        if (StringUtils.isBlank(orderNumber)) {
+            throw ExFactory.throwBusiness("订单号不能为空");
+        }
+        
+        if (!lambdaUpdate().eq(Order::getOrderNumber, orderNumber).remove()) {
+            throw ExFactory.throwBusiness("订单删除失败");
+        }
+    }
+
     private Order convert2Order(OrderDTO orderDTO) {
         Order order = new Order();
         order.setOrderNumber(orderDTO.getOrderNumber());
         order.setCourseCover(orderDTO.getCourseCover());
-        order.setCourseId(order.getCourseId());
+        order.setCourseId(orderDTO.getCourseId());
         order.setCourseTitle(orderDTO.getCourseTitle());
         order.setCourseMoney(orderDTO.getCourseMoney());
         order.setMobile(orderDTO.getMobile());
         order.setNickname(orderDTO.getNickname());
         order.setPayMoney(orderDTO.getPayMoney());
+        order.setTeacherId(orderDTO.getTeacherId());
         order.setTeacherName(orderDTO.getTeacherName());
-        order.setPayType(orderDTO.getPaymentSourceEnum().getType());
+        order.setPayType(orderDTO.getPaymentSource());
         // 默认为未支付 等支付回调成功后修改支付状态
         order.setStatus(OrderStatusEnum.UNPAYMENT.getStatus());
         order.setReductionMoney(orderDTO.getReductionMoney());
@@ -143,6 +181,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .payMoney(order.getPayMoney())
                 .reductionMoney(order.getReductionMoney())
                 .status(order.getStatus())
+                .teacherId(order.getTeacherId())
                 .teacherName(order.getTeacherName())
                 .userId(order.getUserId())
                 .gmtCreate(order.getGmtCreate())

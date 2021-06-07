@@ -27,7 +27,7 @@ public class HttpClientUtils {
     /**
      * 日志记录
      */
-    private static Logger logger = LoggerFactory.getLogger(HttpClientUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpClientUtils.class);
 
     private static RequestConfig requestConfig = null;
 

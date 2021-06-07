@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.user.entity.User;
 import edu.zsq.user.entity.dto.LoginDTO;
 import edu.zsq.user.entity.dto.RegisterDTO;
+import edu.zsq.user.entity.dto.UserDTO;
+import edu.zsq.user.entity.vo.UserVO;
 import edu.zsq.utils.result.JsonResult;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 
 /**
@@ -20,19 +23,22 @@ public interface UserService extends IService<User> {
 
     /**
      * 登录
+     *
      * @param loginDTO 登陆信息
      * @return 登陆结果
      */
-    JsonResult<String> login(LoginDTO loginDTO);
+    String login(LoginDTO loginDTO);
 
     /**
      * 注册
+     *
      * @param registerDTO 注册信息
      */
     void register(RegisterDTO registerDTO);
 
     /**
      * 根据openid获取用户信息
+     *
      * @param openid openId
      * @return 用户信息
      */
@@ -40,8 +46,33 @@ public interface UserService extends IService<User> {
 
     /**
      * 根据日期获取这一天的注册人数  用于统计服务
+     *
      * @param day 天
      * @return 人数
      */
     Integer getRegisterNumber(LocalDate day);
+
+    /**
+     * 根据request 中的token获取用户信息
+     *
+     * @param request request
+     * @return 用户信息
+     */
+    UserVO getUserInfoByToken(HttpServletRequest request);
+
+    /**
+     * 根据用户id获取用户信息
+     *
+     * @param userId 用户id
+     * @return 用户信息
+     */
+    UserVO getUserInfoById(String userId);
+
+    /**
+     * 修改用户信息
+     *
+     * @param userDTO 用户信息
+     * @return token字符串
+     */
+    String updateUser(UserDTO userDTO);
 }

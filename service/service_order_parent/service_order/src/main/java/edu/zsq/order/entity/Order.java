@@ -44,6 +44,9 @@ public class Order implements Serializable {
     @ApiModelProperty(value = "课程封面")
     private String courseCover;
 
+    @ApiModelProperty(value = "讲师ID")
+    private String teacherId;
+
     @ApiModelProperty(value = "讲师名称")
     private String teacherName;
 
@@ -72,6 +75,7 @@ public class Order implements Serializable {
     private Integer status;
 
     @ApiModelProperty(value = "逻辑删除 1（true）已删除， 0（false）未删除")
+    @TableLogic
     private Boolean isDeleted;
 
     @ApiModelProperty(value = "创建时间")

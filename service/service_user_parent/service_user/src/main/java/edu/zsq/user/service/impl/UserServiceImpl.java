@@ -1,22 +1,24 @@
 package edu.zsq.user.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.zsq.servicebase.common.Constants;
 import edu.zsq.user.entity.User;
 import edu.zsq.user.entity.dto.LoginDTO;
 import edu.zsq.user.entity.dto.RegisterDTO;
+import edu.zsq.user.entity.dto.UserDTO;
+import edu.zsq.user.entity.vo.UserVO;
 import edu.zsq.user.mapper.UserMapper;
 import edu.zsq.user.service.UserService;
 import edu.zsq.utils.exception.ErrorCode;
 import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.jwt.JwtUtils;
-import edu.zsq.utils.result.JsonResult;
-import edu.zsq.servicebase.common.Constants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 
 /**
@@ -30,29 +32,19 @@ import java.time.LocalDate;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
-    /**
-     * StringRedisTemplate extends RedisTemplate<String, String>
-     */
     @Resource
     private RedisTemplate<String, String> redisTemplate;
 
-    private final static String DEFAULT_AVATAR = "http://thirdwx.qlogo.cn/mmopen/vi_32/DYAIOgq83eoj0hHXhgJNOTSOFsS4uZs8x1ConecaVOB8eIl115xmJZcT4oCicvia7wMEufibKtTLqiaJeanU2Lpg3w/132";
 
-    /**
-     * 登录
-     *
-     * @param loginDTO 登陆参数
-     * @return token字符串
-     */
     @Override
-    public JsonResult<String> login(LoginDTO loginDTO) {
+    public String login(LoginDTO loginDTO) {
 
         String mobile = loginDTO.getMobile();
         String password = loginDTO.getPassword();
 
         //校验参数
-        if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(password)) {
-            return JsonResult.failure(ErrorCode.BUSINESS_ERROR, "手机号或者密码为空,请检查～");
+        if (StringUtils.isBlank(mobile) || StringUtils.isBlank(password)) {
+            throw ExFactory.throwBusiness("手机号或者密码为空,请检查～");
         }
 
         User userInfo = lambdaQuery()
@@ -61,19 +53,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .one();
 
         if (userInfo == null || userInfo.getIsDeleted()) {
-            return JsonResult.failure(ErrorCode.BUSINESS_ERROR, "该手机号尚未注册,请先注册");
+            throw ExFactory.throwBusiness("该手机号尚未注册,请先注册");
         }
 
 //        输入密码MD5加密后再比较密码
         if (!DigestUtils.md5DigestAsHex(password.getBytes()).equals(userInfo.getPassword())) {
-            return JsonResult.failure("密码错误");
+            throw ExFactory.throwBusiness("密码错误");
         }
 
         if (userInfo.getIsDeleted()) {
-            return JsonResult.failure("该用户已被禁用");
+            throw ExFactory.throwBusiness("该用户已被禁用");
         }
 
-        return JsonResult.success(JwtUtils.getJwtToken(userInfo.getId(), userInfo.getNickname()));
+        return JwtUtils.getJwtToken(userInfo.getId(), userInfo.getNickname());
     }
 
     @Override
@@ -86,8 +78,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String code = registerDTO.getCode();
 
         //校验参数
-        if (StringUtils.isEmpty(nickname) || StringUtils.isEmpty(mobile) ||
-                StringUtils.isEmpty(password) || StringUtils.isEmpty(code)) {
+        if (StringUtils.isBlank(nickname) || StringUtils.isBlank(mobile) ||
+                StringUtils.isBlank(password) || StringUtils.isBlank(code)) {
             throw ExFactory.throwWith(ErrorCode.PARAM_ERROR, "注册信息未填完整");
         }
 
@@ -114,7 +106,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .setMobile(registerDTO.getMobile())
                 .setPassword(DigestUtils.md5DigestAsHex(password.getBytes()))
                 .setIsDeleted(Boolean.FALSE)
-                .setAvatar(DEFAULT_AVATAR);
+                .setAvatar(Constants.DEFAULT_AVATAR);
         if (!save(user)) {
             throw ExFactory.throwBusiness("注册失败！");
         }
@@ -138,4 +130,66 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Integer getRegisterNumber(LocalDate day) {
         return baseMapper.getRegisterNumber(day);
     }
+
+    @Override
+    public UserVO getUserInfoByToken(HttpServletRequest request) {
+        String id = JwtUtils.getMemberIdByJwtToken(request);
+
+        if (StringUtils.isBlank(id)) {
+            throw ExFactory.throwBusiness("id不存在!");
+        }
+
+        User user = lambdaQuery()
+                .eq(User::getId, id)
+                .last(Constants.LIMIT_ONE)
+                .one();
+        if (user == null) {
+            throw ExFactory.throwBusiness("用户已注销或删除!");
+        }
+        return convert2UserVO(user);
+    }
+
+    @Override
+    public UserVO getUserInfoById(String userId) {
+        return convert2UserVO(getById(userId));
+    }
+
+
+    @Override
+    public String updateUser(UserDTO userDTO) {
+
+        if (!updateById(convert2User(userDTO))) {
+            throw ExFactory.throwBusiness("服务器错误, 修改失败");
+        }
+
+        return JwtUtils.getJwtToken(userDTO.getId(), userDTO.getNickname());
+    }
+
+    private User convert2User(UserDTO userDTO) {
+        return new User()
+                .setAge(userDTO.getAge())
+                .setAvatar(userDTO.getAvatar())
+                .setId(userDTO.getId())
+                .setNickname(userDTO.getNickname())
+                .setSex(userDTO.getSex())
+                .setSign(userDTO.getSign())
+                .setMobile(userDTO.getMobile())
+                .setPassword(DigestUtils.md5DigestAsHex(userDTO.getPassword().getBytes()));
+    }
+
+    private UserVO convert2UserVO(User user) {
+        return UserVO.builder()
+                .id(user.getId())
+                .password(user.getPassword())
+                .age(user.getAge())
+                .sex(user.getSex())
+                .avatar(user.getAvatar())
+                .sign(user.getSign())
+                .mobile(user.getMobile())
+                .gmtCreate(user.getGmtCreate())
+                .nickname(user.getNickname())
+                .build();
+
+    }
+
 }

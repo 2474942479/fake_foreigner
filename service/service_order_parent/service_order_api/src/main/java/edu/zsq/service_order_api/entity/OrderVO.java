@@ -30,6 +30,9 @@ public class OrderVO {
     @ApiModelProperty(value = "课程封面")
     private String courseCover;
 
+    @ApiModelProperty(value = "讲师ID")
+    private String teacherId;
+
     @ApiModelProperty(value = "讲师名称")
     private String teacherName;
 
