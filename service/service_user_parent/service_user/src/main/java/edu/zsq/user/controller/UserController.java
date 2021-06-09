@@ -3,6 +3,7 @@ package edu.zsq.user.controller;
 
 import edu.zsq.user.entity.dto.LoginDTO;
 import edu.zsq.user.entity.dto.RegisterDTO;
+import edu.zsq.user.entity.dto.ResetDTO;
 import edu.zsq.user.entity.dto.UserDTO;
 import edu.zsq.user.entity.vo.UserVO;
 import edu.zsq.user.service.UserService;
@@ -61,9 +62,30 @@ public class UserController {
     }
 
     @PostMapping("/updateUser")
+    @ApiOperation("修改用户信息")
     public JsonResult<String> updateUser(@RequestBody UserDTO userDTO) {
         return JsonResult.success(userService.updateUser(userDTO));
     }
 
+    @ApiOperation("第三方登录用户完善用户信息")
+    @PostMapping("/perfectUser")
+    public JsonResult<Void> perfectUser(@RequestBody ResetDTO resetDTO) {
+        userService.perfectUser(resetDTO);
+        return JsonResult.success();
+    }
+
+    @ApiOperation("修改密码")
+    @PostMapping("/updateUserPass")
+    public JsonResult<Void> updateUserPass(@RequestBody ResetDTO resetDTO) {
+        userService.updateUserPass(resetDTO);
+        return JsonResult.success();
+    }
+
+    @ApiOperation("修改手机号")
+    @PostMapping("/updateUserMobile")
+    public JsonResult<Void> updateUserMobile(@RequestBody ResetDTO resetDTO) {
+        userService.updateUserMobile(resetDTO);
+        return JsonResult.success();
+    }
 }
 

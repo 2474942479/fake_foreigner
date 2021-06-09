@@ -107,7 +107,7 @@ public class WxController {
             }
 
             //解析json
-            HashMap mapUserInfo = JSON.parseObject(resultUserInfo, HashMap.class);
+            Map mapUserInfo = JSON.parseObject(resultUserInfo, HashMap.class);
             String nickname = (String) mapUserInfo.get("nickname");
             String headImgUrl = (String) Optional.ofNullable(mapUserInfo.get("headimgurl")).orElse(Constants.DEFAULT_AVATAR);
             Integer sex =(Integer) Optional.ofNullable(mapUserInfo.get("sex")).orElse(0);

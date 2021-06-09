@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.user.entity.User;
 import edu.zsq.user.entity.dto.LoginDTO;
 import edu.zsq.user.entity.dto.RegisterDTO;
+import edu.zsq.user.entity.dto.ResetDTO;
 import edu.zsq.user.entity.dto.UserDTO;
 import edu.zsq.user.entity.vo.UserVO;
 import edu.zsq.utils.result.JsonResult;
@@ -75,4 +76,27 @@ public interface UserService extends IService<User> {
      * @return token字符串
      */
     String updateUser(UserDTO userDTO);
+
+    /**
+     * 第三方登录用户完善用户信息
+     *
+     * @param resetDTO 用户完善信息
+     * @return token字符串
+     */
+    void perfectUser(ResetDTO resetDTO);
+
+    /**
+     * 修改用户密码
+     *
+     * @param resetDTO 用户修改信息
+     */
+    void updateUserPass(ResetDTO resetDTO);
+
+    /**
+     * 修改用户手机号
+     *
+     * @param resetDTO 用户修改信息
+     */
+    void updateUserMobile(ResetDTO resetDTO);
+
 }

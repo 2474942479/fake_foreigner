@@ -1,10 +1,12 @@
 package edu.zsq.user.service.impl;
 
+import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.servicebase.common.Constants;
 import edu.zsq.user.entity.User;
 import edu.zsq.user.entity.dto.LoginDTO;
 import edu.zsq.user.entity.dto.RegisterDTO;
+import edu.zsq.user.entity.dto.ResetDTO;
 import edu.zsq.user.entity.dto.UserDTO;
 import edu.zsq.user.entity.vo.UserVO;
 import edu.zsq.user.mapper.UserMapper;
@@ -15,11 +17,11 @@ import edu.zsq.utils.jwt.JwtUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.util.Optional;
 
 /**
  * <p>
@@ -57,7 +59,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
 //        输入密码MD5加密后再比较密码
-        if (!DigestUtils.md5DigestAsHex(password.getBytes()).equals(userInfo.getPassword())) {
+        if (!SecureUtil.md5().digestHex16(password).equals(userInfo.getPassword())) {
             throw ExFactory.throwBusiness("密码错误");
         }
 
@@ -71,23 +73,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void register(RegisterDTO registerDTO) {
 
+
         //获取注册信息，进行校验
         String nickname = registerDTO.getNickname();
         String mobile = registerDTO.getMobile();
         String password = registerDTO.getPassword();
         String code = registerDTO.getCode();
 
-        //校验参数
+
+        // 校验参数
         if (StringUtils.isBlank(nickname) || StringUtils.isBlank(mobile) ||
                 StringUtils.isBlank(password) || StringUtils.isBlank(code)) {
             throw ExFactory.throwWith(ErrorCode.PARAM_ERROR, "注册信息未填完整");
         }
 
-        //校验验证码
-        //从redis获取发送的验证码
+        // 校验验证码
+        // 从redis获取发送的验证码
         String mobileCode = redisTemplate.opsForValue().get(mobile);
         if (!code.equals(mobileCode)) {
             throw ExFactory.throwBusiness("验证码错误或已过期");
+        }
+
+        if (StringUtils.isNotBlank(redisTemplate.opsForValue().get(mobile)) && !Optional.ofNullable(redisTemplate.delete(mobile)).orElse(Boolean.FALSE)) {
+            log.error("redis删除验证码失败");
         }
 
         //查询数据库中是否存在相同的手机号码
@@ -104,7 +112,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = new User()
                 .setNickname(nickname)
                 .setMobile(registerDTO.getMobile())
-                .setPassword(DigestUtils.md5DigestAsHex(password.getBytes()))
+                .setPassword(SecureUtil.md5().digestHex16(password))
                 .setIsDeleted(Boolean.FALSE)
                 .setAvatar(Constants.DEFAULT_AVATAR);
         if (!save(user)) {
@@ -165,6 +173,73 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return JwtUtils.getJwtToken(userDTO.getId(), userDTO.getNickname());
     }
 
+    @Override
+    public void perfectUser(ResetDTO resetDTO) {
+        User user = lambdaQuery()
+                .eq(User::getMobile, resetDTO.getMobile())
+                .last(Constants.LIMIT_ONE)
+                .one();
+
+        if (user != null && !user.getId().equals(resetDTO.getId())) {
+            throw ExFactory.throwBusiness("该手机号已被注册, 请更换手机号绑定");
+        }
+
+        boolean update = lambdaUpdate()
+                .eq(User::getId, resetDTO.getId())
+                .set(User::getPassword, SecureUtil.md5().digestHex16(resetDTO.getPass()))
+                .set(User::getMobile, resetDTO.getMobile())
+                .update();
+
+        if (!update) {
+            throw ExFactory.throwBusiness("服务器错误, 修改失败");
+        }
+
+    }
+
+    @Override
+    public void updateUserPass(ResetDTO resetDTO) {
+        User user = lambdaQuery()
+                .eq(User::getId, resetDTO.getId())
+                .select(User::getPassword)
+                .last(Constants.LIMIT_ONE)
+                .one();
+        if (!user.getPassword().equals(SecureUtil.md5().digestHex16(resetDTO.getOldPass()))) {
+            throw ExFactory.throwBusiness("原密码错误");
+        }
+
+        boolean update = lambdaUpdate()
+                .eq(User::getId, resetDTO.getId())
+                .set(StringUtils.isNotBlank(resetDTO.getPass()), User::getPassword, SecureUtil.md5().digestHex16(resetDTO.getPass()))
+                .update();
+        if (!update) {
+            throw ExFactory.throwBusiness("服务器异常, 修改失败");
+        }
+    }
+
+    @Override
+    public void updateUserMobile(ResetDTO resetDTO) {
+
+        String mobile = resetDTO.getMobile();
+        String code = resetDTO.getCode();
+        if (StringUtils.isBlank(mobile) || StringUtils.isBlank(code)) {
+            throw ExFactory.throwBusiness("参数不能为空");
+        }
+
+        String mobileCode = redisTemplate.opsForValue().get(mobile);
+        if (!code.equals(mobileCode)) {
+            throw ExFactory.throwBusiness("验证码错误或已过期");
+        }
+
+        boolean update = lambdaUpdate()
+                .eq(User::getId, resetDTO.getId())
+                .set(User::getMobile, mobile)
+                .update();
+
+        if (!update) {
+            throw ExFactory.throwSystem("服务器异常, 更改手机号失败");
+        }
+    }
+
     private User convert2User(UserDTO userDTO) {
         return new User()
                 .setAge(userDTO.getAge())
@@ -173,14 +248,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .setNickname(userDTO.getNickname())
                 .setSex(userDTO.getSex())
                 .setSign(userDTO.getSign())
-                .setMobile(userDTO.getMobile())
-                .setPassword(DigestUtils.md5DigestAsHex(userDTO.getPassword().getBytes()));
+                .setMobile(userDTO.getMobile());
     }
 
     private UserVO convert2UserVO(User user) {
         return UserVO.builder()
                 .id(user.getId())
-                .password(user.getPassword())
                 .age(user.getAge())
                 .sex(user.getSex())
                 .avatar(user.getAvatar())
