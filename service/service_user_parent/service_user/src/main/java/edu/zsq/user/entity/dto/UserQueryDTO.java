@@ -1,9 +1,7 @@
-package edu.zsq.eduservice.entity.dto.query;
+package edu.zsq.user.entity.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import edu.zsq.eduservice.entity.vo.BannerVO;
 import edu.zsq.utils.page.PageDTO;
-import edu.zsq.utils.page.PageData;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,15 +9,17 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 
 /**
- * @author zhangsongqi
- * @date 6:57 下午 2021/4/19
+ * @author 张
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class BannerQueryDTO extends PageDTO {
+public class UserQueryDTO extends PageDTO {
 
-    @ApiModelProperty(value = "教师名称,模糊查询")
-    private String title;
+    @ApiModelProperty(value = "昵称")
+    private String nickname;
+
+    @ApiModelProperty(value = "手机号")
+    private String mobile;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "查询开始时间", example = "2019-01-01 10:10:10")

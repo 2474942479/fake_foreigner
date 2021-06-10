@@ -1,12 +1,10 @@
 package edu.zsq.user.controller;
 
 
-import edu.zsq.user.entity.dto.LoginDTO;
-import edu.zsq.user.entity.dto.RegisterDTO;
-import edu.zsq.user.entity.dto.ResetDTO;
-import edu.zsq.user.entity.dto.UserDTO;
+import edu.zsq.user.entity.dto.*;
 import edu.zsq.user.entity.vo.UserVO;
 import edu.zsq.user.service.UserService;
+import edu.zsq.utils.page.PageData;
 import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +39,12 @@ public class UserController {
     public JsonResult<Void> register(@RequestBody RegisterDTO registerDTO) {
         userService.register(registerDTO);
         return JsonResult.success();
+    }
+
+    @ApiOperation("获取用户列表")
+    @PostMapping("/getUserList")
+    public JsonResult<PageData<UserVO>> getUserList(@RequestBody UserQueryDTO userQueryDTO) {
+        return JsonResult.success(userService.getUserList(userQueryDTO));
     }
 
     @ApiOperation(value = "根据token获取用户信息")
@@ -85,6 +89,13 @@ public class UserController {
     @PostMapping("/updateUserMobile")
     public JsonResult<Void> updateUserMobile(@RequestBody ResetDTO resetDTO) {
         userService.updateUserMobile(resetDTO);
+        return JsonResult.success();
+    }
+
+    @ApiOperation("删除用户")
+    @GetMapping("/removeUser/{id}")
+    public JsonResult<Void> removeUser(@PathVariable String id) {
+        userService.removeById(id);
         return JsonResult.success();
     }
 }

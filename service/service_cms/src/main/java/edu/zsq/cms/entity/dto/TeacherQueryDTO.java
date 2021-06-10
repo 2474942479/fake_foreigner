@@ -1,7 +1,6 @@
 package edu.zsq.cms.entity.dto;
 
-import edu.zsq.cms.entity.vo.TeacherInfoVO;
-import edu.zsq.utils.page.PageData;
+import edu.zsq.utils.page.PageDTO;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
-public class TeacherQueryDTO extends PageData<TeacherInfoVO> {
+public class TeacherQueryDTO extends PageDTO {
 
 
 }

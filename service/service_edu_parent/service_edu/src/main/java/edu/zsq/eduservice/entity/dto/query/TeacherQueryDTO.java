@@ -1,13 +1,11 @@
 package edu.zsq.eduservice.entity.dto.query;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import edu.zsq.eduservice.entity.vo.TeacherVO;
-import edu.zsq.utils.page.PageData;
+import edu.zsq.utils.page.PageDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -15,9 +13,7 @@ import java.time.LocalDateTime;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class TeacherQueryDTO extends PageData<TeacherVO> implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class TeacherQueryDTO extends PageDTO {
 
     @ApiModelProperty(value = "教师名称,模糊查询")
     private String name;

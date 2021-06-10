@@ -16,9 +16,6 @@ public class UserVO {
     @ApiModelProperty(value = "会员id")
     private String id;
 
-    @ApiModelProperty(value = "密码")
-    private String password;
-
     @ApiModelProperty(value = "手机号")
     private String mobile;
 

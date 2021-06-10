@@ -2,6 +2,7 @@ package edu.zsq.acl.entity.dto;
 
 import edu.zsq.acl.entity.Role;
 import edu.zsq.acl.entity.vo.RoleVO;
+import edu.zsq.utils.page.PageDTO;
 import edu.zsq.utils.page.PageData;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,7 +13,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class RoleQueryDTO extends PageData<RoleVO> {
+public class RoleQueryDTO extends PageDTO {
 
     @ApiModelProperty(value = "角色名称")
     private String roleName;

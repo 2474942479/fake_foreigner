@@ -79,7 +79,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         String userId = orderDTO.getUserId();
 
         if (StringUtils.isBlank(userId)) {
-            throw ExFactory.throwBusiness("您未登录，三秒后跳转登录页面");
+            throw ExFactory.throwBusiness("您未登录, 请先登录");
         }
 
         String orderNumber = OrderNumberUtil.getOrderNumber(

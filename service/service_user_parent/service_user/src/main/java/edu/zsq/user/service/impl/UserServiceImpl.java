@@ -1,19 +1,18 @@
 package edu.zsq.user.service.impl;
 
 import cn.hutool.crypto.SecureUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.zsq.servicebase.common.Constants;
 import edu.zsq.user.entity.User;
-import edu.zsq.user.entity.dto.LoginDTO;
-import edu.zsq.user.entity.dto.RegisterDTO;
-import edu.zsq.user.entity.dto.ResetDTO;
-import edu.zsq.user.entity.dto.UserDTO;
+import edu.zsq.user.entity.dto.*;
 import edu.zsq.user.entity.vo.UserVO;
 import edu.zsq.user.mapper.UserMapper;
 import edu.zsq.user.service.UserService;
 import edu.zsq.utils.exception.ErrorCode;
 import edu.zsq.utils.exception.core.ExFactory;
 import edu.zsq.utils.jwt.JwtUtils;
+import edu.zsq.utils.page.PageData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,10 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -126,6 +128,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getOpenid, openid)
                 .last(Constants.LIMIT_ONE)
                 .one();
+    }
+
+    @Override
+    public PageData<UserVO> getUserList(UserQueryDTO userQueryDTO) {
+        Page<User> page = new Page<>(userQueryDTO.getCurrent(), userQueryDTO.getSize());
+        lambdaQuery()
+                .eq(StringUtils.isNotBlank(userQueryDTO.getNickname()), User::getNickname, userQueryDTO.getNickname())
+                .eq(StringUtils.isNotBlank(userQueryDTO.getMobile()), User::getMobile, userQueryDTO.getMobile())
+                .ge(Objects.nonNull(userQueryDTO.getBegin()), User::getGmtCreate, userQueryDTO.getBegin())
+                .le(Objects.nonNull(userQueryDTO.getEnd()), User::getGmtModified, userQueryDTO.getEnd())
+                .orderByDesc(User::getGmtCreate)
+                .page(page);
+
+        if (page.getRecords().isEmpty()) {
+            return PageData.empty();
+        }
+
+        List<UserVO> list = page.getRecords().parallelStream().map(this::convert2UserVO).collect(Collectors.toList());
+
+        return PageData.of(list, page.getCurrent(), page.getSize(), page.getTotal());
+
     }
 
     /**

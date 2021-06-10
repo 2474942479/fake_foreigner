@@ -1,7 +1,6 @@
 package edu.zsq.acl.entity.dto;
 
-import edu.zsq.acl.entity.vo.UserVO;
-import edu.zsq.utils.page.PageData;
+import edu.zsq.utils.page.PageDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,7 +10,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserQueryDTO extends PageData<UserVO> {
+public class UserQueryDTO extends PageDTO {
 
     private String username;
 }

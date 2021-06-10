@@ -2,11 +2,9 @@ package edu.zsq.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.user.entity.User;
-import edu.zsq.user.entity.dto.LoginDTO;
-import edu.zsq.user.entity.dto.RegisterDTO;
-import edu.zsq.user.entity.dto.ResetDTO;
-import edu.zsq.user.entity.dto.UserDTO;
+import edu.zsq.user.entity.dto.*;
 import edu.zsq.user.entity.vo.UserVO;
+import edu.zsq.utils.page.PageData;
 import edu.zsq.utils.result.JsonResult;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +52,14 @@ public interface UserService extends IService<User> {
     Integer getRegisterNumber(LocalDate day);
 
     /**
+     * 根据查询条件分页获取用户信息
+     *
+     * @param userQueryDTO 查询条件
+     * @return 分页结果
+     */
+    PageData<UserVO> getUserList(UserQueryDTO userQueryDTO);
+
+    /**
      * 根据request 中的token获取用户信息
      *
      * @param request request
@@ -81,7 +87,6 @@ public interface UserService extends IService<User> {
      * 第三方登录用户完善用户信息
      *
      * @param resetDTO 用户完善信息
-     * @return token字符串
      */
     void perfectUser(ResetDTO resetDTO);
 

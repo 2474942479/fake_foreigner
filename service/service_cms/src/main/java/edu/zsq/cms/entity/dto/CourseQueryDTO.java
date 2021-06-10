@@ -1,6 +1,7 @@
 package edu.zsq.cms.entity.dto;
 
 import edu.zsq.cms.entity.EduCourse;
+import edu.zsq.utils.page.PageDTO;
 import edu.zsq.utils.page.PageData;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,7 +12,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class CourseQueryDTO extends PageData<EduCourse> {
+public class CourseQueryDTO extends PageDTO {
 
     @ApiModelProperty(value = "课程名称")
     private String title;
