@@ -42,20 +42,20 @@ public class IndexFrontServiceImpl implements IndexFrontService {
 
         // 根据id进行降序排列 只显示前两条幻灯片banner记录
         List<EduBanner> bannerList = bannerService.lambdaQuery()
-                .orderByDesc(EduBanner::getId)
+                .orderByDesc(EduBanner::getSort)
                 .last("limit 6")
                 .list();
 
         // 查询前8条热门课程
         List<EduCourse> courseList = courseService.lambdaQuery()
                 .eq(EduCourse::getStatus, "Normal")
-                .orderByDesc(EduCourse::getId)
+                .orderByDesc(EduCourse::getBuyCount)
                 .last("limit 8")
                 .list();
 
         // 前4个名师
         List<EduTeacher> teacherList = teacherService.lambdaQuery()
-                .orderByDesc(EduTeacher::getId)
+                .orderByAsc(EduTeacher::getSort)
                 .last("limit 4")
                 .list();
 

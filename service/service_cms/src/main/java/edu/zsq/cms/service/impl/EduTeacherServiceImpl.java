@@ -34,7 +34,7 @@ public class EduTeacherServiceImpl extends ServiceImpl<EduTeacherMapper, EduTeac
     public PageData<TeacherInfoVO> getTeacherList(TeacherQueryDTO teacherQueryDTO) {
 
         Page<EduTeacher> page = new Page<>(teacherQueryDTO.getCurrent(), teacherQueryDTO.getSize());
-        lambdaQuery().orderByDesc(EduTeacher::getSort).page(page);
+        lambdaQuery().orderByAsc(EduTeacher::getSort).page(page);
 
         // 判断查询结果是否为空,空直接返回
         if (page.getRecords().isEmpty()) {
