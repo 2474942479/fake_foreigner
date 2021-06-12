@@ -14,7 +14,7 @@ import java.time.LocalDate;
 /**
  * @author 张
  */
-@FeignClient(name = "service8003-user", path = "/")
+@FeignClient(name = "service8150-user", path = "/")
 @Api(value = "用户服务", tags = {"用户统计服务"})
 @Component
 public interface UserStatisticsApi {

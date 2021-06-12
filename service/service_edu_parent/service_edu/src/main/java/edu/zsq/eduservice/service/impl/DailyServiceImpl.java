@@ -45,8 +45,8 @@ public class DailyServiceImpl extends ServiceImpl<DailyMapper, Daily> implements
         daily.setDateCalculated(day);
         daily.setRegisterNum(registerNumber);
         daily.setCourseNum(RandomUtils.nextInt(0, 10));
-        daily.setLoginNum(RandomUtils.nextInt(0, 10000));
-        daily.setVideoViewNum(RandomUtils.nextInt(0, 5000));
+        daily.setLoginNum(RandomUtils.nextInt(0, 1000));
+        daily.setVideoViewNum(RandomUtils.nextInt(0, 500));
         QueryWrapper<Daily> wrapper = new QueryWrapper<>();
         wrapper.eq("date_calculated", day);
 
