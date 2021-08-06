@@ -16,37 +16,22 @@ spring:
                 #lb://nacos注册服务名 lb负载均衡
                 uri: lb://service8001-edu
 
-            -   id: sevice8002-oss
-                predicates: Path=/eduOss/**
-                uri: lb://sevice8002-oss
-
-            -   id: service8003-vod
-                predicates: Path=/eduVod/**
-                uri: lb://service8003-vod
-
             -   id: service8004-cms
                 predicates: Path=/eduCms/**
                 uri: lb://service8004-cms
 
-            -   id: service8005-msm
-                predicates: Path=/eduMsm/**
-                uri: lb://service8005-msm
-
-            -   id: service8150-user
-                predicates: Path=/user/**
-                uri: lb://service8150-user
 
             -   id: service8007-order
                 predicates: Path=/orderService/**
                 uri: lb://service8007-order
 
-            -   id: service8008-statistics
-                predicates: Path=/statisticsService/**
-                uri: lb://service8008-statistics
-
             -   id: service8009-acl
                 predicates: Path=/*/acl/**
                 uri: lb://service8009-acl
+
+            -   id: service8150-user
+                predicates: Path=/user/**
+                uri: lb://service8150-user
 
         nacos:
             discovery:

@@ -1,20 +1,23 @@
 package edu.zsq.utils.exception;
 
+import edu.zsq.utils.exception.core.ExceptionUtils;
+import edu.zsq.utils.exception.servicexception.BusinessException;
 import edu.zsq.utils.exception.servicexception.MyException;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.exception.servicexception.SystemException;
+import edu.zsq.utils.result.JsonResult;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * 统一异常处理类
  *
  * @author 张
  */
-@ControllerAdvice
 @Slf4j
-public class GlobalException {
+@RestControllerAdvice
+public class GlobalException<T> {
 
     /**
      * 指定出现什么异常执行这个方法
@@ -23,10 +26,10 @@ public class GlobalException {
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public MyResultUtils error(Exception e) {
-
-        e.printStackTrace();
-        return MyResultUtils.error().message("执行了全局异常处理");
+    public JsonResult<T> failure(Exception e) {
+        System.out.println(ExceptionUtils.outMore(e));
+        log.error("系统错误", e);
+        return JsonResult.failure(ErrorCode.UNDEFINED_ERROR, "执行了全局异常处理");
 
     }
 
@@ -35,10 +38,10 @@ public class GlobalException {
      */
     @ExceptionHandler(NullPointerException.class)
     @ResponseBody
-    public MyResultUtils error(NullPointerException e) {
-
-        e.printStackTrace();
-        return MyResultUtils.error().message("发生了空指针错误").code(20001);
+    public JsonResult<T> failure(NullPointerException e) {
+        System.out.println(ExceptionUtils.outMore(e));
+        log.error("发生了空指针错误", e);
+        return JsonResult.failure(ErrorCode.PARAM_ERROR, "发生了空指针错误");
 
     }
 
@@ -48,12 +51,29 @@ public class GlobalException {
      */
     @ExceptionHandler(MyException.class)
     @ResponseBody
-    public MyResultUtils error(MyException e) {
-
+    public JsonResult<T> failure(MyException e) {
         log.error(ExceptionUtils.outMore(e));
-        e.printStackTrace();
-        return MyResultUtils.error().message(e.getMsg()).code(e.getStatus());
-
+        JsonResult<T> failure = JsonResult.failure(e.getMessage());
+        failure.code(e.getCode());
+        return failure;
     }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseBody
+    public JsonResult<T> failure(BusinessException e) {
+        System.out.println(ExceptionUtils.outMore(e));
+        log.error(ExceptionUtils.outMore(e));
+        return JsonResult.failure(e.exDefinition);
+    }
+
+    @ExceptionHandler(SystemException.class)
+    @ResponseBody
+    public JsonResult<T> failure(SystemException e) {
+        System.out.println(ExceptionUtils.outMore(e));
+        log.error(ExceptionUtils.outMore(e));
+        return JsonResult.failure(e.exDefinition);
+    }
+
+
 
 }

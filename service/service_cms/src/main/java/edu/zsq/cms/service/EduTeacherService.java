@@ -2,8 +2,9 @@ package edu.zsq.cms.service;
 
 import edu.zsq.cms.entity.EduTeacher;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.Map;
+import edu.zsq.cms.entity.dto.TeacherQueryDTO;
+import edu.zsq.cms.entity.vo.TeacherInfoVO;
+import edu.zsq.utils.page.PageData;
 
 /**
  * <p>
@@ -11,15 +12,14 @@ import java.util.Map;
  * </p>
  *
  * @author zsq
- * @since 2020-08-20
+ * @since 2021-04-18
  */
 public interface EduTeacherService extends IService<EduTeacher> {
 
     /**
      * 分页查询讲师列表
-     * @param current 当前页数
-     * @param size  每页记录数
-     * @return
+     * @param teacherQueryDTO 查询条件
+     * @return 分页结果
      */
-    Map<String, Object> getTeacherFront(long current, long size);
+    PageData<TeacherInfoVO> getTeacherList(TeacherQueryDTO teacherQueryDTO);
 }

@@ -1,20 +1,19 @@
 package edu.zsq.acl.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import edu.zsq.acl.entity.User;
+import edu.zsq.acl.entity.dto.UserDTO;
+import edu.zsq.acl.entity.dto.UserQueryDTO;
+import edu.zsq.acl.entity.vo.RoleVO;
+import edu.zsq.acl.entity.vo.UserVO;
 import edu.zsq.acl.service.RoleService;
 import edu.zsq.acl.service.UserService;
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.exception.core.ExFactory;
+import edu.zsq.utils.page.PageData;
+import edu.zsq.utils.result.JsonResult;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.DigestUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
@@ -30,80 +29,59 @@ import java.util.Map;
 @RequestMapping("/admin/acl/user")
 public class UserController {
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @Autowired
+    @Resource
     private RoleService roleService;
 
     @GetMapping("/get/{id}")
-    public MyResultUtils get(@PathVariable String id) {
-        User user = userService.getById(id);
-        return MyResultUtils.ok().data("item",user);
+    public JsonResult<UserVO> getUser(@PathVariable String id) {
+        return JsonResult.success(userService.getUser(id));
     }
 
     @ApiOperation(value = "获取管理用户分页列表")
-    @GetMapping("{page}/{limit}")
-    public MyResultUtils index(
-            @ApiParam(name = "page", value = "当前页码", required = true)
-            @PathVariable Long page,
-
-            @ApiParam(name = "limit", value = "每页记录数", required = true)
-            @PathVariable Long limit,
-
-            @ApiParam(name = "courseQuery", value = "查询对象", required = false)
-                    User userQueryVo) {
-        Page<User> pageParam = new Page<>(page, limit);
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
-        if(!StringUtils.isEmpty(userQueryVo.getUsername())) {
-            wrapper.like("username",userQueryVo.getUsername());
-        }
-
-        IPage<User> pageModel = userService.page(pageParam, wrapper);
-        return MyResultUtils.ok().data("items", pageModel.getRecords()).data("total", pageModel.getTotal());
+    @PostMapping("/pageUser")
+    public JsonResult<PageData<UserVO>> pageUser(@RequestBody UserQueryDTO userQueryDTO) {
+        return JsonResult.success(userService.pageUser(userQueryDTO));
     }
 
-    @ApiOperation(value = "新增管理用户")
-    @PostMapping("save")
-    public MyResultUtils save(@RequestBody User user) {
-        user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
-        userService.save(user);
-        return MyResultUtils.ok();
-    }
 
-    @ApiOperation(value = "修改管理用户")
-    @PutMapping("update")
-    public MyResultUtils updateById(@RequestBody User user) {
-        userService.updateById(user);
-        return MyResultUtils.ok();
+    @ApiOperation(value = "添加或修改管理用户")
+    @PostMapping("/saveOrUpdateUserInfo")
+    public JsonResult<Void> saveOrUpdateUserInfo(@RequestBody UserDTO userDTO) {
+        userService.saveOrUpdateUserInfo(userDTO);
+        return JsonResult.success();
     }
 
     @ApiOperation(value = "删除管理用户")
     @DeleteMapping("remove/{id}")
-    public MyResultUtils remove(@PathVariable String id) {
-        userService.removeById(id);
-        return MyResultUtils.ok();
+    public JsonResult<Void> remove(@PathVariable String id) {
+
+        if (!userService.removeById(id)) {
+            throw ExFactory.throwSystem("系统错误, 删除用户失败！");
+        }
+        return JsonResult.success();
     }
 
-    @ApiOperation(value = "根据id列表删除管理用户")
+    @ApiOperation(value = "根据用户id列表删除管理用户")
     @DeleteMapping("batchRemove")
-    public MyResultUtils batchRemove(@RequestBody List<String> idList) {
-        userService.removeByIds(idList);
-        return MyResultUtils.ok();
+    public JsonResult<Void> batchRemove(@RequestBody List<String> ids) {
+        userService.batchRemove(ids);
+        return JsonResult.success();
     }
 
-    @ApiOperation(value = "根据用户获取角色数据")
-    @GetMapping("/toAssign/{userId}")
-    public MyResultUtils toAssign(@PathVariable String userId) {
-        Map<String, Object> roleMap = roleService.findRoleByUserId(userId);
-        return MyResultUtils.ok().data(roleMap);
+    @ApiOperation(value = "根据用户id获取角色信息")
+    @GetMapping("/getRoleInfo/{userId}")
+    public JsonResult<Map<String, List<RoleVO>>> getRoleInfo(@PathVariable String userId) {
+        return JsonResult.success(roleService.getRoleInfo(userId));
     }
 
-    @ApiOperation(value = "根据用户分配角色")
-    @PostMapping("/doAssign")
-    public MyResultUtils doAssign(@RequestParam String userId,@RequestParam String[] roleId) {
-        roleService.saveUserRoleRealtionShip(userId,roleId);
-        return MyResultUtils.ok();
+    @ApiOperation(value = "根据用户id分配角色")
+    @PostMapping("/assignRole")
+    public JsonResult<Void> assignRole(@RequestParam String userId, @RequestParam List<String> roleId) {
+        roleService.assignRole(userId, roleId);
+        return JsonResult.OK;
     }
 
 

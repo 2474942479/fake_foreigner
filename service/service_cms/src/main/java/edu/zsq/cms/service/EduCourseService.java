@@ -1,13 +1,13 @@
 package edu.zsq.cms.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.zsq.cms.entity.EduCourse;
-import edu.zsq.cms.entity.vo.CourseQueryVo;
-import edu.zsq.cms.entity.vo.CourseWebVo;
+import edu.zsq.cms.entity.dto.CourseQueryDTO;
+import edu.zsq.cms.entity.vo.CourseAllInfoVO;
+import edu.zsq.cms.entity.vo.CourseListVO;
+import edu.zsq.utils.page.PageData;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -15,7 +15,7 @@ import java.util.Map;
  * </p>
  *
  * @author zsq
- * @since 2020-08-20
+ * @since 2021-04-18
  */
 public interface EduCourseService extends IService<EduCourse> {
 
@@ -28,16 +28,19 @@ public interface EduCourseService extends IService<EduCourse> {
 
     /**
      * 根据条件对课程进行分页查询
-     * @param page
-     * @param courseQuery
-     * @return
+     *
+     * @param courseQueryDTO 查询条件
+     * @return 分页数据
      */
-    Map<String, Object> getCourseListByQuery(Page<EduCourse> page, CourseQueryVo courseQuery);
+    PageData<CourseListVO> getCourseListByQuery(CourseQueryDTO courseQueryDTO);
+
 
     /**
      * 获取课程详情页面所有信息
+     *
+     * @param userId 用户id
      * @param courseId 课程id
-     * @return
+     * @return 所有信息
      */
-    CourseWebVo getCourseBaseInfo(String courseId);
+    CourseAllInfoVO getCourseInfo(String userId, String courseId);
 }

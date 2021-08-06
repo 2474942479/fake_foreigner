@@ -1,4 +1,4 @@
 FROM openjdk:8-jdk-alpine
 VOLUME /tmp
-COPY ./target/online_edu.jar online_edu.jar
-ENTRYPOINT ["java","-jar","/online_edu.jar", "&"]
+COPY ./target/fake_foreigner.jar fake_foreigner.jar
+ENTRYPOINT ["java","-jar","/fake_foreigner.jar", "&"]

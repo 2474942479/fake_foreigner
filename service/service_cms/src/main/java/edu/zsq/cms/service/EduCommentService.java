@@ -1,11 +1,12 @@
 package edu.zsq.cms.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import edu.zsq.cms.entity.EduComment;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
+import edu.zsq.cms.entity.EduComment;
+import edu.zsq.cms.entity.dto.CommentDTO;
+import edu.zsq.cms.entity.dto.CommentQueryDTO;
+import edu.zsq.cms.entity.vo.CommentVO;
+import edu.zsq.utils.page.PageData;
+import edu.zsq.utils.result.JsonResult;
 
 /**
  * <p>
@@ -13,18 +14,23 @@ import java.util.Map;
  * </p>
  *
  * @author zsq
- * @since 2020-08-25
+ * @since 2021-04-18
  */
 public interface EduCommentService extends IService<EduComment> {
 
     /**
-     *  根据课程id查询评论列表
-     * @param page
-     * @param courseId
-     * @param request
-     * @return
+     * 根据课程id查询评论列表
+     *
+     * @param commentQueryDTO 课程id
+     * @return 评论信息
      */
-    Map<String, Object> getCommentList(Page<EduComment> page, String courseId,HttpServletRequest request);
+    PageData<CommentVO> getCommentList(CommentQueryDTO commentQueryDTO);
 
-
+    /**
+     * 添加评论
+     *
+     * @param commentDTO 评论信息
+     * @return 添加结果
+     */
+    void saveComment(CommentDTO commentDTO);
 }

@@ -11,34 +11,35 @@ import java.util.Date;
  * <p>
  * token管理
  * </p>
+ *
  * @author 张
  */
 @Component
 public class TokenManager {
 
-    private long tokenExpiration = 24*60*60*1000;
-    private String tokenSignKey = "123456";
+    private final String TOKEN_SIGN_KEY = "123456";
 
     /**
      * 生成token
+     *
      * @param username
      * @return
      */
     public String createToken(String username) {
-        String token = Jwts.builder().setSubject(username)
+        long tokenExpiration =12 * 60 * 60 * 1000;
+        return Jwts.builder().setSubject(username)
                 .setExpiration(new Date(System.currentTimeMillis() + tokenExpiration))
-                .signWith(SignatureAlgorithm.HS512, tokenSignKey).compressWith(CompressionCodecs.GZIP).compact();
-        return token;
+                .signWith(SignatureAlgorithm.HS512, TOKEN_SIGN_KEY).compressWith(CompressionCodecs.GZIP).compact();
     }
 
     /**
      * 从token中获取用户名
+     *
      * @param token
      * @return
      */
     public String getUserFromToken(String token) {
-        String username = Jwts.parser().setSigningKey(tokenSignKey).parseClaimsJws(token).getBody().getSubject();
-        return username;
+        return Jwts.parser().setSigningKey(TOKEN_SIGN_KEY).parseClaimsJws(token).getBody().getSubject();
     }
 
     public void removeToken(String token) {

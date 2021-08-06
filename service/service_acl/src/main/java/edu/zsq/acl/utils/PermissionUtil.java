@@ -11,11 +11,11 @@ import java.util.List;
 public class PermissionUtil {
 
     /**
-     * 使用递归方法建菜单
-     * @param treeNodes
-     * @return
+     * 使用递归方法建菜单树
+     * @param treeNodes 全部节点
+     * @return 菜单树
      */
-    public static List<Permission> bulid(List<Permission> treeNodes) {
+    public static List<Permission> build(List<Permission> treeNodes) {
         List<Permission> trees = new ArrayList<>();
         for (Permission treeNode : treeNodes) {
             if ("0".equals(treeNode.getPid())) {
@@ -28,11 +28,11 @@ public class PermissionUtil {
 
     /**
      * 递归查找子节点
-     * @param treeNodes
-     * @return
+     * @param treeNodes 全部节点
+     * @return 子节点
      */
     public static Permission findChildren(Permission treeNode,List<Permission> treeNodes) {
-        treeNode.setChildren(new ArrayList<Permission>());
+        treeNode.setChildren(new ArrayList<>());
 
         for (Permission it : treeNodes) {
             if(treeNode.getId().equals(it.getPid())) {

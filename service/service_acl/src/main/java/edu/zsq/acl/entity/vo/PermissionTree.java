@@ -1,6 +1,5 @@
 package edu.zsq.acl.entity.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -35,22 +34,19 @@ public class PermissionTree implements Serializable {
 
     @ApiModelProperty(value = "组件路径")
     private String component;
+
     @ApiModelProperty(value = "图标")
     private String icon;
 
     @ApiModelProperty(value = "状态(0:禁止,1:正常)")
     private Integer status;
 
-
     @ApiModelProperty(value = "层级")
-    @TableField(exist = false)
     private Integer level;
 
     @ApiModelProperty(value = "下级")
-    @TableField(exist = false)
     private List<PermissionTree> children;
 
     @ApiModelProperty(value = "是否选中")
-    @TableField(exist = false)
     private boolean isSelect;
 }

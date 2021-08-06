@@ -2,12 +2,8 @@ package edu.zsq.security.config;
 
 import edu.zsq.security.filter.TokenAuthenticationFilter;
 import edu.zsq.security.filter.TokenLoginFilter;
-import edu.zsq.security.security.DefaultPasswordEncoder;
-import edu.zsq.security.security.TokenLogoutHandler;
-import edu.zsq.security.security.TokenManager;
-import edu.zsq.security.security.UnauthorizedEntryPoint;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import edu.zsq.security.provider.MyAuthenticationProvider;
+import edu.zsq.security.security.*;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,6 +13,9 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * <p>
@@ -31,59 +30,70 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public class TokenWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
-     *    自定义UserDetailsService
-     *    自定义该接口的实现类，查询数据库 获取权限列表
+     * 自定义UserDetailsService
+     * 自定义该接口的实现类，查询数据库 获取权限列表
      */
+    @Resource
     private UserDetailsService userDetailsService;
-    private TokenManager tokenManager;
-    private DefaultPasswordEncoder defaultPasswordEncoder;
-    private RedisTemplate<String,String> redisTemplate;
 
-    @Autowired
-    public TokenWebSecurityConfig(UserDetailsService userDetailsService, DefaultPasswordEncoder defaultPasswordEncoder,
-                                  TokenManager tokenManager, RedisTemplate redisTemplate) {
-        this.userDetailsService = userDetailsService;
-        this.defaultPasswordEncoder = defaultPasswordEncoder;
-        this.tokenManager = tokenManager;
-        this.redisTemplate = redisTemplate;
-    }
+    @Resource
+    private TokenManager tokenManager;
+
+    @Resource
+    private DefaultPasswordEncoder defaultPasswordEncoder;
+
+    @Resource
+    private RedisTemplate<String, List<String>> redisTemplate;
+
+    @Resource
+    private UnAuthorizedEntryPoint unAuthorizedEntryPoint;
+
+    @Resource
+    private UnAccessDeniedHandler unAccessDeniedHandler;
+
 
     /**
      * 配置设置
      *
-     * @param http
-     * @throws Exception
+     * @param http http
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.exceptionHandling()
-                .authenticationEntryPoint(new UnauthorizedEntryPoint())
-                .and().csrf().disable()
+                .authenticationEntryPoint(unAuthorizedEntryPoint)
+                .accessDeniedHandler(unAccessDeniedHandler)
+                .and()
+                .csrf()
+                .disable()
                 .authorizeRequests()
-                .anyRequest().authenticated()
-//                退出地址
-                .and().logout().logoutUrl("/admin/acl/index/logout")
-                .addLogoutHandler(new TokenLogoutHandler(tokenManager, redisTemplate)).and()
+                .anyRequest()
+                .authenticated()
+                // 退出地址
+                .and()
+                .logout()
+                .logoutUrl("/admin/acl/index/logout")
+                .addLogoutHandler(new TokenLogoutHandler(tokenManager, redisTemplate))
+                .and()
                 .addFilter(new TokenLoginFilter(authenticationManager(), tokenManager, redisTemplate))
-                .addFilter(new TokenAuthenticationFilter(authenticationManager(), tokenManager, redisTemplate)).httpBasic();
+                .addFilter(new TokenAuthenticationFilter(authenticationManager(), tokenManager, redisTemplate))
+                .httpBasic();
     }
 
     /**
      * 密码处理
      *
-     * @param auth
-     * @throws Exception
+     * @param auth auth
      */
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(new MyAuthenticationProvider(userDetailsService, defaultPasswordEncoder));
         auth.userDetailsService(userDetailsService).passwordEncoder(defaultPasswordEncoder);
     }
 
     /**
      * 配置哪些请求不拦截
      *
-     * @param web
-     * @throws Exception
+     * @param web web
      */
     @Override
     public void configure(WebSecurity web) throws Exception {

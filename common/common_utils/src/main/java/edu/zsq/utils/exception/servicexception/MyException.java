@@ -1,31 +1,60 @@
 package edu.zsq.utils.exception.servicexception;
 
 import edu.zsq.utils.exception.BaseException;
-import lombok.AllArgsConstructor;
+import edu.zsq.utils.exception.core.ExType;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 /**
  * 自定义业务异常类
  *
  * @author 张
  * @AllArgsConstructor 全部参数构造器
- * @NoArgsConstructor   无参构造器
+ * @NoArgsConstructor 无参构造器
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class MyException extends BaseException {
 
-    private Integer status;
+    /**
+     * 错误类型
+     */
+    private ExType exType;
 
-    private String msg;
+    /**
+     * 错误码
+     */
+    private int code;
 
-    @Override
-    public String toString() {
-        return "MyNullPointerException{" +
-                "message=" + msg +
-                ", status=" + status +
-                '}';
+    /**
+     * 错误描述
+     */
+    private String desc;
+
+    /**
+     * 提示文案
+     */
+    private String copyright;
+
+    public MyException() {
+    }
+
+    public MyException(int code, String desc) {
+        this.code = code;
+        this.desc = desc;
+    }
+
+    public MyException(String message, Throwable cause, ExType exType, int code, String desc) {
+        super(message, cause);
+        this.exType = exType;
+        this.code = code;
+        this.desc = desc;
+    }
+
+    public MyException(ExType exType, int code, String desc, String copyright) {
+        this.exType = exType;
+        this.code = code;
+        this.desc = desc;
+        this.copyright = copyright;
     }
 }

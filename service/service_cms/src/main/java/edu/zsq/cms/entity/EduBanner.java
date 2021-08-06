@@ -1,14 +1,16 @@
 package edu.zsq.cms.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -21,10 +23,10 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="EduBanner对象", description="首页banner表")
-public class EduBanner implements Serializable {
+@ApiModel(value = "EduBanner对象", description = "首页banner表")
+@NoArgsConstructor
+public class EduBanner{
 
-    private static final long serialVersionUID=1L;
 
     @ApiModelProperty(value = "ID")
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
@@ -39,6 +41,9 @@ public class EduBanner implements Serializable {
     @ApiModelProperty(value = "链接地址")
     private String linkUrl;
 
+    @ApiModelProperty(value = "描述")
+    private String description;
+
     @ApiModelProperty(value = "排序")
     private Integer sort;
 
@@ -48,11 +53,13 @@ public class EduBanner implements Serializable {
 
     @ApiModelProperty(value = "创建时间")
     @TableField(fill = FieldFill.INSERT)
-    private Date gmtCreate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime gmtCreate;
 
     @ApiModelProperty(value = "更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date gmtModified;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime gmtModified;
 
 
 }

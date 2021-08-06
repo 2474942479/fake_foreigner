@@ -1,16 +1,16 @@
 package edu.zsq.cms.controller;
 
 
-import edu.zsq.cms.entity.EduCourse;
-import edu.zsq.cms.entity.EduTeacher;
+import edu.zsq.cms.entity.dto.TeacherQueryDTO;
+import edu.zsq.cms.entity.vo.TeacherAndCoursesVO;
+import edu.zsq.cms.entity.vo.TeacherInfoVO;
 import edu.zsq.cms.service.EduCourseService;
 import edu.zsq.cms.service.EduTeacherService;
-import edu.zsq.utils.result.MyResultUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import edu.zsq.utils.page.PageData;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Resource;
 
 /**
  * <p>
@@ -18,42 +18,44 @@ import java.util.Map;
  * </p>
  *
  * @author zsq
- * @since 2020-08-20
+ * @since 2021-04-18
  */
 @RestController
-@RequestMapping("/eduCms/teacherFront")
+@RequestMapping("/eduCms/teacher")
 public class EduTeacherController {
 
-    @Autowired
+    @Resource
     private EduTeacherService teacherService;
-    @Autowired
+    @Resource
     private EduCourseService courseService;
 
     /**
-     * 分页查询
-     * @param current
-     * @param size
-     * @return
+     * 分页查询讲师信息
+     *
+     * @param teacherQueryDTO 查询条件
+     * @return 讲师信息列表
      */
-    @GetMapping("/getTeacherFront/{current}/{size}")
-    public MyResultUtils getTeacherFront(@PathVariable long current, @PathVariable long size){
-        Map<String ,Object> map = teacherService.getTeacherFront(current,size);
-        return MyResultUtils.ok().data(map);
+    @PostMapping("/getTeacherList")
+    public JsonResult<PageData<TeacherInfoVO>> getTeacherList(@RequestBody TeacherQueryDTO teacherQueryDTO) {
+        return JsonResult.success(teacherService.getTeacherList(teacherQueryDTO));
     }
 
 
     /**
      * 根据讲师id获取讲师基本信息和所讲课程
-     * @param id
-     * @return
+     *
+     * @param id 讲师id
+     * @return 讲师信息以及所讲课程
      */
-    @GetMapping("/getTeacherAllById/{id}")
-    public MyResultUtils getTeacherAllById(@PathVariable String id){
-        EduTeacher teacherInfo = teacherService.getById(id);
+    @GetMapping("/getTeacherInfoById/{id}")
+    public JsonResult<TeacherAndCoursesVO> getTeacherInfoById(@PathVariable String id) {
 
-        List<EduCourse> courseList = courseService.getCourseByTeacherId(id);
+        TeacherAndCoursesVO teacherAndCoursesVO = TeacherAndCoursesVO.builder()
+                .teacherInfo(teacherService.getById(id))
+                .courseList(courseService.getCourseByTeacherId(id))
+                .build();
 
-        return MyResultUtils.ok().data("teacherInfo",teacherInfo).data("courseList",courseList);
+        return JsonResult.success(teacherAndCoursesVO);
     }
 
 }

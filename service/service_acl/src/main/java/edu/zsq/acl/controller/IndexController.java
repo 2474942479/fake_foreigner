@@ -1,15 +1,17 @@
 package edu.zsq.acl.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import edu.zsq.acl.entity.vo.UserInfoVO;
 import edu.zsq.acl.service.IndexService;
-import edu.zsq.utils.result.MyResultUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import edu.zsq.utils.result.JsonResult;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author 张
@@ -18,35 +20,33 @@ import java.util.Map;
 @RequestMapping("/admin/acl/index")
 public class IndexController {
 
-    @Autowired
+    @Resource
     private IndexService indexService;
 
     /**
      * 根据token获取用户信息
      */
-    @GetMapping("info")
-    public MyResultUtils info(){
+    @GetMapping("/info")
+    public JsonResult<UserInfoVO> info(){
         //获取当前登录用户用户名
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Map<String, Object> userInfo = indexService.getUserInfo(username);
-        return MyResultUtils.ok().data(userInfo);
+        return JsonResult.success(indexService.getUserInfo(username));
     }
 
     /**
-     * 获取菜单
-     * @return
+     *根据username 获取菜单
+     * @return 菜单列表
      */
-    @GetMapping("menu")
-    public MyResultUtils getMenu(){
+    @GetMapping("/menu")
+    public JsonResult<List<JSONObject>> getMenu(){
         //获取当前登录用户用户名
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<JSONObject> permissionList = indexService.getMenu(username);
-        return MyResultUtils.ok().data("permissionList", permissionList);
+        return JsonResult.success(indexService.getMenu(username));
     }
 
-    @PostMapping("logout")
-    public MyResultUtils logout(){
-        return MyResultUtils.ok();
+    @PostMapping("/logout")
+    public JsonResult<Void> logout(){
+        return JsonResult.success();
     }
 
 }

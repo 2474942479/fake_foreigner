@@ -1,10 +1,13 @@
 package edu.zsq.utils.exception;
 
+import edu.zsq.utils.exception.core.ExDefinition;
+
 /**
  * 自定义异常根类
+ *
  * @author 张
  */
-public class BaseException extends RuntimeException{
+public class BaseException extends RuntimeException {
 
     public BaseException() {
     }
@@ -19,5 +22,9 @@ public class BaseException extends RuntimeException{
 
     public BaseException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public BaseException(ExDefinition exDefinition) {
+        super(exDefinition.getDesc());
     }
 }

@@ -1,6 +1,6 @@
 package edu.zsq.security.security;
 
-import edu.zsq.utils.result.MyResultUtils;
+import edu.zsq.utils.result.JsonResult;
 import edu.zsq.utils.result.ResponseUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
@@ -8,6 +8,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * <p>
@@ -17,10 +18,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class TokenLogoutHandler implements LogoutHandler {
 
-    private TokenManager tokenManager;
-    private RedisTemplate redisTemplate;
+    private final TokenManager tokenManager;
+    private final RedisTemplate<String, List<String>> redisTemplate;
 
-    public TokenLogoutHandler(TokenManager tokenManager, RedisTemplate redisTemplate) {
+    public TokenLogoutHandler(TokenManager tokenManager, RedisTemplate<String, List<String>> redisTemplate) {
         this.tokenManager = tokenManager;
         this.redisTemplate = redisTemplate;
     }
@@ -35,6 +36,6 @@ public class TokenLogoutHandler implements LogoutHandler {
             String userName = tokenManager.getUserFromToken(token);
             redisTemplate.delete(userName);
         }
-        ResponseUtil.out(response, MyResultUtils.ok());
+        ResponseUtil.out(response, JsonResult.success());
     }
 }
