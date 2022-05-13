@@ -64,6 +64,9 @@
         <commons-dbutils.version>1.7</commons-dbutils.version>
         <canal.client.version>1.1.0</canal.client.version>
         <docker.image.prefix>zx</docker.image.prefix>
+        <!-- 修改springboot自帶es版本-->
+        <elasticsearch.version>7.4.2</elasticsearch.version>
+        <elasticsearch-rest.version>7.4.2</elasticsearch-rest.version>
     </properties>
 
 
@@ -233,6 +236,11 @@
                 <groupId>com.alibaba.otter</groupId>
                 <artifactId>canal.client</artifactId>
                 <version>${canal.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>${elasticsearch-rest.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

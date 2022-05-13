@@ -1,4 +1,4 @@
-package edu.zsq.servicebase;
+package edu.zsq.servicebase.conf;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package edu.zsq.servicebase;
+package edu.zsq.servicebase.conf;
 
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.optimize.JsqlParserCountOptimize;
